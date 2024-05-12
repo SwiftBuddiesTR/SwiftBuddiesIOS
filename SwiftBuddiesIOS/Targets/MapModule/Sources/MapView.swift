@@ -3,55 +3,41 @@ import MapKit
 import Design
 
 public struct MapView: View {
-//    @State private var selectedCategory: String? = nil
-    @State private var locations: [Location] = [
-        Location(name: "Boga Heykeli", coordinate: CLLocationCoordinate2D(latitude: 40.990467, longitude: 29.029162)),
-        Location(name: "Coffee Shop 1", coordinate: CLLocationCoordinate2D(latitude: 41.043544, longitude: 29.004255)),
-        Location(name: "Coffee Shop 1", coordinate: CLLocationCoordinate2D(latitude: 41.06, longitude: 29)),
-    ]
-
-    @State private var categoryModalShown = false
-    @State private var selectedCategory: String = "Select Location"
-    @State private var selectedDetent: PresentationDetent = .fraction(0.2)
-    @State private var dismissableMessage: Bool = false
+    
+    @StateObject var vm = MapViewViewModel()
     
     public init() {}
     
     public var body: some View {
         ZStack {
-            MapLocationsView(locations: locations)
-                .edgesIgnoringSafeArea([.top, .leading, .trailing])
-                .bottomSheet(
-                    presentationDetents: [.large, .fraction(0.2), .fraction(0.4), .fraction(0.5), .medium],
-                    detentSelection: $selectedDetent,
-                    isPresented: $categoryModalShown,
-                    sheetCornerRadius: 12, 
-                    interactiveDismissDisabled: false) {
-                        CategoryPicker(selectedCategory: $selectedCategory) {
-                            selectedDetent = .fraction(0.2)
-                            dismissableMessage.toggle()
-                        }
-                    } onDismiss: {
-                        
+            MapLayer
+            .bottomSheet(
+                presentationDetents: [.large, .fraction(0.2), .fraction(0.4), .fraction(0.5), .medium],
+                detentSelection: $vm.selectedDetent,
+                isPresented: $vm.categoryModalShown,
+                sheetCornerRadius: 12,
+                interactiveDismissDisabled: false) {
+                    CategoryPicker(selectedCategory: $vm.selectedCategory) {
+                        vm.selectedDetent = .fraction(0.2)
+                        vm.dismissableMessage.toggle()
                     }
-            if !categoryModalShown {
+                } onDismiss: {
+                    
+                }
+                
+            if !vm.categoryModalShown {
                 VStack {
                     Spacer()
-                    Button(action: {
-                        categoryModalShown.toggle()
-                    }) {
-                        Text("See Locations")
-                            .foregroundColor(.white)
+                    HStack{
+                        seeLocationsButton
+                        createEventButton
                             .padding()
-                            .background(Color.blue)
-                            .cornerRadius(10)
                     }
-                    .padding()
                 }
             }
             
-            DismissableMessage(displayMessage: $dismissableMessage, delay: 3.0) {
-                Text("Selected: \(selectedCategory)")
+            DismissableMessage(displayMessage: $vm.dismissableMessage, delay: 3.0) {
+                Text("\(vm.selectedCategory)")
                     .padding()
                     .foregroundColor(.white)
                     .background(Color.black.opacity(0.75))
@@ -66,14 +52,7 @@ public struct MapView: View {
     MapView()
 }
 
-// Define a simple model for location
-struct Location: Identifiable {
-    let id = UUID()
-    let name: String
-    let coordinate: CLLocationCoordinate2D
-    let image: Image? = nil
-    let backgroundColor: Color? = nil
-}
+
 
 // Map view
 struct MapLocationsView: View {
@@ -159,4 +138,55 @@ struct CategoryPicker: View {
             })
         }
     }
+}
+
+
+// MARK: View extensions for mapView
+extension MapView {
+    
+    private var MapLayer: some View {
+        Map(position: $vm.position){
+            
+        }
+        .mapControls {
+            Spacer()
+            MapUserLocationButton()
+            MapPitchToggle()
+        }
+        .padding(.top, 40)
+        .onAppear{
+            CLLocationManager().requestWhenInUseAuthorization()
+        }
+        .ignoresSafeArea()
+    }
+    
+    private var seeLocationsButton: some View {
+        Button(action: {
+            vm.categoryModalShown.toggle()
+        }) {
+            Text("See Locations")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.blue)
+                .cornerRadius(10)
+        }
+        .padding()
+    }
+    
+    private var createEventButton: some View {
+        Button(action: {
+            // MARK: define function to create event
+        
+            vm.selectedCategory = "Select a meeting point on map"
+            vm.dismissableMessage = true
+            
+        }) {
+            Text("Create Event ")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.orange)
+                .cornerRadius(10)
+        }
+    }
+    
 }
