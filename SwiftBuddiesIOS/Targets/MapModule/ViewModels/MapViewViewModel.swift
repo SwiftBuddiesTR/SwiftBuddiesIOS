@@ -12,11 +12,11 @@ import MapKit
 class MapViewViewModel: ObservableObject {
     
     //    @State private var selectedCategory: String? = nil
-        @Published var locations: [Location] = [
+        /*@Published var locations: [Location] = [
             Location(name: "Boga Heykeli", coordinate: CLLocationCoordinate2D(latitude: 40.990467, longitude: 29.029162)),
             Location(name: "Coffee Shop 1", coordinate: CLLocationCoordinate2D(latitude: 41.043544, longitude: 29.004255)),
             Location(name: "Coffee Shop 1", coordinate: CLLocationCoordinate2D(latitude: 41.06, longitude: 29)),
-        ]
+        ]*/
    
         @Published var position: MapCameraPosition = .userLocation(fallback: .automatic)
         @Published var categoryModalShown = false
