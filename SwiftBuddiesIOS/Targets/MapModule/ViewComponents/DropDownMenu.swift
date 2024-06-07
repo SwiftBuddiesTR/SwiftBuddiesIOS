@@ -29,7 +29,9 @@ struct DropdownMenu: View {
                     .rotationEffect(.degrees(isShowing ? -180 : 0))
             }
             .frame(height: 55)
-            .background(scheme == .dark ? .black : .white)
+            .background(
+                Color(.secondarySystemBackground)
+            )
             .padding(.horizontal)
             .bold()
             .onTapGesture {
@@ -66,18 +68,17 @@ struct DropdownMenu: View {
                
         }
         .overlay(
-            RoundedRectangle(cornerRadius: 4)
+            RoundedRectangle(cornerRadius: 10)
                 .stroke(Color.primary, lineWidth: 1)
         )
-        .background(scheme == .dark ? .black : .white)
+        .background(
+            Color(.secondarySystemBackground)
+        )
         .padding(.horizontal)
         
         
     }
-    
-    
-    
-    
+
 }
 
 

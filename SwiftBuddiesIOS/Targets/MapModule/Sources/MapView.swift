@@ -36,24 +36,77 @@ public struct MapView: View {
                         }
                     }
                 }
-                
-                DismissableMessage(displayMessage: $vm.dismissableMessage, delay: 3.0) {
-                    Text("\(vm.selectedCategory)")
-                        .padding()
-                        .foregroundColor(.white)
-                        .background(Color.black.opacity(0.75))
-                        .cornerRadius(5)
-                        .padding(.top, 80) // Adjust this to properly place on the screen
-                }
             }
         }
-        
+    
     }
+    
+    
 }
 
 #Preview {
     MapView()
 }
+
+
+// MARK: View extensions for mapView
+extension MapView {
+    
+    private var MapLayer: some View {
+        Map(position: $vm.position){
+            
+        }
+        .mapControls {
+            Spacer()
+            MapUserLocationButton()
+            MapPitchToggle()
+        }
+        .padding(.top, 40)
+        .onAppear{
+            CLLocationManager().requestWhenInUseAuthorization()
+        }
+        .ignoresSafeArea()
+    }
+    
+    private var seeLocationsButton: some View {
+        Button(action: {
+            vm.categoryModalShown.toggle()
+        }) {
+            Text("See Locations")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.blue)
+                .cornerRadius(10)
+        }
+        .padding()
+    }
+    
+    private var createEventButton: some View {
+        NavigationLink(destination: NewEventView()) {
+            Text("Create Event")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.orange)
+                .cornerRadius(10)
+        }
+        
+        
+    }
+    
+}
+
+
+
+
+
+/*DismissableMessage(displayMessage: $vm.dismissableMessage, delay: 3.0) {
+    Text("\(vm.selectedCategory)")
+        .padding()
+        .foregroundColor(.white)
+        .background(Color.black.opacity(0.75))
+        .cornerRadius(5)
+        .padding(.top, 80) // Adjust this to properly place on the screen
+}*/
 
 
 
@@ -110,83 +163,3 @@ public struct MapView: View {
         }
     }
 }*/
-
-struct CategoryPicker: View {
-    @Environment(\.presentationMode) var presentationMode
-
-    @Binding var selectedCategory: String
-    let categories = ["Coffee Shops", "Where to Work", "Meeting Points"]
-    var selectAction: () -> Void
-    
-    var body: some View {
-        NavigationView {
-            List {
-                ForEach(categories, id: \.self) { category in
-                    Button(action: {
-                        selectedCategory = category
-                        selectAction()
-                    }) {
-                        Text(category)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            .padding(.horizontal)
-                    }
-                }
-            }
-            .navigationTitle("Select Category")
-            .navigationBarItems(trailing: Button("Dismiss") {
-                presentationMode.wrappedValue.dismiss()
-            })
-        }
-    }
-}
-
-
-// MARK: View extensions for mapView
-extension MapView {
-    
-    private var MapLayer: some View {
-        Map(position: $vm.position){
-            
-        }
-        .mapControls {
-            Spacer()
-            MapUserLocationButton()
-            MapPitchToggle()
-        }
-        .padding(.top, 40)
-        .onAppear{
-            CLLocationManager().requestWhenInUseAuthorization()
-        }
-        .ignoresSafeArea()
-    }
-    
-    private var seeLocationsButton: some View {
-        Button(action: {
-            vm.categoryModalShown.toggle()
-        }) {
-            Text("See Locations")
-                .foregroundColor(.white)
-                .padding()
-                .background(Color.blue)
-                .cornerRadius(10)
-        }
-        .padding()
-    }
-    
-    private var createEventButton: some View {
-        NavigationLink(destination: NewEventView()) {
-            Text("Create Event")
-                .foregroundColor(.white)
-                .padding()
-                .background(Color.orange)
-                .cornerRadius(10)
-        }
-        
-        
-    }
-    
-}

@@ -10,10 +10,7 @@ import MapKit
 
 struct NewEventView: View {
     
-    @StateObject var viewModel = NewEventViewModel()
-    @FocusState private var fieldInFocus: textFieldFocus?
-    
-    @State private var selectedCategory: String?
+    @StateObject var vm = MapViewViewModel()
     
     @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
     
@@ -24,18 +21,28 @@ struct NewEventView: View {
         "Swift Buddies Event"
     ]
     
+    @FocusState private var fieldInFocus: textFieldFocus?
+    
+    @State private var selectedCategory: String?
+    @State var nameText: String = ""
+    @State var descriptionText: String = ""
+    @State var adressText: String = ""
+    @State var startDate: Date = Date()
+    @State var dueDate: Date = Date()
+    //@State var location: CLLocationCoordinate2D =
+   
+
     var body: some View {
        
             ScrollView{
                 VStack(spacing: 15){
-                    
                     DropdownMenu(prompt: "Select..",
                                  options: categories,
-                                 selection:$selectedCategory
+                                 selection: $selectedCategory
                     )
-                    
-                    eventNameTextfield
-                    aboutText
+                    nameTextfield
+                    descriptionTextField
+                    adressTextField
                     datePickers
                     mapLayer
                     createButton
@@ -50,7 +57,7 @@ struct NewEventView: View {
     }
     
     enum textFieldFocus: Hashable {
-        case category, name, about, startDate, dueDate
+        case  name, about, adress
     }
 }
 
@@ -62,69 +69,95 @@ struct NewEventView: View {
 
 extension NewEventView {
     
-    private var eventNameTextfield: some View {
-        TextField("Event name...", text: $viewModel.name )
-            .frame(height: 50)
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .background(Color(UIColor.systemBackground))
+    private var nameTextfield: some View {
+        TextField("Event name...", text: $nameText)
             .textInputAutocapitalization(.never)
+            .font(.headline)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .frame(height: 55)
             .overlay(
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 10)
                     .stroke(Color.primary, lineWidth: 1)
             )
+            .background(
+                Color(.secondarySystemBackground)
+            )
             .padding(.horizontal)
-            .fontWeight(.bold)
             .onSubmit {
                 fieldInFocus = .about
             }
             .focused($fieldInFocus, equals: .name)
+            
     }
     
-    private var aboutText: some View {
-        TextEditor(text: $viewModel.about)
-            .frame(height: 120)
+    private var descriptionTextField: some View {
+        TextField("About your event...", text: $descriptionText)
+            .font(.headline)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .frame(height: 55)
             .overlay(
-                RoundedRectangle(cornerRadius: 4)
+                RoundedRectangle(cornerRadius: 10)
                     .stroke(Color.primary, lineWidth: 1)
+            )
+            .background(
+                Color(.secondarySystemBackground)
+            )
+            .padding(.horizontal)
+            .onSubmit {
+                fieldInFocus = .adress
+            }
+            .focused($fieldInFocus, equals: .about)
+    }
+    
+    private var adressTextField: some View {
+        TextField("Full Adress...", text: $adressText)
+            .font(.headline)
+            .padding()
+            .frame(maxWidth: .infinity)
+            .frame(height: 55)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.primary, lineWidth: 1)
+            )
+            .background(
+                Color(.secondarySystemBackground)
             )
             .padding(.horizontal)
     }
     
+    
     private var datePickers: some View {
         VStack(spacing: 15) {
-            DatePicker("Start Date", selection: $viewModel.startDate)
-                .frame(width: UIScreen.main.bounds.width - 64, height: 55)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
-                .background(Color(UIColor.systemBackground))
-                .textInputAutocapitalization(.never)
+            DatePicker("Start Date", selection: $startDate)
+                .font(.headline)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .frame(height: 55)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 4)
+                    RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.primary, lineWidth: 1)
                 )
-                .fontWeight(.bold)
+                .background(
+                    Color(.secondarySystemBackground)
+                )
                 .padding(.horizontal)
-                .onSubmit {
-                    fieldInFocus = .dueDate
-                }
-            .focused($fieldInFocus, equals: .startDate)
+                
             
-            DatePicker("Due Date", selection: $viewModel.dueDate)
-                .frame(width: UIScreen.main.bounds.width - 64, height: 55)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
-                .background(Color(UIColor.systemBackground))
-                .textInputAutocapitalization(.never)
+            DatePicker("Due Date", selection: $dueDate)
+                .font(.headline)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .frame(height: 55)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 4)
+                    RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.primary, lineWidth: 1)
                 )
-                .fontWeight(.bold)
+                .background(
+                    Color(.secondarySystemBackground)
+                )
                 .padding(.horizontal)
-                .onSubmit {
-                    
-                }
-                .focused($fieldInFocus, equals: .dueDate)
         }
     }
     
@@ -142,13 +175,17 @@ extension NewEventView {
             }
         }
         .aspectRatio(1, contentMode: .fill)
-        .padding()
-        .cornerRadius(20)
+        .cornerRadius(15)
+        .padding(.horizontal)
     }
     
     private var createButton: some View {
         Button(action: {
-            // Save the event to database
+            // Save the event into core data
+            if selectedCategory != nil {
+                vm.addData(category: selectedCategory!, name: nameText, description: descriptionText, adress: adressText, startDate: startDate, dueDate: dueDate)
+                print(vm.savedEvents.count)
+            }
         }) {
             Text("Create")
                 .frame(width: UIScreen.main.bounds.width - 64, height: 55)
