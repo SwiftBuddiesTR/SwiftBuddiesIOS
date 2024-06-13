@@ -21,4 +21,6 @@ struct Location: Identifiable {
     let coordinate: CLLocationCoordinate2D
     //let image: Image? = nil
     //let backgroundColor: Color? = nil
+    
+    
 }

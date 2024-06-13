@@ -9,10 +9,11 @@ import SwiftUI
 import MapKit
 
 struct NewEventView: View {
+    @Environment(\.presentationMode) var presentationMode
     
-    @StateObject var vm = MapViewViewModel()
-    
-    @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
+    @StateObject var vm = MapViewModel()
+
+    //@State private var tappedLocation: CLLocationCoordinate2D?
     
     private let categories = [
         "Meeting",
@@ -21,7 +22,6 @@ struct NewEventView: View {
         "Swift Buddies Event"
     ]
     
-    @FocusState private var fieldInFocus: textFieldFocus?
     
     @State private var selectedCategory: String?
     @State var nameText: String = ""
@@ -51,14 +51,11 @@ struct NewEventView: View {
                 .padding(.top)
                 Spacer()
             }
-         
         
+       
         
     }
     
-    enum textFieldFocus: Hashable {
-        case  name, about, adress
-    }
 }
 
 #Preview {
@@ -84,10 +81,7 @@ extension NewEventView {
                 Color(.secondarySystemBackground)
             )
             .padding(.horizontal)
-            .onSubmit {
-                fieldInFocus = .about
-            }
-            .focused($fieldInFocus, equals: .name)
+            
             
     }
     
@@ -105,10 +99,7 @@ extension NewEventView {
                 Color(.secondarySystemBackground)
             )
             .padding(.horizontal)
-            .onSubmit {
-                fieldInFocus = .adress
-            }
-            .focused($fieldInFocus, equals: .about)
+            
     }
     
     private var adressTextField: some View {
@@ -163,7 +154,7 @@ extension NewEventView {
     
     private var mapLayer: some View {
         VStack {
-            Map(position: $cameraPosition) {
+            Map(position: $vm.position) {
                 
             }
             .mapControls {
@@ -173,6 +164,7 @@ extension NewEventView {
             .onAppear{
                 CLLocationManager().requestWhenInUseAuthorization()
             }
+
         }
         .aspectRatio(1, contentMode: .fill)
         .cornerRadius(15)
@@ -183,8 +175,9 @@ extension NewEventView {
         Button(action: {
             // Save the event into core data
             if selectedCategory != nil {
-                vm.addData(category: selectedCategory!, name: nameText, description: descriptionText, adress: adressText, startDate: startDate, dueDate: dueDate)
-                print(vm.savedEvents.count)
+                
+            } else {
+               
             }
         }) {
             Text("Create")
@@ -198,3 +191,6 @@ extension NewEventView {
 
     }
 }
+
+
+

@@ -4,9 +4,11 @@ import Design
 
 public struct MapView: View {
     
-    @StateObject var vm = MapViewViewModel()
+    @StateObject var vm = MapViewModel()
     
-    public init() {}
+    public init() {
+        
+    }
     
     public var body: some View {
         NavigationView{
@@ -36,6 +38,7 @@ public struct MapView: View {
                         }
                     }
                 }
+                
             }
         }
     
@@ -52,16 +55,17 @@ public struct MapView: View {
 // MARK: View extensions for mapView
 extension MapView {
     
+    // Core Dataya Location kaydedebilirsem. Bu haritayı o lokasyonlarla başlatacağım ver her category için farklı bir pin designi olcak.
     private var MapLayer: some View {
         Map(position: $vm.position){
-            
+        
         }
         .mapControls {
             Spacer()
             MapUserLocationButton()
             MapPitchToggle()
         }
-        .padding(.top, 40)
+        .padding(.top, 50)
         .onAppear{
             CLLocationManager().requestWhenInUseAuthorization()
         }
