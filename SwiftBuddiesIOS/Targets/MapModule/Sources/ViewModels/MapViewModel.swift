@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-import CoreData
+import SwiftData
 import MapKit
 
 class MapViewModel: ObservableObject {
@@ -21,6 +21,11 @@ class MapViewModel: ObservableObject {
     
     init() {
         
+    }
+    
+    func addItem(modelContext: ModelContext, id: String, category: String, name: String, about: String, startDate: Date, dueDate: Date/*, coordinate: CLLocationCoordinate2D*/) {
+        let event = EventModel(category: category, name: name, aboutEvent: about, startDate: startDate, dueDate: dueDate/*,coordinate: coordinate*/)
+        modelContext.insert(event)
     }
     
     

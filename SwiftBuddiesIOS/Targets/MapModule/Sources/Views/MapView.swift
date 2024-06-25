@@ -1,10 +1,12 @@
 import SwiftUI
 import MapKit
 import Design
+import SwiftData
 
 public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
+    
     
     public init() {
         
@@ -41,6 +43,7 @@ public struct MapView: View {
                 
             }
         }
+        //.modelContainer(for: EventModel.self)
     
     }
     

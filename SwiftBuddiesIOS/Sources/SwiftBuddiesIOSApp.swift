@@ -1,6 +1,6 @@
 import SwiftUI
-import GoogleSignIn
-import Core
+import Map
+import SwiftData
 
 @main
 struct SwiftBuddiesIOSApp: App {
@@ -13,6 +13,9 @@ struct SwiftBuddiesIOSApp: App {
         WindowGroup {
             RootView()
         }
+        .modelContainer(for: EventModel.self)
+        
+        
     }
 }
 
