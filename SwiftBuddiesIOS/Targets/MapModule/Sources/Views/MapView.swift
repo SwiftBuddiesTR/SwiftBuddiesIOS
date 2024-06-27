@@ -13,6 +13,7 @@ public struct MapView: View {
     }
     
     public var body: some View {
+        
         NavigationView{
             ZStack {
                 MapLayer
@@ -43,7 +44,6 @@ public struct MapView: View {
                 
             }
         }
-        //.modelContainer(for: EventModel.self)
     
     }
     

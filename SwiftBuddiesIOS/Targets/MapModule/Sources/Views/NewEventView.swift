@@ -183,7 +183,7 @@ extension NewEventView {
                 print(items.count)
                 self.presentationMode.wrappedValue.dismiss()
             } else {
-            
+              //Hata mesajı
             }
         }) {
             Text("Create")
