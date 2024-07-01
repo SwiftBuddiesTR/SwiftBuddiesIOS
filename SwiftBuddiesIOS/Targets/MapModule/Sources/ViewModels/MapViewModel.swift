@@ -15,7 +15,7 @@ class MapViewModel: ObservableObject {
     @Published var position: MapCameraPosition = .userLocation(fallback: .automatic)
     @Published var categoryModalShown = false
     @Published var selectedCategory: String = "Select Location"
-    @Published var selectedDetent: PresentationDetent = .fraction(0.2)
+    @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var dismissableMessage: Bool = false
     
     
@@ -23,8 +23,8 @@ class MapViewModel: ObservableObject {
         
     }
     
-    func addItem(modelContext: ModelContext, id: String, category: String, name: String, about: String, startDate: Date, dueDate: Date/*, coordinate: CLLocationCoordinate2D*/) {
-        let event = EventModel(category: category, name: name, aboutEvent: about, startDate: startDate, dueDate: dueDate/*,coordinate: coordinate*/)
+    func addItem(modelContext: ModelContext, id: String, category: String, name: String, about: String, startDate: Date, dueDate: Date, latitude: Double, longitude: Double) {
+        let event = EventModel(category: category, name: name, aboutEvent: about, startDate: startDate, dueDate: dueDate, latitude: latitude, longitude: longitude)
         modelContext.insert(event)
     }
     

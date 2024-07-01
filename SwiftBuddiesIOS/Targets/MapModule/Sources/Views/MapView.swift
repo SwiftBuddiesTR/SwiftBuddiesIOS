@@ -6,6 +6,7 @@ import SwiftData
 public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
+    @State private var items: [EventModel] = []
     
     
     public init() {
@@ -18,17 +19,20 @@ public struct MapView: View {
             ZStack {
                 MapLayer
                 .bottomSheet(
-                    presentationDetents: [.large, .fraction(0.2), .fraction(0.4), .fraction(0.5), .medium],
+                    presentationDetents: [.large, .fraction(0.2), .fraction(0.4), .fraction(0.5), .fraction(0.9), .medium],
                     detentSelection: $vm.selectedDetent,
                     isPresented: $vm.categoryModalShown,
                     sheetCornerRadius: 12,
                     interactiveDismissDisabled: false) {
-                        CategoryPicker(selectedCategory: $vm.selectedCategory) {
-                            vm.selectedDetent = .fraction(0.2)
-                            vm.dismissableMessage.toggle()
+                        CategoryPicker(selectedCategory: $vm.selectedCategory, selectedItems: $items) {
+                            
                         }
                     } onDismiss: {
-                        
+                        for item in items {
+                            print("Category: \(item.category)")
+                            print("Latitude: \(item.latitude)")
+                            print("Longitude: \(item.longitude)")
+                        }
                     }
                     
                 if !vm.categoryModalShown {
@@ -101,72 +105,3 @@ extension MapView {
     }
     
 }
-
-
-
-
-
-/*DismissableMessage(displayMessage: $vm.dismissableMessage, delay: 3.0) {
-    Text("\(vm.selectedCategory)")
-        .padding()
-        .foregroundColor(.white)
-        .background(Color.black.opacity(0.75))
-        .cornerRadius(5)
-        .padding(.top, 80) // Adjust this to properly place on the screen
-}*/
-
-
-
-// Map view
-/*struct MapLocationsView: View {
-    var locations: [Location]
-
-    var body: some View {
-        
-        VStack {
-            Map(position: .constant(.automatic)) {
-                ForEach(locations) { location in
-                    Annotation(coordinate: location.coordinate) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 5)
-                                .fill(location.backgroundColor ?? Color.teal)
-                            if let image = location.image {
-                                image
-                                    .frame(width: 12, height: 12)
-                                    .padding(5)
-                            } else {
-                                Image(systemName: "house")
-                                    .frame(width: 24, height: 24)
-                                    .padding(5)
-                            }
-                        }
-                    } label: {
-                        Text(location.name)
-                    }
-
-                }
-                Annotation("Columbia University", coordinate: .columbiaUniversity) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color.teal)
-                        Text("🎓")
-                            .padding(5)
-                    }
-                }
-            }
-            
-            Map(
-                coordinateRegion: .constant(
-                    MKCoordinateRegion(
-                        center: CLLocationCoordinate2D(latitude: 41.04, longitude: 29),
-                        latitudinalMeters: 10000,
-                        longitudinalMeters: 10000
-                    )
-                ),
-                annotationItems: locations
-            ) { location in
-                MapPin(coordinate: location.coordinate, tint: Color.orange)
-            }
-        }
-    }
-}*/

@@ -6,7 +6,6 @@
 //
 
 import Foundation
-//import MapKit
 import SwiftData
 
 @Model
@@ -17,15 +16,19 @@ public class EventModel: Identifiable {
     let aboutEvent: String
     let startDate: Date
     let dueDate: Date
-    //let coordinate: CLLocationCoordinate2D
+    let latitude: Double
+    let longitude: Double
     
-    init(category: String, name: String, aboutEvent: String, startDate: Date, dueDate: Date/*, coordinate: CLLocationCoordinate2D*/) {
+    
+    init(category: String, name: String, aboutEvent: String, startDate: Date, dueDate: Date, latitude: Double, longitude: Double) {
         self.id = UUID().uuidString
         self.category = category
         self.name = name
         self.aboutEvent = aboutEvent
         self.startDate = startDate
         self.dueDate = dueDate
-        //self.coordinate = coordinate
+        self.latitude = latitude
+        self.longitude = longitude
+        
     }
 }

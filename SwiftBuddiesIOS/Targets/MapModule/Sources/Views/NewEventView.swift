@@ -14,7 +14,7 @@ struct NewEventView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
-    
+    @Query private var items: [EventModel]
     @StateObject var vm = MapViewModel()
     
     private let categories = [
@@ -31,7 +31,7 @@ struct NewEventView: View {
     @State var adressText: String = ""
     @State var startDate: Date = Date()
     @State var dueDate: Date = Date()
-    @State var tappedLocation: CLLocationCoordinate2D?
+    @State var tappedLocation: CLLocationCoordinate2D? = nil
    
 
     var body: some View {
@@ -180,8 +180,9 @@ extension NewEventView {
     private var createButton: some View {
         Button(action: {
             // Save the event into core data
-            if selectedCategory != nil {
-                vm.addItem(modelContext: context, id: UUID().uuidString, category: selectedCategory ?? "", name: nameText, about: descriptionText, startDate: startDate, dueDate: dueDate)
+            if selectedCategory != nil, tappedLocation != nil {
+                vm.addItem(modelContext: context, id: UUID().uuidString, category: selectedCategory ?? "", name: nameText, about: descriptionText, startDate: startDate, dueDate: dueDate, latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
+                print(items.count)
                 print(tappedLocation?.latitude)
                 self.presentationMode.wrappedValue.dismiss()
             } else {

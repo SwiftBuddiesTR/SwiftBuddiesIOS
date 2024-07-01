@@ -9,12 +9,14 @@ import SwiftUI
 import SwiftData
 
 struct CategoryPicker: View {
+    
     @Environment(\.presentationMode) var presentationMode
+    @StateObject var vm = MapViewModel()
 
     @Binding var selectedCategory: String
-    @Query private var items: [EventModel]
     
-    @State private var selectedItems: [EventModel] = []
+    @Query private var items: [EventModel]
+    @Binding var selectedItems: [EventModel] 
     
     private let categories = [
         "Meeting",
@@ -36,12 +38,9 @@ struct CategoryPicker: View {
                         for item in items {
                             if selectedCategory == item.category {
                                 selectedItems.append(item)
-                                /*for si in selectedItems {
-                                    print(si.name)
-                                }*/
                             }
                         }
-                      
+                        presentationMode.wrappedValue.dismiss()
                         print("selected items \(selectedItems.count)")
                     }) {
                         Text(category)
