@@ -6,13 +6,10 @@ import SwiftData
 public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
-    @State private var items: [EventModel] = []
     
-    @State private var region: MKCoordinateRegion = MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-            span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
-    
+    @Query private var items: [EventModel]
+    @State private var selectedItems: [EventModel] = []
+
     public init() {
         
     }
@@ -28,16 +25,23 @@ public struct MapView: View {
                     isPresented: $vm.categoryModalShown,
                     sheetCornerRadius: 12,
                     interactiveDismissDisabled: false) {
-                        CategoryPicker(selectedCategory: $vm.selectedCategory, selectedItems: $items) {
+                        CategoryPicker(selectedCategory: $vm.selectedCategory) {
                             
                         }
                     } onDismiss: {
+                        selectedItems.removeAll()
                         for item in items {
+                            if vm.selectedCategory == item.category {
+                                selectedItems.append(item)
+                            }
+                        }
+                        print("selected items count: \(selectedItems.count)")
+                        for item in selectedItems {
                             print("Category: \(item.category)")
                             print("Latitude: \(item.latitude)")
                             print("Longitude: \(item.longitude)")
                             if let firstItem = items.first {
-                                setMapRegion(to: firstItem)
+                                vm.setMapRegion(to: firstItem)
                             }
                         }
                     }
@@ -54,19 +58,11 @@ public struct MapView: View {
                 }
                 
             }
+            
+            
         }
-    
+        
     }
-    
-    
-    private func setMapRegion(to item: EventModel) {
-        let coordinate = CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
-        let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        withAnimation(.easeInOut) {
-            self.region = MKCoordinateRegion(center: coordinate, span: span)
-        }
-    }
-    
 }
 
 #Preview {
@@ -79,12 +75,12 @@ extension MapView {
     
     // Core Dataya Location kaydedebilirsem. Bu haritayı o lokasyonlarla başlatacağım ver her category için farklı bir pin designi olcak.
     private var MapLayer: some View {
-        Map(coordinateRegion: $region, annotationItems: items) { item in
+        Map(coordinateRegion: $vm.region, annotationItems: selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
                 CustomAnnotationView()
                     .shadow(radius: 10)
                     .onTapGesture {
-                        setMapRegion(to: item)
+                        vm.setMapRegion(to: item)
                     }
             }
         }
