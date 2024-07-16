@@ -35,7 +35,7 @@ struct DropdownMenu: View {
             .padding(.horizontal)
             .bold()
             .onTapGesture {
-                withAnimation(.snappy) {
+                withAnimation(.easeInOut) {
                     isShowing.toggle()
                 }
             }
@@ -59,7 +59,10 @@ struct DropdownMenu: View {
                         .padding(.horizontal)
                         .onTapGesture {
                             selection = option
-                            isShowing.toggle()
+                            withAnimation(.easeInOut) {
+                                isShowing.toggle()
+                            }
+                            
                         }
                     }
                 }

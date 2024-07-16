@@ -15,9 +15,6 @@ struct CategoryPicker: View {
 
     @Binding var selectedCategory: String
     
-    //@Query private var items: [EventModel]
-    //@Binding var selectedItems: [EventModel]
-    
     private let categories = [
         "Meeting",
         "Study Body",
@@ -32,14 +29,7 @@ struct CategoryPicker: View {
             List {
                 ForEach(categories, id: \.self) { category in
                     Button(action: {
-                        
                         selectedCategory = category
-                        /*selectedItems.removeAll()
-                        for item in items {
-                            if selectedCategory == item.category {
-                                selectedItems.append(item)
-                            }
-                        }*/
                         presentationMode.wrappedValue.dismiss()
                         
                     }) {

@@ -13,7 +13,6 @@ import CoreLocation
 
 class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
-    @Published var position: MapCameraPosition = .userLocation(fallback: .automatic)
     @Published var categoryModalShown = false
     @Published var selectedCategory: String = "Select Location"
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
@@ -24,7 +23,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
     
-    private let locationManager = CLLocationManager()
+    let locationManager = CLLocationManager()
     
     override init() {
         super.init()
@@ -60,6 +59,24 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         withAnimation(.easeInOut) {
             self.region = MKCoordinateRegion(center: coordinate, span: span)
+        }
+    }
+    
+    func filteredItems(items: [EventModel], selectedItems: inout [EventModel]) {
+        selectedItems.removeAll()
+        
+        for item in items {
+            print("selected category: \(selectedCategory)")
+            print("item category: \(item.category)")
+            if selectedCategory == item.category {
+                selectedItems.append(item)
+            }
+        }
+        
+        for item in selectedItems {
+            if let firstItem = items.first {
+                setMapRegion(to: firstItem)
+            }
         }
     }
 }

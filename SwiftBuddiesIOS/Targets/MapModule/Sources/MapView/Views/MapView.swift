@@ -9,62 +9,59 @@ public struct MapView: View {
     
     @Query private var items: [EventModel]
     @State private var selectedItems: [EventModel] = []
+    @StateObject var coordinator = Coordinator()
 
     public init() {
         
     }
     
     public var body: some View {
-        
-        NavigationView{
+        NavigationStack(path: $coordinator.path) {
             ZStack {
                 MapLayer
-                .bottomSheet(
-                    presentationDetents: [.large, .fraction(0.2), .fraction(0.4), .fraction(0.5), .fraction(0.9), .medium],
-                    detentSelection: $vm.selectedDetent,
-                    isPresented: $vm.categoryModalShown,
-                    sheetCornerRadius: 12,
-                    interactiveDismissDisabled: false) {
-                        CategoryPicker(selectedCategory: $vm.selectedCategory) {
+                    .edgesIgnoringSafeArea([.top, .leading, .trailing])
+                    .bottomSheet(
+                        presentationDetents: [.large, .fraction(0.2), .fraction(0.4), .fraction(0.5), .fraction(0.9), .medium],
+                        detentSelection: $vm.selectedDetent,
+                        isPresented: $vm.categoryModalShown,
+                        sheetCornerRadius: 12,
+                        interactiveDismissDisabled: false) {
+                            CategoryPicker(selectedCategory: $vm.selectedCategory) {}
+                        } onDismiss: {
+                            vm.filteredItems(items: items, selectedItems: &selectedItems)
+                            print("all items count: \(items.count)")
+                            print("selected items count: \(selectedItems.count)")
                             
                         }
-                    } onDismiss: {
-                        selectedItems.removeAll()
-                        for item in items {
-                            if vm.selectedCategory == item.category {
-                                selectedItems.append(item)
-                            }
-                        }
-                        print("selected items count: \(selectedItems.count)")
-                        for item in selectedItems {
-                            print("Category: \(item.category)")
-                            print("Latitude: \(item.latitude)")
-                            print("Longitude: \(item.longitude)")
-                            if let firstItem = items.first {
-                                vm.setMapRegion(to: firstItem)
-                            }
-                        }
-                    }
-                    
+                
                 if !vm.categoryModalShown {
                     VStack {
                         Spacer()
-                        HStack{
+                        HStack {
                             seeLocationsButton
                             createEventButton
                                 .padding()
                         }
                     }
                 }
-                
             }
-            
-            
+            .navigationDestination(for: Coordinator.NavigationDestination.self) { destination in
+                switch destination {
+                case .newEventView:
+                    NewEventView()
+                        .environmentObject(coordinator)
+                case .selectLocationMapView:
+                    SelectLocationMapView()
+                        .environmentObject(coordinator)
+                case .mapView:
+                    MapView()
+                        .environmentObject(coordinator)
+                }
+            }
         }
-        
+        .environmentObject(coordinator)
     }
 }
-
 #Preview {
     MapView()
 }
@@ -77,7 +74,7 @@ extension MapView {
     private var MapLayer: some View {
         Map(coordinateRegion: $vm.region, annotationItems: selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
-                CustomAnnotationView()
+                RedAnnotationView()
                     .shadow(radius: 10)
                     .onTapGesture {
                         vm.setMapRegion(to: item)
@@ -93,32 +90,35 @@ extension MapView {
         .onAppear{
             CLLocationManager().requestWhenInUseAuthorization()
         }
-        .ignoresSafeArea()
+        .onDisappear {
+            vm.locationManager.stopUpdatingLocation()
+        }
+        
     }
     
     private var seeLocationsButton: some View {
-        Button(action: {
-            vm.categoryModalShown.toggle()
-        }) {
-            Text("See Locations")
-                .foregroundColor(.white)
-                .padding()
-                .background(Color.blue)
-                .cornerRadius(10)
-        }
-        .padding()
-    }
-    
-    private var createEventButton: some View {
-        NavigationLink(destination: NewEventView()) {
-            Text("Create Event")
-                .foregroundColor(.white)
-                .padding()
-                .background(Color.orange)
-                .cornerRadius(10)
+            Button(action: {
+                vm.categoryModalShown.toggle()
+            }) {
+                Text("See Locations")
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.blue)
+                    .cornerRadius(10)
+            }
+            .padding()
         }
         
-        
-    }
+        private var createEventButton: some View {
+            Button(action: {
+                coordinator.navigate(to: .newEventView)
+            }) {
+                Text("Create Event")
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(Color.orange)
+                    .cornerRadius(10)
+            }
+        }
     
 }

@@ -5,17 +5,16 @@
 //  Created by Oğuzhan Abuhanoğlu on 13.05.2024.
 //
 
-import Foundation
 import SwiftUI
-import MapKit
 import SwiftData
 
 struct NewEventView: View {
     
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
-    @Query private var items: [EventModel]
+
     @StateObject var vm = MapViewModel()
+    @EnvironmentObject var coordinator: Coordinator
     
     private let categories = [
         "Meeting",
@@ -23,51 +22,42 @@ struct NewEventView: View {
         "Place to work",
         "Swift Buddies Event"
     ]
-    
-    
+
     @State private var selectedCategory: String?
     @State var nameText: String = ""
     @State var descriptionText: String = ""
     @State var adressText: String = ""
     @State var startDate: Date = Date()
     @State var dueDate: Date = Date()
-    @State var tappedLocation: CLLocationCoordinate2D? = nil
-   
+    
+    
+    
 
     var body: some View {
-       
-            ScrollView{
-                VStack(spacing: 15){
-                    DropdownMenu(prompt: "Select..",
-                                 options: categories,
-                                 selection: $selectedCategory
-                    )
-                    nameTextfield
-                    descriptionTextField
-                    adressTextField
-                    datePickers
-                    mapLayer
-                    createButton
-                }
-                .navigationTitle("Event Details")
-                .padding(.top)
-                Spacer()
+        ScrollView {
+            VStack(spacing: 15) {
+                DropdownMenu(prompt: "Select..",
+                             options: categories,
+                             selection: $selectedCategory)
+                nameTextfield
+                descriptionTextField
+                adressTextField
+                datePickers
+                NextButton
             }
-        
-       
-        
+            .navigationTitle("Event Details")
+            .navigationBarTitleDisplayMode(.large)
+            .padding(.top)
+            Spacer()
+        }
     }
-    
-    
-    
-    
 }
+
+
 
 #Preview {
     NewEventView()
 }
-
-
 
 extension NewEventView {
     
@@ -86,8 +76,6 @@ extension NewEventView {
                 Color(.secondarySystemBackground)
             )
             .padding(.horizontal)
-            
-            
     }
     
     private var descriptionTextField: some View {
@@ -104,11 +92,10 @@ extension NewEventView {
                 Color(.secondarySystemBackground)
             )
             .padding(.horizontal)
-            
     }
     
     private var adressTextField: some View {
-        TextField("Full Adress...", text: $adressText)
+        TextField("Full Address...", text: $adressText)
             .font(.headline)
             .padding()
             .frame(maxWidth: .infinity)
@@ -122,7 +109,6 @@ extension NewEventView {
             )
             .padding(.horizontal)
     }
-    
     
     private var datePickers: some View {
         VStack(spacing: 15) {
@@ -139,7 +125,6 @@ extension NewEventView {
                     Color(.secondarySystemBackground)
                 )
                 .padding(.horizontal)
-                
             
             DatePicker("Due Date", selection: $dueDate)
                 .font(.headline)
@@ -157,49 +142,28 @@ extension NewEventView {
         }
     }
     
-    private var mapLayer: some View {
-        
-        VStack {
-            MapViewRepresentable(tappedLocation: $tappedLocation)
-            .mapControls {
-                MapUserLocationButton()
-                MapPitchToggle()
-            }
-            .onAppear{
-                CLLocationManager().requestWhenInUseAuthorization()
-            }
-        }
-        .aspectRatio(1, contentMode: .fill)
-        .cornerRadius(15)
-        .padding(.horizontal)
-         
-    }
-    
-    
-    
-    private var createButton: some View {
+    private var NextButton: some View {
         Button(action: {
-            // Save the event into core data
-            if selectedCategory != nil, tappedLocation != nil {
-                vm.addItem(modelContext: context, id: UUID().uuidString, category: selectedCategory ?? "", name: nameText, about: descriptionText, startDate: startDate, dueDate: dueDate, latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
-                print(items.count)
-                print(tappedLocation?.latitude)
-                self.presentationMode.wrappedValue.dismiss()
+            if selectedCategory != nil {
+                EventSingletonModel.sharedInstance.category = selectedCategory ?? ""
+                EventSingletonModel.sharedInstance.name = nameText
+                EventSingletonModel.sharedInstance.aboutEvent = descriptionText
+                EventSingletonModel.sharedInstance.startDate = startDate
+                EventSingletonModel.sharedInstance.dueDate = dueDate
+                coordinator.navigate(to: .selectLocationMapView)
             } else {
-              //Hata mesajı
+                // Handle error message if selectedCategory is nil
             }
+            
         }) {
-            Text("Create")
+            Text("Next")
                 .frame(width: UIScreen.main.bounds.width - 64, height: 55)
                 .padding(.horizontal)
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color.orange))
-                .foregroundStyle(.white)
+                .foregroundColor(.white)
                 .fontWeight(.bold)
-                
         }
-
+        .disabled(selectedCategory == nil) // Disable button if selectedCategory is nil
+        
     }
 }
-
-
-
