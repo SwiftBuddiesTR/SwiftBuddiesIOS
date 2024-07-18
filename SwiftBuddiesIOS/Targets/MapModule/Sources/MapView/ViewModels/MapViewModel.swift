@@ -56,27 +56,25 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func setMapRegion(to item: EventModel) {
         let coordinate = CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
-        let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        withAnimation(.easeInOut) {
-            self.region = MKCoordinateRegion(center: coordinate, span: span)
-        }
+        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        self.region = MKCoordinateRegion(center: coordinate, span: span)
     }
     
     func filteredItems(items: [EventModel], selectedItems: inout [EventModel]) {
         selectedItems.removeAll()
-        
         for item in items {
-            print("selected category: \(selectedCategory)")
-            print("item category: \(item.category)")
             if selectedCategory == item.category {
                 selectedItems.append(item)
             }
         }
-        
         for item in selectedItems {
-            if let firstItem = items.first {
+            if let firstItem = selectedItems.first {
+                
                 setMapRegion(to: firstItem)
+                print("1")
             }
         }
     }
+    
+    
 }

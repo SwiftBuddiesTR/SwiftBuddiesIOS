@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-public class EventModel: Identifiable {
+public class EventModel: Identifiable{
     public let id: String
     let category: String
     let name: String
