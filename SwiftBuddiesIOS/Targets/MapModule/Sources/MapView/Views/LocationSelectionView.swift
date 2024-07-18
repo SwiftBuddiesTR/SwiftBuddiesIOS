@@ -9,13 +9,13 @@ import SwiftUI
 import MapKit
 import SwiftData
 
-struct SelectLocationMapView: View {
+struct LocationSelectionView: View {
     
     @Environment(\.modelContext) private var context
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var coordinator: Coordinator
     
-    @StateObject var vm = MapViewModel()
+    @StateObject var vm = LocationSelectionViewViewModel()
 
     @State var tappedLocation: CLLocationCoordinate2D? = nil
     let eventSingleton = EventSingletonModel.sharedInstance
@@ -36,10 +36,10 @@ struct SelectLocationMapView: View {
 }
 
 #Preview {
-    SelectLocationMapView()
+    LocationSelectionView()
 }
 
-extension SelectLocationMapView {
+extension LocationSelectionView {
     
     private var mapLayer: some View {
         VStack {

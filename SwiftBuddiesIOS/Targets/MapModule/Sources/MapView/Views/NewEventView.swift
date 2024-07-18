@@ -13,7 +13,7 @@ struct NewEventView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
 
-    @StateObject var vm = MapViewModel()
+    @StateObject var vm = LocationSelectionViewViewModel()
     @EnvironmentObject var coordinator: Coordinator
     
     private let categories = [
@@ -30,12 +30,10 @@ struct NewEventView: View {
     @State var startDate: Date = Date()
     @State var dueDate: Date = Date()
     
-    
-    
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 15) {
+            VStack(spacing: 30) {
                 DropdownMenu(prompt: "Select..",
                              options: categories,
                              selection: $selectedCategory)

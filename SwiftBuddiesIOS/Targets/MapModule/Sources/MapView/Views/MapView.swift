@@ -44,7 +44,7 @@ public struct MapView: View {
                     NewEventView()
                         .environmentObject(coordinator)
                 case .selectLocationMapView:
-                    SelectLocationMapView()
+                    LocationSelectionView()
                         .environmentObject(coordinator)
                 case .mapView:
                     MapView()
