@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 
-class Coordinator: ObservableObject {
+class NavigationCoordinator: ObservableObject {
     
     enum NavigationDestination: Hashable {
         case mapView

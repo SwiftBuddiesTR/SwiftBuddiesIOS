@@ -13,24 +13,15 @@ struct NewEventView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
 
-    @EnvironmentObject var coordinator: Coordinator
-    
-    let categories = EventCategory.allCases.map { $0.rawValue }
-
-    @State private var selectedCategory: EventCategory.RawValue?
-    @State var nameText: String = ""
-    @State var descriptionText: String = ""
-    @State var adressText: String = ""
-    @State var startDate: Date = Date()
-    @State var dueDate: Date = Date()
-    
+    @StateObject private var vm = NewEventViewViewModel()
+    @EnvironmentObject var coordinator: NavigationCoordinator
 
     var body: some View {
         ScrollView {
             VStack(spacing: 30) {
                 DropdownMenu(prompt: "Select..",
-                             options: categories,
-                             selection: $selectedCategory)
+                             options: vm.filteredCategories,
+                             selection: $vm.selectedCategory)
                 nameTextfield
                 descriptionTextField
                 adressTextField
@@ -54,7 +45,7 @@ struct NewEventView: View {
 extension NewEventView {
     
     private var nameTextfield: some View {
-        TextField("Event name...", text: $nameText)
+        TextField("Event name...", text: $vm.nameText)
             .textInputAutocapitalization(.never)
             .font(.headline)
             .padding()
@@ -71,7 +62,7 @@ extension NewEventView {
     }
     
     private var descriptionTextField: some View {
-        TextField("About your event...", text: $descriptionText)
+        TextField("About your event...", text: $vm.descriptionText)
             .font(.headline)
             .padding()
             .frame(maxWidth: .infinity)
@@ -87,7 +78,7 @@ extension NewEventView {
     }
     
     private var adressTextField: some View {
-        TextField("Full Address...", text: $adressText)
+        TextField("Full Address...", text: $vm.adressText)
             .font(.headline)
             .padding()
             .frame(maxWidth: .infinity)
@@ -104,7 +95,7 @@ extension NewEventView {
     
     private var datePickers: some View {
         VStack(spacing: 15) {
-            DatePicker("Start Date", selection: $startDate)
+            DatePicker("Start Date", selection: $vm.startDate)
                 .font(.headline)
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -118,7 +109,7 @@ extension NewEventView {
                 )
                 .padding(.horizontal)
             
-            DatePicker("Due Date", selection: $dueDate)
+            DatePicker("Due Date", selection: $vm.dueDate)
                 .font(.headline)
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -136,12 +127,12 @@ extension NewEventView {
     
     private var NextButton: some View {
         Button(action: {
-            if selectedCategory != nil {
-                EventSingletonModel.sharedInstance.category = selectedCategory ?? ""
-                EventSingletonModel.sharedInstance.name = nameText
-                EventSingletonModel.sharedInstance.aboutEvent = descriptionText
-                EventSingletonModel.sharedInstance.startDate = startDate
-                EventSingletonModel.sharedInstance.dueDate = dueDate
+            if vm.selectedCategory != nil {
+                EventSingletonModel.sharedInstance.category = vm.selectedCategory ?? ""
+                EventSingletonModel.sharedInstance.name = vm.nameText
+                EventSingletonModel.sharedInstance.aboutEvent = vm.descriptionText
+                EventSingletonModel.sharedInstance.startDate = vm.startDate
+                EventSingletonModel.sharedInstance.dueDate = vm.dueDate
                 coordinator.navigate(to: .selectLocationMapView)
             } else {
                 // Handle error message if selectedCategory is nil
@@ -155,7 +146,7 @@ extension NewEventView {
                 .foregroundColor(.white)
                 .fontWeight(.bold)
         }
-        .disabled(selectedCategory == nil) // Disable button if selectedCategory is nil
+        .disabled(vm.selectedCategory == nil) // Disable button if selectedCategory is nil
         
     }
 }

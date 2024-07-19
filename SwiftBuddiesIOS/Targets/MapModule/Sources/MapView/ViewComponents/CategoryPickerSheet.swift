@@ -13,8 +13,7 @@ struct CategoryPicker: View {
     @Environment(\.presentationMode) var presentationMode
 
     @Binding var selectedCategory: String
-    
-    private let categories = EventCategory.allCases.map { $0.rawValue }
+    @StateObject var vm = MapViewModel()
     
     var selectAction: () -> Void
     
@@ -22,7 +21,7 @@ struct CategoryPicker: View {
         NavigationView {
             List {
             
-                ForEach(categories, id: \.self) { category in
+                ForEach(vm.categories, id: \.self) { category in
                     Button(action: {
                         selectedCategory = category
                         presentationMode.wrappedValue.dismiss()

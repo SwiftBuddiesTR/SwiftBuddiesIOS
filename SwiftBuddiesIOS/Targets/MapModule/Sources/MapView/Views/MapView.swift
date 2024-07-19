@@ -11,7 +11,7 @@ public struct MapView: View {
     //QUERY MAPVİEWMODEL A AKTARILMALI?
     @Query private var items: [EventModel]
     @State private var selectedItems: [EventModel] = []
-    @StateObject var coordinator = Coordinator()
+    @StateObject var coordinator = NavigationCoordinator()
 
     public init() {
         
@@ -50,7 +50,7 @@ public struct MapView: View {
                         vm.filteredItems(items: items, selectedItems: &selectedItems)
                     }
                 }
-            .navigationDestination(for: Coordinator.NavigationDestination.self) { destination in
+            .navigationDestination(for: NavigationCoordinator.NavigationDestination.self) { destination in
                 switch destination {
                 case .newEventView:
                     NewEventView()

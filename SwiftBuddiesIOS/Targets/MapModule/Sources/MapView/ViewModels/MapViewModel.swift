@@ -16,6 +16,14 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var categoryModalShown = false
     @Published var selectedCategory: String = ""
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
+    
+    var categories: [String] {
+        EventCategory.allCases.map { $0.rawValue }
+    }
+        
+    var filteredCategories: [String] {
+        categories.filter { $0 != "All" }
+    }
    
     
     @Published var region: MKCoordinateRegion = MKCoordinateRegion(

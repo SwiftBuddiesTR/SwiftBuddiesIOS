@@ -13,7 +13,7 @@ struct LocationSelectionView: View {
     
     @Environment(\.modelContext) private var context
     @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var coordinator: Coordinator
+    @EnvironmentObject var coordinator: NavigationCoordinator
     
     @StateObject var vm = LocationSelectionViewViewModel()
 
@@ -61,9 +61,14 @@ extension LocationSelectionView {
     private var createButton: some View {
         Button(action: {
             // Save the event into core data
-            vm.addItem(modelContext: context, id: UUID().uuidString, category: eventSingleton.category , name: eventSingleton.name, about: eventSingleton.aboutEvent, startDate: eventSingleton.startDate, dueDate: eventSingleton.dueDate, latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
+            if tappedLocation != nil {
+                vm.addItem(modelContext: context, id: UUID().uuidString, category: eventSingleton.category , name: eventSingleton.name, about: eventSingleton.aboutEvent, startDate: eventSingleton.startDate, dueDate: eventSingleton.dueDate, latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
+                
+                coordinator.popToRoot()
+            } else {
+                //error message
+            }
             
-            coordinator.popToRoot()
         }) {
             Text("Create")
                 .frame(width: UIScreen.main.bounds.width - 64, height: 55)
