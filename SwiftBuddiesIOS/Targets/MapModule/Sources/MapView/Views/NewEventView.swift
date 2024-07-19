@@ -13,17 +13,11 @@ struct NewEventView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
 
-    @StateObject var vm = LocationSelectionViewViewModel()
     @EnvironmentObject var coordinator: Coordinator
     
-    private let categories = [
-        "Meeting",
-        "Study Body",
-        "Place to work",
-        "Swift Buddies Event"
-    ]
+    let categories = EventCategory.allCases.map { $0.rawValue }
 
-    @State private var selectedCategory: String?
+    @State private var selectedCategory: EventCategory.RawValue?
     @State var nameText: String = ""
     @State var descriptionText: String = ""
     @State var adressText: String = ""

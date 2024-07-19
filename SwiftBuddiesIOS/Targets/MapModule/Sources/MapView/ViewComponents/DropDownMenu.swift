@@ -11,9 +11,10 @@ struct DropdownMenu: View {
     
     let prompt: String
     let options: [String]
+    @Binding var selection: String
     
     @State private var isShowing = false
-    @Binding var selection: String?
+    
     @Environment(\.colorScheme) var scheme
     
     var body: some View {
@@ -91,7 +92,7 @@ struct DropdownMenu: View {
                     "option1",
                     "option2",
                     "option3"],
-                 selection: .constant("option2")
+                 selection: .constant(EventCategory.meeting.rawValue)
     )
 }
 

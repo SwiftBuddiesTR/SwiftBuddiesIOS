@@ -14,14 +14,16 @@ import CoreLocation
 class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     @Published var categoryModalShown = false
-    @Published var selectedCategory: String = "Select Location"
+    @Published var selectedCategory: String = ""
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
-    @Published var dismissableMessage: Bool = false
+   
     
     @Published var region: MKCoordinateRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
+    
+    @Published var currentEvent: EventModel?
     
     let locationManager = CLLocationManager()
     
@@ -52,12 +54,17 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func setMapRegion(to item: EventModel) {
         let coordinate = CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
-        let span = MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+        let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
         self.region = MKCoordinateRegion(center: coordinate, span: span)
+        self.currentEvent = item
     }
     
     func filteredItems(items: [EventModel], selectedItems: inout [EventModel]) {
         selectedItems.removeAll()
+        if selectedCategory == EventCategory.all.rawValue {
+            selectedItems = items
+        }
+        
         for item in items {
             if selectedCategory == item.category {
                 selectedItems.append(item)

@@ -61,7 +61,7 @@ extension LocationSelectionView {
     private var createButton: some View {
         Button(action: {
             // Save the event into core data
-            vm.addItem(modelContext: context, id: UUID().uuidString, category: eventSingleton.category, name: eventSingleton.name, about: eventSingleton.aboutEvent, startDate: eventSingleton.startDate, dueDate: eventSingleton.dueDate, latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
+            vm.addItem(modelContext: context, id: UUID().uuidString, category: eventSingleton.category , name: eventSingleton.name, about: eventSingleton.aboutEvent, startDate: eventSingleton.startDate, dueDate: eventSingleton.dueDate, latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
             
             coordinator.popToRoot()
         }) {

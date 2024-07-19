@@ -9,9 +9,9 @@ import Foundation
 import SwiftData
 
 @Model
-public class EventModel: Identifiable{
+public class EventModel: Identifiable {
     public let id: String
-    let category: String
+    let category: EventCategory.RawValue
     let name: String
     let aboutEvent: String
     let startDate: Date
@@ -20,7 +20,7 @@ public class EventModel: Identifiable{
     let longitude: Double
     
     
-    init(category: String, name: String, aboutEvent: String, startDate: Date, dueDate: Date, latitude: Double, longitude: Double) {
+    init(category: EventCategory.RawValue, name: String, aboutEvent: String, startDate: Date, dueDate: Date, latitude: Double, longitude: Double) {
         self.id = UUID().uuidString
         self.category = category
         self.name = name

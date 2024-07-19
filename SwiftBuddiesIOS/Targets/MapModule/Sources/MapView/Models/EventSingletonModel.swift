@@ -11,7 +11,7 @@ class EventSingletonModel {
     
     static var sharedInstance = EventSingletonModel()
     
-    var category: String = ""
+    var category: String = EventCategory.RawValue()
     var name: String = ""
     var aboutEvent: String = ""
     var startDate: Date = Date()

@@ -11,22 +11,17 @@ import SwiftData
 struct CategoryPicker: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @StateObject var vm = MapViewModel()
 
     @Binding var selectedCategory: String
     
-    private let categories = [
-        "Meeting",
-        "Study Body",
-        "Place to work",
-        "Swift Buddies Event"
-    ]
+    private let categories = EventCategory.allCases.map { $0.rawValue }
     
     var selectAction: () -> Void
     
     var body: some View {
         NavigationView {
             List {
+            
                 ForEach(categories, id: \.self) { category in
                     Button(action: {
                         selectedCategory = category
