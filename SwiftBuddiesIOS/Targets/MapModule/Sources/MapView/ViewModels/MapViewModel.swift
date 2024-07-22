@@ -16,6 +16,15 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var categoryModalShown = false
     @Published var selectedCategory: String = ""
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
+    @Published var showEventListView: Bool = false
+    
+    @Published var region: MKCoordinateRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
+        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+    )
+    @Published var currentEvent: EventModel?
+    
+    let locationManager = CLLocationManager()
     
     var categories: [String] {
         EventCategory.allCases.map { $0.rawValue }
@@ -24,16 +33,6 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     var filteredCategories: [String] {
         categories.filter { $0 != "All" }
     }
-   
-    
-    @Published var region: MKCoordinateRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
-    
-    @Published var currentEvent: EventModel?
-    
-    let locationManager = CLLocationManager()
     
     override init() {
         super.init()
@@ -84,6 +83,12 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
                 setMapRegion(to: firstItem)
                 print("1")
             }
+        }
+    }
+    
+    func toggleEventList() {
+        withAnimation(.easeInOut) {
+            showEventListView.toggle()
         }
     }
     

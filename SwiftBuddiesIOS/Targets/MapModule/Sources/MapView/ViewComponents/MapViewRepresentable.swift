@@ -40,7 +40,7 @@ struct MapViewRepresentable: UIViewRepresentable {
         mapView.delegate = context.coordinator
 
         // Long press gesture recognizer
-        let longPressGesture = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(NavigationCoordinator.handleLongPress(gestureRecognizer:)))
+        let longPressGesture = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleLongPress(gestureRecognizer:)))
         mapView.addGestureRecognizer(longPressGesture)
 
         // Haritayı kullanıcının konumu ile başlat

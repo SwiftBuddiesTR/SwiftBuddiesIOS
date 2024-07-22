@@ -18,21 +18,35 @@ public struct MapView: View {
     }
     
     public var body: some View {
+        
         NavigationStack(path: $coordinator.path) {
             ZStack {
                 MapLayer
                     .edgesIgnoringSafeArea([.top, .leading, .trailing])
-              
-                if !vm.categoryModalShown {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            seeLocationsButton
-                            createEventButton
-                                .padding()
+                
+                
+                VStack(alignment: .leading) {
+                    listHeader
+                        .padding(.horizontal)
+                    
+                    seeLocationsButton
+                        .padding(.leading)
+                    
+                    Spacer()
+                    
+                    if !vm.categoryModalShown {
+                        VStack {
+                            Spacer()
+                            HStack {
+                                learnMoreButton
+                                createEventButton
+                            }
+                            .padding()
                         }
                     }
                 }
+                
+                
             }
             .onAppear {
                 // Map açıldığında tüm eventler de ki anotasyonları görebilmek için
@@ -72,14 +86,15 @@ public struct MapView: View {
 }
 
 
+
+
 // MARK: View extensions for mapView
 extension MapView {
     
     private var MapLayer: some View {
         Map(coordinateRegion: $vm.region, annotationItems: selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
-                // BU KONTROL ENUMLA GERÇEKLEŞTİRELECEK!
-               
+                
                 if item.category == EventCategory.meeting.rawValue {
                     OrangeAnnotationView()
                         .shadow(radius: 10)
@@ -124,45 +139,90 @@ extension MapView {
                 }
             }
         }
-        .mapControls {
-            Spacer()
-            MapUserLocationButton()
-            MapPitchToggle()
-        }
-        .padding(.top, 50)
         .onAppear{
             CLLocationManager().requestWhenInUseAuthorization()
         }
         .onDisappear {
             vm.locationManager.stopUpdatingLocation()
         }
-      
+    }
+    
+    
+    private var listHeader: some View {
+        VStack {
+            Button {
+                vm.toggleEventList()
+            } label: {
+                Text(vm.currentEvent?.name ?? "")
+                    .font(.title2)
+                    .fontWeight(.black)
+                    .foregroundColor(.primary)
+                    .frame(height: 55)
+                    .frame(maxWidth: .infinity)
+                    .overlay(alignment: .leading) {
+                        Image(systemName: "arrow.down")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                            .padding()
+                            .rotationEffect(Angle(degrees: vm.showEventListView ? 180 : 0))
+                    }
+            }
+            
+            if vm.showEventListView {
+                EventListView(events: selectedItems)
+            }
+        }
+        .background(.thickMaterial)
+        .cornerRadius(10)
+        .shadow(color: .black.opacity(0.3), radius: 20 ,x: 0 , y: 15)
         
     }
     
     private var seeLocationsButton: some View {
+        VStack{
             Button(action: {
                 vm.categoryModalShown.toggle()
             }) {
-                Text("See Locations")
-                    .foregroundColor(.white)
+                Text("filter by category")
+                    .foregroundColor(.secondary)
+                    .font(.subheadline)
                     .padding()
-                    .background(Color.blue)
-                    .cornerRadius(10)
             }
-            .padding()
         }
+        .frame(height: 30)
+        .background(.thickMaterial)
+        .shadow(color: .black.opacity(0.3), radius: 20 ,x: 0 , y: 15)
+        .cornerRadius(30)
+       
         
-        private var createEventButton: some View {
-            Button(action: {
-                coordinator.navigate(to: .newEventView)
-            }) {
-                Text("Create Event")
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.orange)
-                    .cornerRadius(10)
-            }
+    }
+    
+    private var learnMoreButton: some View {
+        Button(action: {
+            // to detils view
+        }) {
+            Text(" Learn More ")
+                .frame(maxWidth: .infinity)
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.red)
+                .cornerRadius(10)
         }
+        .padding(.horizontal)
+    }
+    
+    
+    private var createEventButton: some View {
+        Button(action: {
+            coordinator.navigate(to: .newEventView)
+        }) {
+            //Text("Create Event")
+            Image(systemName: "plus")
+                .foregroundColor(.white)
+                .padding()
+                .background(Color.orange)
+                .cornerRadius(55/2)
+        }
+    }
     
 }
