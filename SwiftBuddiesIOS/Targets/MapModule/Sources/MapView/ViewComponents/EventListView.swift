@@ -15,15 +15,8 @@ struct EventListView: View {
     var body: some View {
         List{
             ForEach(events) { event in
-                Button {
-                    print("gazaa")
-                    print(event.name)
-                    vm.toggleEventList()
-                    /*if vm.showEventListView == false {
-                        withAnimation(.easeInOut) {
-                            vm.setMapRegion(to: event)
-                        }
-                    }*/
+                NavigationLink {
+                    EventDetailsView(event: event)
                 } label: {
                     listRowView(event: event)
                 }

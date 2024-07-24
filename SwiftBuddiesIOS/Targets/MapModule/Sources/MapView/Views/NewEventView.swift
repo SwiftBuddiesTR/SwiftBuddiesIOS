@@ -24,7 +24,6 @@ struct NewEventView: View {
                              selection: $vm.selectedCategory)
                 nameTextfield
                 descriptionTextField
-                adressTextField
                 datePickers
                 NextButton
             }
@@ -63,22 +62,6 @@ extension NewEventView {
     
     private var descriptionTextField: some View {
         TextField("About your event...", text: $vm.descriptionText)
-            .font(.headline)
-            .padding()
-            .frame(maxWidth: .infinity)
-            .frame(height: 55)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.primary, lineWidth: 1)
-            )
-            .background(
-                Color(.secondarySystemBackground)
-            )
-            .padding(.horizontal)
-    }
-    
-    private var adressTextField: some View {
-        TextField("Full Address...", text: $vm.adressText)
             .font(.headline)
             .padding()
             .frame(maxWidth: .infinity)

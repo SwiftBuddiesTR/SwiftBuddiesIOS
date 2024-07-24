@@ -17,12 +17,12 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var selectedCategory: String = ""
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var showEventListView: Bool = false
-    
+
     @Published var region: MKCoordinateRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
-    @Published var currentEvent: EventModel?
+    @Published var currentEvent: EventModel = EventModel(category: "test", name: "test", aboutEvent: "test", startDate: Date(), dueDate: Date(), latitude: 12, longitude: 12)
     
     let locationManager = CLLocationManager()
     

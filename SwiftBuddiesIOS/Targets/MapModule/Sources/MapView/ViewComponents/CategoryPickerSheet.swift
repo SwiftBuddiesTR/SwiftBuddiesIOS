@@ -38,9 +38,27 @@ struct CategoryPicker: View {
                 }
             }
             .navigationTitle("Select Category")
-            .navigationBarItems(trailing: Button("Dismiss") {
-                presentationMode.wrappedValue.dismiss()
-            })
+            .navigationBarItems(trailing: backButton)
+            
+        }
+    }
+}
+
+extension CategoryPicker {
+    
+    private var backButton: some View{
+        Button(action: {
+            //dismiss sheet
+            presentationMode.wrappedValue.dismiss()
+        }) {
+            Image(systemName: "xmark")
+                .font(.headline)
+                .padding()
+                .foregroundColor(.primary)
+                .background(.thinMaterial)
+                .cornerRadius(10)
+                .shadow(radius: 4)
+                .padding()
         }
     }
 }

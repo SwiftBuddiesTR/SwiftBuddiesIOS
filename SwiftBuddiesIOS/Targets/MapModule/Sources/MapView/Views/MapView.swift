@@ -94,13 +94,13 @@ extension MapView {
     private var MapLayer: some View {
         Map(coordinateRegion: $vm.region, annotationItems: selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
-                
                 if item.category == EventCategory.meeting.rawValue {
                     OrangeAnnotationView()
                         .shadow(radius: 10)
                         .onTapGesture {
                             withAnimation(.easeInOut) {
                                 vm.setMapRegion(to: item)
+                                vm.showEventListView = false
                             }
                         }
                         .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
@@ -111,6 +111,7 @@ extension MapView {
                         .onTapGesture {
                             withAnimation(.easeInOut) {
                                 vm.setMapRegion(to: item)
+                                vm.showEventListView = false
                             }
                         }
                         .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
@@ -122,6 +123,7 @@ extension MapView {
                         .onTapGesture {
                             withAnimation(.easeInOut) {
                                 vm.setMapRegion(to: item)
+                                vm.showEventListView = false
                             }
                         }
                         .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
@@ -133,6 +135,7 @@ extension MapView {
                         .onTapGesture {
                             withAnimation(.easeInOut) {
                                 vm.setMapRegion(to: item)
+                                vm.showEventListView = false
                             }
                         }
                         .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
@@ -153,7 +156,7 @@ extension MapView {
             Button {
                 vm.toggleEventList()
             } label: {
-                Text(vm.currentEvent?.name ?? "")
+                Text(vm.currentEvent.name)
                     .font(.title2)
                     .fontWeight(.black)
                     .foregroundColor(.primary)
@@ -198,9 +201,9 @@ extension MapView {
     }
     
     private var learnMoreButton: some View {
-        Button(action: {
-            // to detils view
-        }) {
+        NavigationLink {
+            EventDetailsView(event: (vm.currentEvent))
+        } label: {
             Text(" Learn More ")
                 .frame(maxWidth: .infinity)
                 .foregroundColor(.white)
@@ -212,11 +215,11 @@ extension MapView {
     }
     
     
+    
     private var createEventButton: some View {
         Button(action: {
             coordinator.navigate(to: .newEventView)
         }) {
-            //Text("Create Event")
             Image(systemName: "plus")
                 .foregroundColor(.white)
                 .padding()
