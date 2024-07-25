@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct NewEventView: View {
-    
+    //BU EKRANIN TASARIMI GELİŞTİRİLEBİLİR.
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
 
@@ -18,12 +18,13 @@ struct NewEventView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 30) {
+            VStack(spacing: 20) {
                 DropdownMenu(prompt: "Select..",
                              options: vm.filteredCategories,
                              selection: $vm.selectedCategory)
                 nameTextfield
                 descriptionTextField
+                Divider()
                 datePickers
                 NextButton
             }
@@ -77,7 +78,7 @@ extension NewEventView {
     }
     
     private var datePickers: some View {
-        VStack(spacing: 15) {
+        VStack(spacing: 20) {
             DatePicker("Start Date", selection: $vm.startDate)
                 .font(.headline)
                 .padding()

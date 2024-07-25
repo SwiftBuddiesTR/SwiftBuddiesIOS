@@ -10,7 +10,7 @@ import MapKit
 import SwiftData
 
 struct LocationSelectionView: View {
-    
+    //BUTON FOCUS PROBLEMİ VAR.
     @Environment(\.modelContext) private var context
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var coordinator: NavigationCoordinator
@@ -19,18 +19,20 @@ struct LocationSelectionView: View {
 
     @State var tappedLocation: CLLocationCoordinate2D? = nil
     let eventSingleton = EventSingletonModel.sharedInstance
+    @FocusState private var isButtonFocused: Bool
     
     var body: some View {
         ZStack {
             mapLayer
                 .edgesIgnoringSafeArea([.top, .leading, .trailing])
+             
             
             VStack {
                 Spacer()
                 createButton
                     .padding()
+                    .focused($isButtonFocused)
             }
-            
         }
     }
 }
@@ -80,4 +82,10 @@ extension LocationSelectionView {
         }
     }
 
+}
+
+extension CLLocationCoordinate2D: Equatable {
+    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
+        return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
+    }
 }
