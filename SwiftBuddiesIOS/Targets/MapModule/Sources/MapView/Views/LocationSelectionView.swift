@@ -18,6 +18,7 @@ struct LocationSelectionView: View {
     @StateObject var vm = LocationSelectionViewViewModel()
 
     @State var tappedLocation: CLLocationCoordinate2D? = nil
+    @State private var showAlert: Bool = false
     let eventSingleton = EventSingletonModel.sharedInstance
     @FocusState private var isButtonFocused: Bool
     
@@ -33,9 +34,13 @@ struct LocationSelectionView: View {
                     .padding()
                     .focused($isButtonFocused)
             }
+            .alert(isPresented: $showAlert) {
+                createAlert()
+            }
         }
     }
 }
+
 
 #Preview {
     LocationSelectionView()
@@ -64,11 +69,12 @@ extension LocationSelectionView {
         Button(action: {
             // Save the event into core data
             if tappedLocation != nil {
-                vm.addItem(modelContext: context, id: UUID().uuidString, category: eventSingleton.category , name: eventSingleton.name, about: eventSingleton.aboutEvent, startDate: eventSingleton.startDate, dueDate: eventSingleton.dueDate, latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
+                vm.addItem(modelContext: context, id: UUID().uuidString, category: eventSingleton.category , name: eventSingleton.name, about: eventSingleton.aboutEvent, startDate: eventSingleton.startDate.toISOString(), dueDate: eventSingleton.dueDate.toISOString(), latitude: tappedLocation!.latitude, longitude: tappedLocation!.longitude)
                 
                 coordinator.popToRoot()
+                
             } else {
-                //error message
+                showAlert = true
             }
             
         }) {
@@ -80,6 +86,12 @@ extension LocationSelectionView {
                 .fontWeight(.bold)
             
         }
+    }
+    
+    private func createAlert() -> Alert {
+        return Alert(title: Text("Ups 🧐"),
+                     message: Text("Please specify the event location."),
+                     dismissButton: .default(Text("OK")))
     }
 
 }

@@ -15,6 +15,7 @@ struct NewEventView: View {
 
     @StateObject private var vm = NewEventViewViewModel()
     @EnvironmentObject var coordinator: NavigationCoordinator
+    @State private var showAlert: Bool = false
 
     var body: some View {
         ScrollView {
@@ -27,6 +28,10 @@ struct NewEventView: View {
                 Divider()
                 datePickers
                 NextButton
+                    
+            }
+            .alert(isPresented: $showAlert) {
+                createAlert()
             }
             .navigationTitle("Event Details")
             .navigationBarTitleDisplayMode(.large)
@@ -120,6 +125,7 @@ extension NewEventView {
                 coordinator.navigate(to: .selectLocationMapView)
             } else {
                 // Handle error message if selectedCategory is nil
+                showAlert = true
             }
             
         }) {
@@ -130,7 +136,12 @@ extension NewEventView {
                 .foregroundColor(.white)
                 .fontWeight(.bold)
         }
-        .disabled(vm.selectedCategory == nil) // Disable button if selectedCategory is nil
         
+    }
+    
+    private func createAlert() -> Alert {
+        return Alert(title: Text("Ups 🧐"),
+                     message: Text("Category option can not be empty."),
+                     dismissButton: .default(Text("OK")))
     }
 }
