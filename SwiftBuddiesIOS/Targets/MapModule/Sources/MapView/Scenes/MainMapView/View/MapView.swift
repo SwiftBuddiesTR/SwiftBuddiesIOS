@@ -138,7 +138,7 @@ extension MapView {
             }
         }
         .onAppear{
-            CLLocationManager().requestWhenInUseAuthorization()
+            vm.locationManager.requestWhenInUseAuthorization()
         }
         .onDisappear {
             vm.locationManager.stopUpdatingLocation()
