@@ -14,7 +14,7 @@ struct NewEventView: View {
     @Environment(\.modelContext) private var context
 
     @StateObject private var vm = NewEventViewViewModel()
-    @EnvironmentObject var coordinator: NavigationCoordinator
+    @EnvironmentObject var coordinator: MapNavigationCoordinator
     @State private var showAlert: Bool = false
 
     var body: some View {
@@ -117,12 +117,16 @@ extension NewEventView {
     private var NextButton: some View {
         Button(action: {
             if vm.selectedCategory != nil {
-                EventSingletonModel.sharedInstance.category = vm.selectedCategory ?? ""
-                EventSingletonModel.sharedInstance.name = vm.nameText
-                EventSingletonModel.sharedInstance.aboutEvent = vm.descriptionText
-                EventSingletonModel.sharedInstance.startDate = vm.startDate
-                EventSingletonModel.sharedInstance.dueDate = vm.dueDate
-                coordinator.navigate(to: .selectLocationMapView)
+                let newEventModel: NewEventModel = .init(
+                    category: vm.selectedCategory ?? "",
+                    name: vm.nameText,
+                    aboutEvent: vm.descriptionText,
+                    startDate: vm.startDate.toISOString(),
+                    dueDate: vm.dueDate.toISOString(),
+                    latitude: nil,
+                    longitude: nil
+                )
+                coordinator.navigate(to: .selectLocationMapView(newEventModel))
             } else {
                 // Handle error message if selectedCategory is nil
                 showAlert = true

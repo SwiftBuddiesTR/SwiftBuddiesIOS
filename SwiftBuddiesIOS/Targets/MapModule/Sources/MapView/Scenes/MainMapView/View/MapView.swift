@@ -3,7 +3,6 @@ import MapKit
 import Design
 import SwiftData
 
-
 public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
@@ -11,15 +10,14 @@ public struct MapView: View {
     //QUERY MAPVİEWMODEL A AKTARILMALI?
     @Query private var items: [EventModel]
     @State private var selectedItems: [EventModel] = []
-    @StateObject var coordinator = NavigationCoordinator()
+    @StateObject var coordinator = MapNavigationCoordinator()
 
     public init() {
         
     }
     
     public var body: some View {
-        
-        NavigationStack(path: $coordinator.path) {
+        NavigationStack(path: $coordinator.mapNavigationStack) {
             ZStack {
                 MapLayer
                     .edgesIgnoringSafeArea([.top, .leading, .trailing])
@@ -64,17 +62,14 @@ public struct MapView: View {
                         vm.filteredItems(items: items, selectedItems: &selectedItems)
                     }
                 }
-            .navigationDestination(for: NavigationCoordinator.NavigationDestination.self) { destination in
+            .navigationDestination(for: MapNavigationCoordinator.NavigationDestination.self) { destination in
                 switch destination {
-                case .newEventView:
-                    NewEventView()
-                        .environmentObject(coordinator)
-                case .selectLocationMapView:
-                    LocationSelectionView()
-                        .environmentObject(coordinator)
                 case .mapView:
                     MapView()
-                        .environmentObject(coordinator)
+                case .newEventView:
+                    NewEventView()
+                case .selectLocationMapView(let event):
+                    LocationSelectionView(newEvent: event)
                 }
             }
         }

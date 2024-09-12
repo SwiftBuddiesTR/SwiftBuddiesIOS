@@ -9,21 +9,21 @@ import Foundation
 import SwiftUI
 
 
-class NavigationCoordinator: ObservableObject {
+class MapNavigationCoordinator: ObservableObject {
     
     enum NavigationDestination: Hashable {
         case mapView
         case newEventView
-        case selectLocationMapView
+        case selectLocationMapView(NewEventModel)
     }
 
-    @Published var path = NavigationPath()
+    @Published var mapNavigationStack: [NavigationDestination] = []
     
     func navigate(to destination: NavigationDestination) {
-        path.append(destination)
+        mapNavigationStack.append(destination)
     }
     
     func popToRoot() {
-        path.removeLast(path.count)
+        mapNavigationStack.removeLast(mapNavigationStack.count)
     }
 }

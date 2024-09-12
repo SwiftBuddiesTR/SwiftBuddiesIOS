@@ -13,14 +13,21 @@ struct LocationSelectionView: View {
     //BUTON FOCUS PROBLEMİ VAR.
     @Environment(\.modelContext) private var context
     @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var coordinator: NavigationCoordinator
+    @EnvironmentObject var coordinator: MapNavigationCoordinator
     
     @StateObject var vm = LocationSelectionViewViewModel()
 
     @State var tappedLocation: CLLocationCoordinate2D? = nil
     @State private var showAlert: Bool = false
-    let eventSingleton = EventSingletonModel.sharedInstance
     @FocusState private var isButtonFocused: Bool
+    
+    @State var newEvent: NewEventModel
+    
+    init(
+        newEvent: NewEventModel
+    ) {
+        self.newEvent = newEvent
+    }
     
     var body: some View {
         ZStack {
@@ -43,7 +50,17 @@ struct LocationSelectionView: View {
 
 
 #Preview {
-    LocationSelectionView()
+    LocationSelectionView(
+        newEvent: .init(
+            category: "cat",
+            name: "name",
+            aboutEvent: "about",
+            startDate: "start",
+            dueDate: "due",
+            latitude: 0.00,
+            longitude: 0.00
+        )
+    )
 }
 
 extension LocationSelectionView {
@@ -69,18 +86,12 @@ extension LocationSelectionView {
         Button(action: {
             // Save the event into core data
             if tappedLocation != nil {
+                newEvent.latitude = tappedLocation?.latitude
+                newEvent.longitude = tappedLocation?.longitude
                 vm.addItem(
                     modelContext: context,
-                    id: UUID().uuidString,
-                    category: eventSingleton.category ,
-                    name: eventSingleton.name,
-                    about: eventSingleton.aboutEvent,
-                    startDate: eventSingleton.startDate.toISOString(),
-                    dueDate: eventSingleton.dueDate.toISOString(),
-                    latitude: tappedLocation!.latitude,
-                    longitude: tappedLocation!.longitude
+                    newEventModel: newEvent
                 )
-                
                 coordinator.popToRoot()
                 
             } else {

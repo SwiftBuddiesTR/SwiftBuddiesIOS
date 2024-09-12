@@ -19,7 +19,15 @@ public class EventModel: Identifiable {
     let longitude: Double
     
     
-    init(category: EventCategory.RawValue, name: String, aboutEvent: String, startDate: String, dueDate: String, latitude: Double, longitude: Double) {
+    init(
+        category: EventCategory.RawValue,
+        name: String,
+        aboutEvent: String,
+        startDate: String,
+        dueDate: String,
+        latitude: Double,
+        longitude: Double
+    ) {
         self.id = UUID().uuidString
         self.category = category
         self.name = name
