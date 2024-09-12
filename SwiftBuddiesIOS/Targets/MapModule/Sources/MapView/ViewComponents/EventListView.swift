@@ -29,7 +29,7 @@ struct EventListView: View {
 }
 
 #Preview {
-    EventListView(events: [EventModel(category: "test", name: "test", aboutEvent: "test", startDate: Date(), dueDate: Date(), latitude: 12, longitude: 12)])
+    EventListView(events: [EventModel(category: "test", name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)])
 }
 
 extension EventListView {

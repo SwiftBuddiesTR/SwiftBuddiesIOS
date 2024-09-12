@@ -41,7 +41,7 @@ struct EventDetailsView: View {
 
 
 #Preview {
-    EventDetailsView(event: EventModel(category: "test", name: "test", aboutEvent: "test", startDate: Date(), dueDate: Date(), latitude: 12, longitude: 12))
+    EventDetailsView(event: EventModel(category: "test", name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12))
 }
 
 
@@ -67,16 +67,26 @@ extension EventDetailsView {
     
     private var eventDates: some View {
         let dateFormatter = DateFormatter()
-            dateFormatter.dateStyle = .medium
-            dateFormatter.timeStyle = .short
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .short
+        
                 
-            return VStack(alignment: .leading, spacing: 8) {
-                Text("Between:")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                Text(dateFormatter.string(from: event.startDate))
-                Text(dateFormatter.string(from: event.dueDate))
-            }
+        return VStack(alignment: .leading, spacing: 8) {
+           Text("Between:")
+               .font(.title2)
+               .fontWeight(.bold)
+           if let startDate = dateFormatter.date(from: event.startDate) {
+               let formattedStartDate = dateFormatter.string(from: startDate)
+               Text(formattedStartDate)
+           }
+           
+           if let dueDate = dateFormatter.date(from: event.dueDate) {
+               let formattedDueDate = dateFormatter.string(from: dueDate)
+               Text(formattedDueDate)
+           }
+       }
+        
     }
     
     private var mapLocation: some View {

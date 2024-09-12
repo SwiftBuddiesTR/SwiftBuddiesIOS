@@ -22,7 +22,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
-    @Published var currentEvent: EventModel = EventModel(category: "test", name: "test", aboutEvent: "test", startDate: Date(), dueDate: Date(), latitude: 12, longitude: 12)
+    @Published var currentEvent: EventModel = EventModel(category: "test", name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)
     
     let locationManager = CLLocationManager()
     
@@ -79,9 +79,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
         for item in selectedItems {
             if let firstItem = selectedItems.first {
-                
                 setMapRegion(to: firstItem)
-                print("1")
             }
         }
     }
