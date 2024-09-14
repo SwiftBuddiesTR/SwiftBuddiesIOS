@@ -7,7 +7,9 @@
 
 import SwiftUI
 
-struct OrangeAnnotationView: View {
+struct AnnotationView: View {
+    
+    @State var color: Color = .black
     
     var body: some View {
        
@@ -18,14 +20,14 @@ struct OrangeAnnotationView: View {
                 .frame(width: 30, height: 30)
                 .foregroundColor(.white)
                 .padding(6)
-                .background(Color.orange)
+                .background(color)
                 .clipShape(.circle)
             
             Image(systemName: "triangle.fill")
                 .resizable()
                 .scaledToFit()
                 .frame(width: 10, height: 10)
-                .foregroundColor(Color.orange)
+                .foregroundColor(color)
                 .rotationEffect(Angle(degrees: 180))
                 .offset(y: -11)
                 
@@ -37,108 +39,7 @@ struct OrangeAnnotationView: View {
 }
 
 #Preview {
-    OrangeAnnotationView()
+    AnnotationView()
 }
 
-
-struct RedAnnotationView: View {
-    
-    var body: some View {
-       
-        VStack{
-            Image(systemName: "map.circle.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .foregroundColor(.white)
-                .padding(6)
-                .background(Color.red)
-                .clipShape(.circle)
-            
-            Image(systemName: "triangle.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 10, height: 10)
-                .foregroundColor(Color.red)
-                .rotationEffect(Angle(degrees: 180))
-                .offset(y: -11)
-                
-        }
-        //bu paddingi annotation yerleştirildiğinde konumu kapatmaması ve okun tam lokasyonnu göstermesi için kullandım
-        .padding(.bottom)
-        
-    }
-}
-
-#Preview {
-    RedAnnotationView()
-}
-
-
-struct BlueAnnotationView: View {
-    
-    var body: some View {
-       
-        VStack{
-            Image(systemName: "map.circle.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .foregroundColor(.white)
-                .padding(6)
-                .background(Color.blue)
-                .clipShape(.circle)
-            
-            Image(systemName: "triangle.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 10, height: 10)
-                .foregroundColor(Color.blue)
-                .rotationEffect(Angle(degrees: 180))
-                .offset(y: -11)
-                
-        }
-        //bu paddingi annotation yerleştirildiğinde konumu kapatmaması ve okun tam lokasyonnu göstermesi için kullandım
-        .padding(.bottom)
-        
-    }
-}
-
-#Preview {
-    BlueAnnotationView()
-}
-
-
-struct GreenAnnotationView: View {
-    
-    var body: some View {
-       
-        VStack{
-            Image(systemName: "map.circle.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .foregroundColor(.white)
-                .padding(6)
-                .background(Color.green)
-                .clipShape(.circle)
-            
-            Image(systemName: "triangle.fill")
-                .resizable()
-                .scaledToFit()
-                .frame(width: 10, height: 10)
-                .foregroundColor(Color.green)
-                .rotationEffect(Angle(degrees: 180))
-                .offset(y: -11)
-                
-        }
-        //bu paddingi annotation yerleştirildiğinde konumu kapatmaması ve okun tam lokasyonnu göstermesi için kullandım
-        .padding(.bottom)
-        
-    }
-}
-
-#Preview {
-    GreenAnnotationView()
-}
 

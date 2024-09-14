@@ -9,20 +9,50 @@ import SwiftUI
 import SwiftData
 
 struct NewEventView: View {
-    //BU EKRANIN TASARIMI GELİŞTİRİLEBİLİR.
+
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
-
-    @StateObject private var vm = NewEventViewViewModel()
+    
+    @EnvironmentObject var mapVM: MapViewModel
     @EnvironmentObject var coordinator: MapNavigationCoordinator
+    @StateObject private var vm = NewEventViewViewModel()
+    
     @State private var showAlert: Bool = false
-
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                DropdownMenu(prompt: "Select..",
-                             options: vm.filteredCategories,
-                             selection: $vm.selectedCategory)
+//                DropdownMenu(prompt: "Select..",
+//                             options: vm.filteredCategories,
+//                             selection: $vm.selectedCategory)
+                Menu {
+                    ForEach(mapVM.categories, id: \.self) { category in
+                        Button(action: {
+                            vm.selection = category
+                        }) {
+                            Text(category.capitalized)
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Text(vm.selection)
+                            .font(.headline)
+                            .foregroundStyle(Color("AdaptiveColor"))
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 55)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.primary, lineWidth: 1)
+                            )
+                            .background(
+                                Color(.secondarySystemBackground)
+                            )
+                            .padding(.horizontal)
+                    }
+                }
                 nameTextfield
                 descriptionTextField
                 Divider()
@@ -47,6 +77,7 @@ struct NewEventView: View {
     NewEventView()
 }
 
+// MARK: COMPONENTS
 extension NewEventView {
     
     private var nameTextfield: some View {
@@ -116,9 +147,9 @@ extension NewEventView {
     
     private var NextButton: some View {
         Button(action: {
-            if vm.selectedCategory != nil {
+            if vm.selection != "Select a category" {
                 let newEventModel: NewEventModel = .init(
-                    category: vm.selectedCategory ?? "",
+                    category: vm.selection,
                     name: vm.nameText,
                     aboutEvent: vm.descriptionText,
                     startDate: vm.startDate.toISOString(),
@@ -128,7 +159,6 @@ extension NewEventView {
                 )
                 coordinator.navigate(to: .selectLocationMapView(newEventModel))
             } else {
-                // Handle error message if selectedCategory is nil
                 showAlert = true
             }
             

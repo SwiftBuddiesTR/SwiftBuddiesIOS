@@ -93,20 +93,23 @@ extension EventDetailsView {
         VStack {
             Map(coordinateRegion: .constant(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))), annotationItems: [event]) { event in
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude)) {
-                    if event.category == EventCategory.meeting.rawValue {
-                        OrangeAnnotationView()
-                            .shadow(radius: 10)
-                    } else if event.category == EventCategory.studyBody.rawValue {
-                        RedAnnotationView()
-                            .shadow(radius: 10)
-                    } else if event.category == EventCategory.placeToWork.rawValue {
-                        BlueAnnotationView()
-                            .shadow(radius: 10)
-                        
-                    } else if event.category == EventCategory.swiftBuddiesEvent.rawValue {
-                        GreenAnnotationView()
-                            .shadow(radius: 10)
-                    }
+//                    if event.category == EventCategory.meeting.rawValue {
+//                        AnnotationView()
+//                            .shadow(radius: 10)
+//                    } else if event.category == EventCategory.studyBody.rawValue {
+//                        RedAnnotationView()
+//                            .shadow(radius: 10)
+//                    } else if event.category == EventCategory.placeToWork.rawValue {
+//                        BlueAnnotationView()
+//                            .shadow(radius: 10)
+//                        
+//                    } else if event.category == EventCategory.swiftBuddiesEvent.rawValue {
+//                        GreenAnnotationView()
+//                            .shadow(radius: 10)
+//                    }
+                    
+                    AnnotationView(color: .orange)
+                        .shadow(radius: 10)
                 }
             }
             .allowsHitTesting(false)

@@ -10,7 +10,7 @@ import SwiftData
 @Model
 public class EventModel: Identifiable {
     public let id: String
-    let category: EventCategory.RawValue
+    let category: String
     let name: String
     let aboutEvent: String
     let startDate: String
@@ -20,7 +20,7 @@ public class EventModel: Identifiable {
     
     
     init(
-        category: EventCategory.RawValue,
+        category: String,
         name: String,
         aboutEvent: String,
         startDate: String,

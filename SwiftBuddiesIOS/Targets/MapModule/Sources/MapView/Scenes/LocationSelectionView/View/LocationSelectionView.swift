@@ -13,13 +13,14 @@ struct LocationSelectionView: View {
     //BUTON FOCUS PROBLEMİ VAR.
     @Environment(\.modelContext) private var context
     @Environment(\.presentationMode) var presentationMode
+    
     @EnvironmentObject var coordinator: MapNavigationCoordinator
+    @EnvironmentObject var locationManager: LocationManager
     
     @StateObject var vm = LocationSelectionViewViewModel()
 
     @State var tappedLocation: CLLocationCoordinate2D? = nil
     @State private var showAlert: Bool = false
-    @FocusState private var isButtonFocused: Bool
     
     @State var newEvent: NewEventModel
     
@@ -39,7 +40,6 @@ struct LocationSelectionView: View {
                 Spacer()
                 createButton
                     .padding()
-                    .focused($isButtonFocused)
             }
             .alert(isPresented: $showAlert) {
                 createAlert()
@@ -63,6 +63,7 @@ struct LocationSelectionView: View {
     )
 }
 
+// MARK: COMPONENTS
 extension LocationSelectionView {
     
     private var mapLayer: some View {
@@ -73,7 +74,10 @@ extension LocationSelectionView {
                     MapPitchToggle()
                 }
                 .onAppear{
-                    CLLocationManager().requestWhenInUseAuthorization()
+                    locationManager.startUpdatingLocation()
+                }
+                .onDisappear {
+                    locationManager.stopUpdatingLocation()
                 }
         }
         .aspectRatio(1, contentMode: .fill)

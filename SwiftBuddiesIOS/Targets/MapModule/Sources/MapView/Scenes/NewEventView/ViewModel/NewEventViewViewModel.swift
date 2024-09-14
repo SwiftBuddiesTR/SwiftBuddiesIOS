@@ -9,15 +9,7 @@ import Foundation
 
 class NewEventViewViewModel: ObservableObject {
     
-    var categories: [String] {
-        EventCategory.allCases.map { $0.rawValue }
-    }
-        
-    var filteredCategories: [String] {
-        categories.filter { $0 != "All" }
-    }
-    
-    @Published var selectedCategory: EventCategory.RawValue?
+    @Published var selection: String = "Select a category"
     @Published var nameText: String = ""
     @Published var descriptionText: String = ""
     @Published var adressText: String = ""

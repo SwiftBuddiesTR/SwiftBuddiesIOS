@@ -13,7 +13,7 @@ import CoreLocation
 
 class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
-    @Published var categoryModalShown = false
+    @Published var categoryModalShown: Bool = false
     @Published var selectedCategory: String = ""
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var showEventListView: Bool = false
@@ -22,17 +22,22 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
         center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
+    
     @Published var currentEvent: EventModel = EventModel(category: "test", name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)
     
     let locationManager = CLLocationManager()
     
-    var categories: [String] {
-        EventCategory.allCases.map { $0.rawValue }
-    }
-        
-    var filteredCategories: [String] {
-        categories.filter { $0 != "All" }
-    }
+    // bunu backednden alacağız.
+    @Published var categories: [String] =
+    ["All", "Meeting", "Study Body", "Place to work", "Swift Buddies Event"]
+    
+//    var categories: [String] {
+//        EventCategory.allCases.map { $0.rawValue }
+//    }
+//        
+//    var filteredCategories: [String] {
+//        categories.filter { $0 != "All" }
+//    }
     
     override init() {
         super.init()
@@ -68,7 +73,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func filteredItems(items: [EventModel], selectedItems: inout [EventModel]) {
         selectedItems.removeAll()
-        if selectedCategory == EventCategory.all.rawValue {
+        if selectedCategory == "All" /*EventCategory.all.rawValue*/ {
             selectedItems = items
         }
         

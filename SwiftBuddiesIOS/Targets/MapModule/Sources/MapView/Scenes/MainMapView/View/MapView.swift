@@ -6,14 +6,15 @@ import SwiftData
 public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
-    
-    //QUERY MAPVİEWMODEL A AKTARILMALI?
-    @Query private var items: [EventModel]
-    @State private var selectedItems: [EventModel] = []
     @StateObject var coordinator = MapNavigationCoordinator()
 
+    @StateObject var locationManager = LocationManager()
+    @Query private var items: [EventModel]
+    @State private var selectedItems: [EventModel] = []
+    
+
     public init() {
-        
+        locationManager.checkLocationAuthorization()
     }
     
     public var body: some View {
@@ -21,17 +22,13 @@ public struct MapView: View {
             ZStack {
                 MapLayer
                     .edgesIgnoringSafeArea([.top, .leading, .trailing])
-                
-                
+    
                 VStack(alignment: .leading) {
                     listHeader
                         .padding(.horizontal)
-                    
-                    seeLocationsButton
+                    categoryFilterButton
                         .padding(.leading)
-                    
                     Spacer()
-                    
                     if !vm.categoryModalShown {
                         VStack {
                             Spacer()
@@ -43,8 +40,6 @@ public struct MapView: View {
                         }
                     }
                 }
-                
-                
             }
             .onAppear {
                 // Map açıldığında tüm eventler de ki anotasyonları görebilmek için
@@ -73,6 +68,8 @@ public struct MapView: View {
                 }
             }
         }
+        .environmentObject(locationManager)
+        .environmentObject(vm)
         .environmentObject(coordinator)
     }
 }
@@ -83,14 +80,13 @@ public struct MapView: View {
 
 
 
-// MARK: View extensions for mapView
+// MARK: COMPONENTS
 extension MapView {
     
     private var MapLayer: some View {
         Map(coordinateRegion: $vm.region, annotationItems: selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
-                if item.category == EventCategory.meeting.rawValue {
-                    OrangeAnnotationView()
+                AnnotationView(color: .orange)
                         .shadow(radius: 10)
                         .onTapGesture {
                             withAnimation(.easeInOut) {
@@ -99,52 +95,65 @@ extension MapView {
                             }
                         }
                         .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-                    
-                } else if item.category == EventCategory.studyBody.rawValue {
-                    RedAnnotationView()
-                        .shadow(radius: 10)
-                        .onTapGesture {
-                            withAnimation(.easeInOut) {
-                                vm.setMapRegion(to: item)
-                                vm.showEventListView = false
-                            }
-                        }
-                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-                    
-                } else if item.category == EventCategory.placeToWork.rawValue {
-                    
-                    BlueAnnotationView()
-                        .shadow(radius: 10)
-                        .onTapGesture {
-                            withAnimation(.easeInOut) {
-                                vm.setMapRegion(to: item)
-                                vm.showEventListView = false
-                            }
-                        }
-                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-                    
-                } else if item.category == EventCategory.swiftBuddiesEvent.rawValue {
-                    
-                    GreenAnnotationView()
-                        .shadow(radius: 10)
-                        .onTapGesture {
-                            withAnimation(.easeInOut) {
-                                vm.setMapRegion(to: item)
-                                vm.showEventListView = false
-                            }
-                        }
-                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-                }
+
             }
         }
         .onAppear{
-            vm.locationManager.requestWhenInUseAuthorization()
+            locationManager.startUpdatingLocation()
+            locationManager.checkLocationAuthorization()
         }
         .onDisappear {
-            vm.locationManager.stopUpdatingLocation()
+            locationManager.stopUpdatingLocation()
+            locationManager.checkLocationAuthorization()
         }
     }
     
+    //                if item.category == EventCategory.meeting.rawValue {
+    //                    AnnotationView()
+    //                        .shadow(radius: 10)
+    //                        .onTapGesture {
+    //                            withAnimation(.easeInOut) {
+    //                                vm.setMapRegion(to: item)
+    //                                vm.showEventListView = false
+    //                            }
+    //                        }
+    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
+    //
+    //                } else if item.category == EventCategory.studyBody.rawValue {
+    //                    RedAnnotationView()
+    //                        .shadow(radius: 10)
+    //                        .onTapGesture {
+    //                            withAnimation(.easeInOut) {
+    //                                vm.setMapRegion(to: item)
+    //                                vm.showEventListView = false
+    //                            }
+    //                        }
+    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
+    //
+    //                } else if item.category == EventCategory.placeToWork.rawValue {
+    //
+    //                    BlueAnnotationView()
+    //                        .shadow(radius: 10)
+    //                        .onTapGesture {
+    //                            withAnimation(.easeInOut) {
+    //                                vm.setMapRegion(to: item)
+    //                                vm.showEventListView = false
+    //                            }
+    //                        }
+    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
+    //
+    //                } else if item.category == EventCategory.swiftBuddiesEvent.rawValue {
+    //
+    //                    GreenAnnotationView()
+    //                        .shadow(radius: 10)
+    //                        .onTapGesture {
+    //                            withAnimation(.easeInOut) {
+    //                                vm.setMapRegion(to: item)
+    //                                vm.showEventListView = false
+    //                            }
+    //                        }
+    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
+    //                }
     
     private var listHeader: some View {
         VStack {
@@ -176,7 +185,7 @@ extension MapView {
         
     }
     
-    private var seeLocationsButton: some View {
+    private var categoryFilterButton: some View {
         VStack{
             Button(action: {
                 vm.categoryModalShown.toggle()

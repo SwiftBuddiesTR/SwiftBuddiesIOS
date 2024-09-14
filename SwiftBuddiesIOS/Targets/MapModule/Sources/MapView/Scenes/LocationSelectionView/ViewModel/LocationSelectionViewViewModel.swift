@@ -30,7 +30,7 @@ class LocationSelectionViewViewModel: ObservableObject {
 }
 
 struct NewEventModel: Hashable {
-    var category: EventCategory.RawValue
+    var category: String
     var name: String
     var aboutEvent: String
     var startDate: String
