@@ -20,7 +20,7 @@ class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var showEventListView: Bool = false
 
-    private let locationManager = LocationManager()
+    var locationManager = LocationManager()
     
     @Published var showExplanationText: Bool = true
     

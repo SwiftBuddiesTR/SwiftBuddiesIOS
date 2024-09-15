@@ -13,8 +13,8 @@ struct NewEventView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.modelContext) private var context
     
-    @EnvironmentObject var mapVM: MapViewModel
     @EnvironmentObject var coordinator: MapNavigationCoordinator
+    @EnvironmentObject var mapVM: MapViewModel
     @StateObject private var vm = NewEventViewViewModel()
     
     

@@ -15,14 +15,11 @@ struct LocationSelectionView: View {
     @Environment(\.presentationMode) var presentationMode
     
     @EnvironmentObject var coordinator: MapNavigationCoordinator
-    @EnvironmentObject var locationManager: LocationManager
-    
     @StateObject var vm = LocationSelectionViewViewModel()
+    @State var newEvent: NewEventModel
 
     @State var tappedLocation: CLLocationCoordinate2D? = nil
     @State private var showAlert: Bool = false
-    
-    @State var newEvent: NewEventModel
     
     init(
         newEvent: NewEventModel
@@ -34,8 +31,6 @@ struct LocationSelectionView: View {
         ZStack {
             mapLayer
                 .edgesIgnoringSafeArea([.top, .leading, .trailing])
-             
-            
             VStack {
                 Spacer()
                 createButton
@@ -72,12 +67,6 @@ extension LocationSelectionView {
                 .mapControls {
                     MapUserLocationButton()
                     MapPitchToggle()
-                }
-                .onAppear{
-                    locationManager.startUpdatingLocation()
-                }
-                .onDisappear {
-                    locationManager.stopUpdatingLocation()
                 }
         }
         .aspectRatio(1, contentMode: .fill)

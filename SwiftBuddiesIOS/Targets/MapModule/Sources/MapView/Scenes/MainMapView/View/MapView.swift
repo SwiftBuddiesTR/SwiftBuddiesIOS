@@ -7,13 +7,11 @@ public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
     @StateObject var coordinator = MapNavigationCoordinator()
-    @StateObject var locationManager = LocationManager()
 
     @Query private var items: [EventModel]
    
-    
     public init() {
-        locationManager.checkLocationAuthorization()
+        vm.locationManager.checkLocationAuthorization()
         
     }
     
@@ -78,7 +76,6 @@ public struct MapView: View {
             }
         }
         .environmentObject(vm)
-        .environmentObject(locationManager)
         .environmentObject(coordinator)
     }
 }
@@ -91,7 +88,7 @@ public struct MapView: View {
 extension MapView {
     
     private var mapLayer: some View {
-        Map(coordinateRegion: $locationManager.region, annotationItems: vm.selectedItems) { item in
+        Map(coordinateRegion: $vm.locationManager.region, annotationItems: vm.selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
                 AnnotationView(color: .orange)
                     .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
@@ -106,14 +103,14 @@ extension MapView {
             }
         }
         .onAppear{
-            locationManager.startUpdatingLocation()
-            locationManager.checkLocationAuthorization()
+            vm.locationManager.startUpdatingLocation()
+            vm.locationManager.checkLocationAuthorization()
             vm.selectedItems = items
             vm.currentEvent = vm.selectedItems.first
         }
         .onDisappear {
-            locationManager.stopUpdatingLocation()
-            locationManager.checkLocationAuthorization()
+            vm.locationManager.stopUpdatingLocation()
+            vm.locationManager.checkLocationAuthorization()
             vm.showExplanationText = false
             vm.showExplanationText = false
         }
