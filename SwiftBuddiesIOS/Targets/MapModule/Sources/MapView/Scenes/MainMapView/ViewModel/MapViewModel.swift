@@ -7,67 +7,42 @@
 
 import Foundation
 import SwiftUI
-import SwiftData
 import MapKit
 import CoreLocation
 
 class MapViewModel: NSObject, ObservableObject, CLLocationManagerDelegate {
+    
+    @Published var selectedItems: [EventModel] = []
+    @Published var currentEvent: EventModel?
     
     @Published var categoryModalShown: Bool = false
     @Published var selectedCategory: String = ""
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var showEventListView: Bool = false
 
-    @Published var region: MKCoordinateRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 37.7749, longitude: -122.4194),
-        span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-    )
+    private let locationManager = LocationManager()
     
-    @Published var currentEvent: EventModel = EventModel(category: "test", name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)
-    
-    let locationManager = CLLocationManager()
+    @Published var showExplanationText: Bool = true
     
     // bunu backednden alacağız.
-    @Published var categories: [String] =
-    ["All", "Meeting", "Study Body", "Place to work", "Swift Buddies Event"]
+    @Published var categories: [String] = [
+        "All", "Meeting", "Study Body", "Place to work", "Swift Buddies Event"
+    ]
     
-//    var categories: [String] {
-//        EventCategory.allCases.map { $0.rawValue }
-//    }
-//        
-//    var filteredCategories: [String] {
-//        categories.filter { $0 != "All" }
-//    }
+    var filteredCategories: [String] {
+        categories.filter { $0 != "All" }
+    }
     
     override init() {
         super.init()
-        locationManager.delegate = self
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager.requestWhenInUseAuthorization()
-        locationManager.startUpdatingLocation()
+        
+        
     }
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let location = locations.first {
-            withAnimation {
-                region = MKCoordinateRegion(
-                    center: location.coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-                )
-            }
-            locationManager.stopUpdatingLocation()
-        }
-    }
-    
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        print("Failed to get user location: \(error)")
-    }
-    
     
     func setMapRegion(to item: EventModel) {
         let coordinate = CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
         let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        self.region = MKCoordinateRegion(center: coordinate, span: span)
+        locationManager.region = MKCoordinateRegion(center: coordinate, span: span)
         self.currentEvent = item
     }
     

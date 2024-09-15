@@ -7,20 +7,20 @@ public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
     @StateObject var coordinator = MapNavigationCoordinator()
-
     @StateObject var locationManager = LocationManager()
-    @Query private var items: [EventModel]
-    @State private var selectedItems: [EventModel] = []
-    
 
+    @Query private var items: [EventModel]
+   
+    
     public init() {
         locationManager.checkLocationAuthorization()
+        
     }
     
     public var body: some View {
         NavigationStack(path: $coordinator.mapNavigationStack) {
             ZStack {
-                MapLayer
+                mapLayer
                     .edgesIgnoringSafeArea([.top, .leading, .trailing])
     
                 VStack(alignment: .leading) {
@@ -31,30 +31,39 @@ public struct MapView: View {
                     Spacer()
                     if !vm.categoryModalShown {
                         VStack {
-                            Spacer()
                             HStack {
-                                learnMoreButton
+                                VStack {
+                                    // add explanation text here
+                                    if vm.showExplanationText == true , vm.currentEvent != nil {
+                                        explanationText
+                                    }
+                                    if vm.currentEvent != nil {
+                                        learnMoreButton
+                                            .allowsHitTesting(vm.currentEvent != nil)
+                                    }
+                                }
+                                .frame(maxHeight: .infinity, alignment: .bottom)
+                               
                                 createEventButton
+                                    .padding(.horizontal)
+                                    .frame(maxHeight: .infinity, alignment: .bottom)
                             }
                             .padding()
                         }
                     }
                 }
             }
-            .onAppear {
-                // Map açıldığında tüm eventler de ki anotasyonları görebilmek için
-                self.selectedItems = items
-            }
             .bottomSheet(
-                presentationDetents: [.large, .fraction(0.2), .fraction(0.4), .fraction(0.5), .fraction(0.9), .medium],
+                presentationDetents: [.large, .fraction(0.2), .fraction(0.9), .medium],
                 detentSelection: $vm.selectedDetent,
                 isPresented: $vm.categoryModalShown,
                 sheetCornerRadius: 12,
                 interactiveDismissDisabled: false) {
-                    CategoryPicker(selectedCategory: $vm.selectedCategory) {}
+                    CategoryPicker(selectedCategory: $vm.selectedCategory)
                 } onDismiss: {
                     withAnimation(.easeInOut) {
-                        vm.filteredItems(items: items, selectedItems: &selectedItems)
+                        vm.filteredItems(items: items, selectedItems: &vm.selectedItems)
+                        vm.currentEvent = vm.selectedItems.first
                     }
                 }
             .navigationDestination(for: MapNavigationCoordinator.NavigationDestination.self) { destination in
@@ -68,8 +77,8 @@ public struct MapView: View {
                 }
             }
         }
-        .environmentObject(locationManager)
         .environmentObject(vm)
+        .environmentObject(locationManager)
         .environmentObject(coordinator)
     }
 }
@@ -78,89 +87,44 @@ public struct MapView: View {
 }
 
 
-
-
 // MARK: COMPONENTS
 extension MapView {
     
-    private var MapLayer: some View {
-        Map(coordinateRegion: $vm.region, annotationItems: selectedItems) { item in
+    private var mapLayer: some View {
+        Map(coordinateRegion: $locationManager.region, annotationItems: vm.selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
                 AnnotationView(color: .orange)
-                        .shadow(radius: 10)
-                        .onTapGesture {
-                            withAnimation(.easeInOut) {
-                                vm.setMapRegion(to: item)
-                                vm.showEventListView = false
-                            }
+                    .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
+                    .onTapGesture {
+                        withAnimation(.easeInOut) {
+                            vm.setMapRegion(to: item)
+                            vm.showEventListView = false
                         }
-                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-
+                        
+                    }
+                    .shadow(radius: 10)
             }
         }
         .onAppear{
             locationManager.startUpdatingLocation()
             locationManager.checkLocationAuthorization()
+            vm.selectedItems = items
+            vm.currentEvent = vm.selectedItems.first
         }
         .onDisappear {
             locationManager.stopUpdatingLocation()
             locationManager.checkLocationAuthorization()
+            vm.showExplanationText = false
+            vm.showExplanationText = false
         }
     }
-    
-    //                if item.category == EventCategory.meeting.rawValue {
-    //                    AnnotationView()
-    //                        .shadow(radius: 10)
-    //                        .onTapGesture {
-    //                            withAnimation(.easeInOut) {
-    //                                vm.setMapRegion(to: item)
-    //                                vm.showEventListView = false
-    //                            }
-    //                        }
-    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-    //
-    //                } else if item.category == EventCategory.studyBody.rawValue {
-    //                    RedAnnotationView()
-    //                        .shadow(radius: 10)
-    //                        .onTapGesture {
-    //                            withAnimation(.easeInOut) {
-    //                                vm.setMapRegion(to: item)
-    //                                vm.showEventListView = false
-    //                            }
-    //                        }
-    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-    //
-    //                } else if item.category == EventCategory.placeToWork.rawValue {
-    //
-    //                    BlueAnnotationView()
-    //                        .shadow(radius: 10)
-    //                        .onTapGesture {
-    //                            withAnimation(.easeInOut) {
-    //                                vm.setMapRegion(to: item)
-    //                                vm.showEventListView = false
-    //                            }
-    //                        }
-    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-    //
-    //                } else if item.category == EventCategory.swiftBuddiesEvent.rawValue {
-    //
-    //                    GreenAnnotationView()
-    //                        .shadow(radius: 10)
-    //                        .onTapGesture {
-    //                            withAnimation(.easeInOut) {
-    //                                vm.setMapRegion(to: item)
-    //                                vm.showEventListView = false
-    //                            }
-    //                        }
-    //                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-    //                }
     
     private var listHeader: some View {
         VStack {
             Button {
                 vm.toggleEventList()
             } label: {
-                Text(vm.currentEvent.name)
+                Text(vm.currentEvent?.name ?? "")
                     .font(.title2)
                     .fontWeight(.black)
                     .foregroundColor(.primary)
@@ -176,7 +140,7 @@ extension MapView {
             }
             
             if vm.showEventListView {
-                EventListView(events: selectedItems)
+                EventListView(events: vm.selectedItems)
             }
         }
         .background(.thickMaterial)
@@ -200,24 +164,44 @@ extension MapView {
         .background(.thickMaterial)
         .shadow(color: .black.opacity(0.3), radius: 20 ,x: 0 , y: 15)
         .cornerRadius(30)
-       
-        
     }
     
     private var learnMoreButton: some View {
         NavigationLink {
-            EventDetailsView(event: (vm.currentEvent))
+            if let event = vm.currentEvent {
+                EventDetailsView(event: event)
+            }
         } label: {
-            Text(" Learn More ")
-                .frame(maxWidth: .infinity)
+            Image(systemName: "info.circle.fill")
                 .foregroundColor(.white)
                 .padding()
                 .background(Color.red)
-                .cornerRadius(10)
+                .cornerRadius(55/2)
         }
         .padding(.horizontal)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
+    
+    private var explanationText: some View {
+        VStack {
+            Text("You can click for more information about the selected event on the map.")
+                .font(.headline)
+                .foregroundStyle(.red)
+                .padding()
+                .background(Color.white)
+                .cornerRadius(10)
+            
+            Image(systemName: "triangle.fill")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 10, height: 10)
+                .foregroundColor(Color.red)
+                .rotationEffect(Angle(degrees: 180))
+                .offset(x: -100 , y: -11)
+        }
+        .multilineTextAlignment(.center)
+    }
     
     
     private var createEventButton: some View {
