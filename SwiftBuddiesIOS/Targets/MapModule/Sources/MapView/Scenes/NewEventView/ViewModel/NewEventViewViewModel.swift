@@ -16,4 +16,5 @@ class NewEventViewViewModel: ObservableObject {
     @Published var startDate: Date = Date()
     @Published var dueDate: Date = Date()
     
+    @Published var showAlert: Bool = false
 }

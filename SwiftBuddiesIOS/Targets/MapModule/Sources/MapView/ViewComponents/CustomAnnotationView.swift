@@ -34,7 +34,6 @@ struct AnnotationView: View {
         }
         //bu paddingi annotation yerleştirildiğinde konumu kapatmaması ve okun tam lokasyonnu göstermesi için kullandım
         .padding(.bottom)
-        
     }
 }
 

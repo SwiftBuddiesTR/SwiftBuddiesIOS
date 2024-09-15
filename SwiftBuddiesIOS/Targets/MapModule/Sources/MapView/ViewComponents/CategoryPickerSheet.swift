@@ -16,12 +16,9 @@ struct CategoryPicker: View {
     @Binding var selectedCategory: String
     @StateObject var vm = MapViewModel()
     
-    var selectAction: () -> Void
-    
     var body: some View {
         NavigationView {
             List {
-            
                 ForEach(mapVM.categories, id: \.self) { category in
                     Button(action: {
                         selectedCategory = category
@@ -29,9 +26,10 @@ struct CategoryPicker: View {
                         
                     }) {
                         Text(category)
+                            .fontWeight(.semibold)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Color.orange)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                             .padding(.horizontal)
@@ -45,6 +43,7 @@ struct CategoryPicker: View {
     }
 }
 
+// MARK: COMPONENTS
 extension CategoryPicker {
     
     private var backButton: some View{
@@ -54,12 +53,13 @@ extension CategoryPicker {
         }) {
             Image(systemName: "xmark")
                 .font(.headline)
-                .padding()
                 .foregroundColor(.primary)
+                .padding()
                 .background(.thinMaterial)
                 .cornerRadius(10)
-                .shadow(radius: 4)
-                .padding()
+                .shadow(radius: 7)
+                
         }
+        .padding(.top, 20)
     }
 }

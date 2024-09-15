@@ -17,42 +17,11 @@ struct NewEventView: View {
     @EnvironmentObject var coordinator: MapNavigationCoordinator
     @StateObject private var vm = NewEventViewViewModel()
     
-    @State private var showAlert: Bool = false
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-//                DropdownMenu(prompt: "Select..",
-//                             options: vm.filteredCategories,
-//                             selection: $vm.selectedCategory)
-                Menu {
-                    ForEach(mapVM.categories, id: \.self) { category in
-                        Button(action: {
-                            vm.selection = category
-                        }) {
-                            Text(category.capitalized)
-                                .foregroundStyle(.primary)
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                } label: {
-                    HStack {
-                        Text(vm.selection)
-                            .font(.headline)
-                            .foregroundStyle(Color("AdaptiveColor"))
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 55)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.primary, lineWidth: 1)
-                            )
-                            .background(
-                                Color(.secondarySystemBackground)
-                            )
-                            .padding(.horizontal)
-                    }
-                }
+                categoryPickerMenu
                 nameTextfield
                 descriptionTextField
                 Divider()
@@ -60,7 +29,7 @@ struct NewEventView: View {
                 NextButton
                     
             }
-            .alert(isPresented: $showAlert) {
+            .alert(isPresented: $vm.showAlert) {
                 createAlert()
             }
             .navigationTitle("Event Details")
@@ -79,6 +48,37 @@ struct NewEventView: View {
 
 // MARK: COMPONENTS
 extension NewEventView {
+    
+    private var categoryPickerMenu: some View {
+        Menu {
+            ForEach(mapVM.filteredCategories, id: \.self) { category in
+                Button(action: {
+                    vm.selection = category
+                }) {
+                    Text(category.capitalized)
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+        } label: {
+            HStack {
+                Text(vm.selection)
+                    .font(.headline)
+                    .foregroundStyle(Color("AdaptiveColor"))
+                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 55)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.primary, lineWidth: 1)
+                    )
+                    .background(
+                        Color(.secondarySystemBackground)
+                    )
+                    .padding(.horizontal)
+            }
+        }
+    }
     
     private var nameTextfield: some View {
         TextField("Event name...", text: $vm.nameText)
@@ -159,7 +159,7 @@ extension NewEventView {
                 )
                 coordinator.navigate(to: .selectLocationMapView(newEventModel))
             } else {
-                showAlert = true
+                vm.showAlert = true
             }
             
         }) {
