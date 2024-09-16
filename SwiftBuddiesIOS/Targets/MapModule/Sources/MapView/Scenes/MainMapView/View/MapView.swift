@@ -11,8 +11,7 @@ public struct MapView: View {
     @Query private var items: [EventModel]
    
     public init() {
-        vm.locationManager.checkLocationAuthorization()
-        
+       
     }
     
     public var body: some View {
@@ -88,13 +87,13 @@ public struct MapView: View {
 extension MapView {
     
     private var mapLayer: some View {
-        Map(coordinateRegion: $vm.locationManager.region, annotationItems: vm.selectedItems) { item in
+        Map(coordinateRegion: $vm.region, showsUserLocation: true, annotationItems: vm.selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
                 AnnotationView(color: .orange)
                     .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
                     .onTapGesture {
                         withAnimation(.easeInOut) {
-                            vm.setMapRegion(to: item)
+                            vm.currentEvent = item
                             vm.showEventListView = false
                         }
                         
@@ -103,15 +102,12 @@ extension MapView {
             }
         }
         .onAppear{
-            vm.locationManager.startUpdatingLocation()
-            vm.locationManager.checkLocationAuthorization()
+            vm.startUpdatingLocation()
             vm.selectedItems = items
             vm.currentEvent = vm.selectedItems.first
         }
         .onDisappear {
-            vm.locationManager.stopUpdatingLocation()
-            vm.locationManager.checkLocationAuthorization()
-            vm.showExplanationText = false
+            vm.stopUpdatingLocation()
             vm.showExplanationText = false
         }
     }
