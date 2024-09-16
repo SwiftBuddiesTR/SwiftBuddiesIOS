@@ -66,27 +66,30 @@ extension EventDetailsView {
     }
     
     private var eventDates: some View {
+        // ISO 8601 formatını çözmek için doğru formatı kullanıyoruz
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .short
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
         
-                
+        let displayFormatter = DateFormatter()
+        displayFormatter.dateStyle = .medium
+        displayFormatter.timeStyle = .short
+        
         return VStack(alignment: .leading, spacing: 8) {
-           Text("Between:")
-               .font(.title2)
-               .fontWeight(.bold)
-           if let startDate = dateFormatter.date(from: event.startDate) {
-               let formattedStartDate = dateFormatter.string(from: startDate)
-               Text(formattedStartDate)
-           }
-           
-           if let dueDate = dateFormatter.date(from: event.dueDate) {
-               let formattedDueDate = dateFormatter.string(from: dueDate)
-               Text(formattedDueDate)
-           }
-       }
-        
+            Text("Between:")
+                .font(.title2)
+                .fontWeight(.bold)
+            
+            if let startDate = dateFormatter.date(from: event.startDate) {
+                let formattedStartDate = displayFormatter.string(from: startDate)
+                Text(formattedStartDate)
+            }
+            
+            if let dueDate = dateFormatter.date(from: event.dueDate) {
+                let formattedDueDate = displayFormatter.string(from: dueDate)
+                Text(formattedDueDate)
+            }
+        }
     }
     
     private var mapLocation: some View {
