@@ -9,19 +9,19 @@ import SwiftUI
 
 struct EventListView: View {
     
-    @StateObject var vm = MapViewModel()
+    @EnvironmentObject var vm: MapViewModel
     var events: [EventModel]
     
     var body: some View {
         List{
             ForEach(events) { event in
-                NavigationLink {
-                    EventDetailsView(event: event)
-                } label: {
-                    listRowView(event: event)
-                }
-                .padding(.vertical , 4)
-                .listRowBackground(Color.clear)
+                listRowView(event: event)
+                    .onTapGesture {
+                        vm.currentEvent = event
+                        vm.toggleEventList()
+                    }
+                    .padding(.vertical , 4)
+                    .listRowBackground(Color.clear)
             }
         }
         .listStyle(PlainListStyle())

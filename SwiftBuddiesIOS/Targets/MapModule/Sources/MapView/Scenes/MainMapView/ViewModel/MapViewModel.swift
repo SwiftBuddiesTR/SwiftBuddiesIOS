@@ -16,7 +16,9 @@ class MapViewModel: ObservableObject {
     @Published var selectedItems: [EventModel] = []
     @Published var currentEvent: EventModel? {
         didSet {
-            setMapRegion(to: currentEvent)
+            withAnimation(.easeInOut) {
+                setMapRegion(to: currentEvent)
+            }
         }
     }
     

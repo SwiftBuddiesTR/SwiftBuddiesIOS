@@ -90,7 +90,7 @@ extension MapView {
     private var mapLayer: some View {
         Map(coordinateRegion: $vm.region, showsUserLocation: true, annotationItems: vm.selectedItems) { item in
             MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
-                AnnotationView(color: .orange)
+                AnnotationView(color: Color(hex: item.category.color))
                     .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
                     .onTapGesture {
                         withAnimation(.easeInOut) {
