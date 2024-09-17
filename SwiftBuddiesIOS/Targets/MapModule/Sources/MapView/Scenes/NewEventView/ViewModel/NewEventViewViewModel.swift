@@ -7,9 +7,9 @@
 
 import Foundation
 
-class NewEventViewViewModel: ObservableObject {
+final class NewEventViewViewModel: ObservableObject {
     
-    @Published var selection: String = "Select a category"
+    @Published var selection: Category?
     @Published var nameText: String = ""
     @Published var descriptionText: String = ""
     @Published var adressText: String = ""

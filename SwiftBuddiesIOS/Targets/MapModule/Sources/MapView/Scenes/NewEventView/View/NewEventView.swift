@@ -26,7 +26,7 @@ struct NewEventView: View {
                 descriptionTextField
                 Divider()
                 datePickers
-                NextButton
+                nextButton
                     
             }
             .alert(isPresented: $vm.showAlert) {
@@ -51,18 +51,18 @@ extension NewEventView {
     
     private var categoryPickerMenu: some View {
         Menu {
-            ForEach(mapVM.filteredCategories, id: \.self) { category in
+            ForEach(mapVM.filteredCategories) { category in
                 Button(action: {
                     vm.selection = category
                 }) {
-                    Text(category.capitalized)
+                    Text(category.name.capitalized)
                         .foregroundStyle(.primary)
                         .frame(maxWidth: .infinity)
                 }
             }
         } label: {
             HStack {
-                Text(vm.selection)
+                Text(vm.selection?.name ?? "Select a Category")
                     .font(.headline)
                     .foregroundStyle(Color("AdaptiveColor"))
                     .padding()
@@ -145,11 +145,11 @@ extension NewEventView {
         }
     }
     
-    private var NextButton: some View {
+    private var nextButton: some View {
         Button(action: {
-            if vm.selection != "Select a category" {
+            if let selection = vm.selection {
                 let newEventModel: NewEventModel = .init(
-                    category: vm.selection,
+                    category: selection,
                     name: vm.nameText,
                     aboutEvent: vm.descriptionText,
                     startDate: vm.startDate.toISOString(),

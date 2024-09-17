@@ -47,7 +47,7 @@ struct LocationSelectionView: View {
 #Preview {
     LocationSelectionView(
         newEvent: .init(
-            category: "cat",
+            category: .mock,
             name: "name",
             aboutEvent: "about",
             startDate: "start",

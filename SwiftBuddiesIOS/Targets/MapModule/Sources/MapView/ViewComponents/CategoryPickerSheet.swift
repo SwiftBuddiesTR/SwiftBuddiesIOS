@@ -11,21 +11,19 @@ import SwiftData
 struct CategoryPicker: View {
     
     @Environment(\.presentationMode) var presentationMode
-    @EnvironmentObject var mapVM: MapViewModel
 
-    @Binding var selectedCategory: String
-    @StateObject var vm = MapViewModel()
+    @Binding var selectedCategory: Category?
+    let categories: Categories
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(mapVM.categories, id: \.self) { category in
+                ForEach(categories, id: \.self) { category in
                     Button(action: {
                         selectedCategory = category
                         presentationMode.wrappedValue.dismiss()
-                        
                     }) {
-                        Text(category)
+                        Text(category.name)
                             .fontWeight(.semibold)
                             .padding()
                             .frame(maxWidth: .infinity)

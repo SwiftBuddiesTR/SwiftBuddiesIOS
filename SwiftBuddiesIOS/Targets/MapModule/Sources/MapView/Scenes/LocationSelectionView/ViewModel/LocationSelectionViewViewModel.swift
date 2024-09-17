@@ -29,8 +29,8 @@ class LocationSelectionViewViewModel: ObservableObject {
     }
 }
 
-struct NewEventModel: Hashable {
-    var category: String
+struct NewEventModel: Hashable, Codable {
+    var category: Category
     var name: String
     var aboutEvent: String
     var startDate: String

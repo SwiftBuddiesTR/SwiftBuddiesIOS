@@ -41,7 +41,7 @@ struct EventDetailsView: View {
 
 
 #Preview {
-    EventDetailsView(event: EventModel(category: "test", name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12))
+    EventDetailsView(event: EventModel(category: .init(name: "", color: ""), name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12))
 }
 
 // MARK: COMPONENTS
@@ -52,7 +52,7 @@ extension EventDetailsView {
             Text(event.name)
                 .font(.largeTitle)
                 .fontWeight(.semibold)
-            Text(event.category)
+            Text(event.category.name)
                 .font(.title3)
                 .foregroundColor(.secondary)
         }

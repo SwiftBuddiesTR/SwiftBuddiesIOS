@@ -21,7 +21,7 @@ class MapViewModel: ObservableObject {
     }
     
     @Published var categoryModalShown: Bool = false
-    @Published var selectedCategory: String = ""
+    @Published var selectedCategory: Category?
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var showEventListView: Bool = false
     
@@ -35,15 +35,14 @@ class MapViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     // bunu backednden alacağız.
-    @Published var categories: [String] = [
-        "All", "Meeting", "Study Body", "Place to work", "Swift Buddies Event"
-    ]
+    @Published var categories: Categories
     
-    var filteredCategories: [String] {
-        categories.filter { $0 != "All" }
+    var filteredCategories: Categories {
+        categories.filter { $0.name != "All" }
     }
     
-     init() {
+    init() {
+        self.categories = .mock
         self.region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: currentCoord.lat, longitude: currentCoord.lon ), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
         addSubscribers()
     }
@@ -76,12 +75,12 @@ class MapViewModel: ObservableObject {
     
     func filteredItems(items: [EventModel], selectedItems: inout [EventModel]) {
         selectedItems.removeAll()
-        if selectedCategory == "All" {
+        if selectedCategory?.name == "All" {
             selectedItems = items
         }
         
         for item in items {
-            if selectedCategory == item.category {
+            if selectedCategory?.name == item.category.name {
                 selectedItems.append(item)
             }
         }

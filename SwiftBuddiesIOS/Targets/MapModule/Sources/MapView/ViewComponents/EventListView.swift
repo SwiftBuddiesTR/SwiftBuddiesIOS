@@ -29,7 +29,7 @@ struct EventListView: View {
 }
 
 #Preview {
-    EventListView(events: [EventModel(category: "test", name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)])
+    EventListView(events: [EventModel(category: .mock, name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)])
 }
 
 extension EventListView {
@@ -42,7 +42,7 @@ extension EventListView {
             VStack(alignment: .leading){
                 Text(event.name)
                     .font(.headline)
-                Text(event.category)
+                Text(event.category.name)
                     .font(.subheadline)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -51,17 +51,17 @@ extension EventListView {
     }
     
     private func imageColor(event: EventModel) -> Color {
-        if event.category == "Meeting" /*EventCategory.meeting.rawValue*/ {
-            return .orange
-        } else if event.category == "Study Body" /*EventCategory.studyBody.rawValue*/ {
-            return .red
-        } else if event.category == "Place the work" /*EventCategory.placeToWork.rawValue*/ {
-            return .blue
-        } else if event.category == "Swift Buddies Event" /*EventCategory.swiftBuddiesEvent.rawValue*/ {
-            return .green
-        }
-        
-        return .orange
-
+//        if event.category == "Meeting" /*EventCategory.meeting.rawValue*/ {
+//            return .orange
+//        } else if event.category == "Study Body" /*EventCategory.studyBody.rawValue*/ {
+//            return .red
+//        } else if event.category == "Place the work" /*EventCategory.placeToWork.rawValue*/ {
+//            return .blue
+//        } else if event.category == "Swift Buddies Event" /*EventCategory.swiftBuddiesEvent.rawValue*/ {
+//            return .green
+//        }
+//
+//        return .orange
+        Color(hex: event.category.color)
     }
 }

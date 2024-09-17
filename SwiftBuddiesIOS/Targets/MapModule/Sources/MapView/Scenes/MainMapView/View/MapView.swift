@@ -9,10 +9,8 @@ public struct MapView: View {
     @StateObject var coordinator = MapNavigationCoordinator()
 
     @Query private var items: [EventModel]
-   
-    public init() {
-       
-    }
+    
+    public init() {}
     
     public var body: some View {
         NavigationStack(path: $coordinator.mapNavigationStack) {
@@ -56,7 +54,10 @@ public struct MapView: View {
                 isPresented: $vm.categoryModalShown,
                 sheetCornerRadius: 12,
                 interactiveDismissDisabled: false) {
-                    CategoryPicker(selectedCategory: $vm.selectedCategory)
+                    CategoryPicker(
+                        selectedCategory: $vm.selectedCategory,
+                        categories: vm.categories
+                    )
                 } onDismiss: {
                     withAnimation(.easeInOut) {
                         vm.filteredItems(items: items, selectedItems: &vm.selectedItems)
