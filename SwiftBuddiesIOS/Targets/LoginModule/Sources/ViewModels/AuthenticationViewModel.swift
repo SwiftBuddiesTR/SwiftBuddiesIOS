@@ -13,6 +13,7 @@ final public class AuthenticationViewModel: ObservableObject {
     public init() {
         self.authManager = AuthenticationManager(authService: .shared)
         self.apiClient = .shared
+        self.authManager = AuthenticationManager(authService: .shared)
     }
     
     func signIn(provider: AuthProviderOption) throws {
