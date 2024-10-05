@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AnnotationView: View {
     
-    @State var color: Color = .black
+    let color: Color
     
     var body: some View {
        
@@ -38,7 +38,5 @@ struct AnnotationView: View {
 }
 
 #Preview {
-    AnnotationView()
+    AnnotationView(color: .red)
 }
-
-

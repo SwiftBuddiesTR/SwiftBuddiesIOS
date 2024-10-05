@@ -96,7 +96,7 @@ extension EventDetailsView {
         VStack {
             Map(coordinateRegion: .constant(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude), span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))), annotationItems: [event]) { event in
                 MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: event.latitude, longitude: event.longitude)) {
-                    AnnotationView(color: .orange)
+                    AnnotationView(color: Color(hex: event.category.color))
                         .shadow(radius: 10)
                 }
             }

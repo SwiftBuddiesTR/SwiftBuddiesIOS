@@ -9,14 +9,14 @@ import SwiftData
 
 @Model
 public class EventModel: Identifiable {
-    public let id: String
-    let category: Category
-    let name: String
-    let aboutEvent: String
-    let startDate: String
-    let dueDate: String
-    let latitude: Double
-    let longitude: Double
+    public var id: String
+    var category: Category
+    var name: String
+    var aboutEvent: String
+    var startDate: String
+    var dueDate: String
+    var latitude: Double
+    var longitude: Double
     
     
     init(
@@ -59,11 +59,9 @@ public struct Category: Identifiable, Codable, Hashable {
     }
 }
 
+// For previews
 extension Category {
-    static let mock: Category = .init(
-        name: "Meeting",
-        color: "#FF0000"
-    )
+    static let mock: Category = Categories.mock[1]
 }
 
 extension Categories {

@@ -51,17 +51,6 @@ extension EventListView {
     }
     
     private func imageColor(event: EventModel) -> Color {
-//        if event.category == "Meeting" /*EventCategory.meeting.rawValue*/ {
-//            return .orange
-//        } else if event.category == "Study Body" /*EventCategory.studyBody.rawValue*/ {
-//            return .red
-//        } else if event.category == "Place the work" /*EventCategory.placeToWork.rawValue*/ {
-//            return .blue
-//        } else if event.category == "Swift Buddies Event" /*EventCategory.swiftBuddiesEvent.rawValue*/ {
-//            return .green
-//        }
-//
-//        return .orange
         Color(hex: event.category.color)
     }
 }
