@@ -13,7 +13,6 @@ struct LocationSelectionView: View {
     //BUTON FOCUS PROBLEMİ VAR.
     @Environment(\.modelContext) private var context
     @Environment(\.presentationMode) var presentationMode
-    
     @EnvironmentObject var coordinator: MapNavigationCoordinator
     @StateObject var vm = LocationSelectionViewViewModel()
     @State var newEvent: NewEventModel
@@ -41,6 +40,8 @@ struct LocationSelectionView: View {
             }
         }
     }
+    
+   
 }
 
 
@@ -62,16 +63,30 @@ struct LocationSelectionView: View {
 extension LocationSelectionView {
     
     private var mapLayer: some View {
-        VStack {
-            MapViewRepresentable(tappedLocation: $tappedLocation)
-                .mapControls {
-                    MapUserLocationButton()
-                    MapPitchToggle()
-                }
+        
+        ZStack {
+            MapViewRepresentable(tappedLocation: $tappedLocation, searchResults: $vm.searchResults, selectedAnnotation: $vm.selectedAnnotation)
+                .edgesIgnoringSafeArea([.top, .leading, .trailing])
+            
+            VStack {
+                SearchBar(text: $vm.searchText, onSearchButtonClicked: vm.search)
+                    .padding()
+                
+                Spacer()
+            }
+            .padding(.top, 80)
         }
-        .aspectRatio(1, contentMode: .fill)
-        .cornerRadius(15)
-        .padding(.horizontal)
+        
+//        VStack {
+//            MapViewRepresentable(tappedLocation: $tappedLocation)
+//                .mapControls {
+//                    MapUserLocationButton()
+//                    MapPitchToggle()
+//                }
+//        }
+//        .aspectRatio(1, contentMode: .fill)
+//        .cornerRadius(15)
+//        .padding(.horizontal)
          
     }
     
@@ -108,10 +123,4 @@ extension LocationSelectionView {
                      dismissButton: .default(Text("OK")))
     }
 
-}
-
-extension CLLocationCoordinate2D: Equatable {
-    public static func == (lhs: CLLocationCoordinate2D, rhs: CLLocationCoordinate2D) -> Bool {
-        return lhs.latitude == rhs.latitude && lhs.longitude == rhs.longitude
-    }
 }
