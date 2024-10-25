@@ -18,8 +18,8 @@ public class EventModel: Identifiable {
     var latitude: Double
     var longitude: Double
     
-    
     init(
+        uid: String,
         category: Category,
         name: String,
         aboutEvent: String,
@@ -28,7 +28,7 @@ public class EventModel: Identifiable {
         latitude: Double,
         longitude: Double
     ) {
-        self.id = UUID().uuidString
+        self.id = uid
         self.category = category
         self.name = name
         self.aboutEvent = aboutEvent

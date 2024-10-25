@@ -41,7 +41,7 @@ struct EventDetailsView: View {
 
 
 #Preview {
-    EventDetailsView(event: EventModel(category: .init(name: "", color: ""), name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12))
+    EventDetailsView(event: EventModel(uid: UUID().uuidString,category: .init(name: "", color: ""), name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12))
 }
 
 // MARK: COMPONENTS

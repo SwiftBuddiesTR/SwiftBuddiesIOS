@@ -10,9 +10,12 @@ import SwiftUI
 import MapKit
 import CoreLocation
 import Combine
+import BuddiesNetwork
+import Network
 
 class MapViewModel: ObservableObject {
-    
+    private let apiClient: BuddiesClient
+
     @Published var selectedItems: [EventModel] = []
     @Published var currentEvent: EventModel? {
         didSet {
@@ -45,6 +48,7 @@ class MapViewModel: ObservableObject {
     init() {
         self.categories = .mock
 //        self.region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: currentCoord.lat, longitude: currentCoord.lon ), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+        self.apiClient = .shared
         addSubscribers()
     }
     
@@ -108,5 +112,29 @@ class MapViewModel: ObservableObject {
         locationManager.startUpdatingLocation()
     }
     
+    public func getEvents() async {
+        let request = MapGetEventsRequest()
+        
+        do {
+            let data = try await apiClient.perform(request)
+            debugPrint("Events Success: \(data.events)")
+        } catch {
+            debugPrint(error)
+        }
+    }
     
+}
+
+// MARK: - RegisterRequest
+struct MapGetEventsRequest: Requestable {
+    
+    typealias Data = MapEventsResponseModel
+    
+    func toUrlRequest() throws -> URLRequest {
+        try URLProvider.returnUrlRequest(
+            method: .get,
+            url: APIs.Map.getEvents.url(),
+            data: self
+        )
+    }
 }

@@ -8,6 +8,8 @@
 import Foundation
 import SwiftData
 import MapKit
+import BuddiesNetwork
+import Network
 
 class LocationSelectionViewViewModel: ObservableObject {
     
@@ -18,14 +20,21 @@ class LocationSelectionViewViewModel: ObservableObject {
         center: CLLocationCoordinate2D(latitude: 0, longitude: 0),
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
+    private let apiClient: BuddiesClient!
+    
+    init() {
+        self.apiClient = .shared
+    }
     
     func addItem(
+        uid: String?,
         modelContext: ModelContext,
         newEventModel: NewEventModel
     ) {
         guard let latitude = newEventModel.latitude,
               let longitude = newEventModel.longitude else { return }
         let event = EventModel(
+            uid: uid ?? "asdfasfafaf",
             category: newEventModel.category,
             name: newEventModel.name,
             aboutEvent: newEventModel.aboutEvent,
@@ -49,6 +58,24 @@ class LocationSelectionViewViewModel: ObservableObject {
         }
     }
     
+    func createEvent(event: NewEventModel, completion: @escaping (String?) -> Void) async {
+        let request = MapCreateEventRequest(
+            category: event.category.name,
+            name: event.name,
+            description: event.aboutEvent,
+            startDate: event.startDate,
+            dueDate: event.dueDate,
+            latitude: event.latitude,
+            longitude: event.longitude
+        )
+        
+        do {
+            let data = try await apiClient.perform(request)
+            completion(data.uid)
+        } catch {
+            debugPrint(error)
+        }
+    }
 }
 
 struct NewEventModel: Hashable, Codable {
@@ -59,4 +86,38 @@ struct NewEventModel: Hashable, Codable {
     var dueDate: String
     var latitude: Double?
     var longitude: Double?
+}
+
+struct MapCreateEventRequest: Requestable {
+    
+    let category: String?
+    let name: String?
+    let description: String?
+    let startDate: String?
+    let dueDate: String?
+    let latitude: Double?
+    let longitude: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case category = "category"
+        case name = "name"
+        case description = "description"
+        case startDate = "startDate"
+        case dueDate = "dueDate"
+        case latitude = "latitude"
+        case longitude = "longitude"
+    }
+    
+    struct Data: Decodable {
+        var uid: String?
+    }
+    
+    
+    func toUrlRequest() throws -> URLRequest {
+        try URLProvider.returnUrlRequest(
+            method: .post,
+            url: APIs.Map.createEvent.url(),
+            data: self
+        )
+    }
 }

@@ -29,7 +29,7 @@ struct EventListView: View {
 }
 
 #Preview {
-    EventListView(events: [EventModel(category: .mock, name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)])
+    EventListView(events: [EventModel(uid: UUID().uuidString, category: .mock, name: "test", aboutEvent: "test", startDate: "", dueDate: "", latitude: 12, longitude: 12)])
 }
 
 extension EventListView {

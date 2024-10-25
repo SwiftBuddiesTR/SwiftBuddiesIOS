@@ -96,10 +96,11 @@ extension LocationSelectionView {
             if tappedLocation != nil {
                 newEvent.latitude = tappedLocation?.latitude
                 newEvent.longitude = tappedLocation?.longitude
-                vm.addItem(
-                    modelContext: context,
-                    newEventModel: newEvent
-                )
+                Task {
+                    await vm.createEvent(event: newEvent) { uid in
+                        vm.addItem(uid: uid, modelContext: context, newEventModel: newEvent)
+                    }
+                }
                 coordinator.popToRoot()
                 
             } else {

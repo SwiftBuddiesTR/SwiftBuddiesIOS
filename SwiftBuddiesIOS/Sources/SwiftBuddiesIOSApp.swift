@@ -1,6 +1,8 @@
 import SwiftUI
+import GoogleSignIn
 import Map
 import SwiftData
+import Core
 
 @main
 struct SwiftBuddiesIOSApp: App {

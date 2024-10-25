@@ -122,10 +122,14 @@ extension MapView {
                     .shadow(radius: 10)
             }
         }
+        .task {
+            await vm.getEvents()
+        }
         .onAppear{
             vm.startUpdatingLocation()
             vm.selectedItems = items
             vm.currentEvent = vm.selectedItems.first
+            
         }
         .onDisappear {
             vm.stopUpdatingLocation()
