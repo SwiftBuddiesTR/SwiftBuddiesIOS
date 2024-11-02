@@ -17,7 +17,7 @@ struct CommentCell: View {
                 
                 // MARK: - User photo
                 
-                Image(user.profileImageUrl)
+                Image(user.profileImageUrl ?? "")
                     .resizable()
                     .scaledToFill()
                     .frame(width: 35, height: 35)

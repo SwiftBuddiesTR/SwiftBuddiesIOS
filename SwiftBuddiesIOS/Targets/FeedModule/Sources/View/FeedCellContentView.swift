@@ -28,7 +28,7 @@ struct FeedCellContentView: View {
         }
     }
 }
-
-#Preview {
-    FeedCellContentView(post: PostModel.MockPosts[0])
-}
+//
+//#Preview {
+//    FeedCellContentView(post: PostModel.MockPosts[0])
+//}

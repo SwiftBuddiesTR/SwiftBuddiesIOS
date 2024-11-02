@@ -33,6 +33,6 @@ struct FeedCellCountersView: View {
     }
 }
 
-#Preview {
-    FeedCellCountersView(post: PostModel.MockPosts[0])
-}
+//#Preview {
+//    FeedCellCountersView(post: PostModel.MockPosts[0])
+//}

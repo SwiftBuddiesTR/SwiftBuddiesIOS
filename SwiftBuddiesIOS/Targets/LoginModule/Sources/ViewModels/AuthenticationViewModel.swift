@@ -7,13 +7,12 @@ import BuddiesNetwork
 @MainActor
 final public class AuthenticationViewModel: ObservableObject {
     private let apiClient: BuddiesClient
-    private let authManager: AuthWithSSOProtocol
+    private var authManager: AuthWithSSOProtocol
 //    @Dependency(\.authManager) var authManager
      
     public init() {
         self.authManager = AuthenticationManager(authService: .shared)
         self.apiClient = .shared
-        self.authManager = AuthenticationManager(authService: .shared)
     }
     
     func signIn(provider: AuthProviderOption) throws {

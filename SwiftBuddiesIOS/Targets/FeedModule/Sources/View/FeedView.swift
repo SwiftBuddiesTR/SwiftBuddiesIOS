@@ -2,7 +2,7 @@ import SwiftUI
 import Design
 
 public struct FeedView: View {
-    
+    @StateObject private var viewModel = FeedViewModel()
     @State private var addPost = false
     
     public init() {}
@@ -10,8 +10,10 @@ public struct FeedView: View {
         NavigationStack {
             ScrollView {
                 LazyVStack(spacing: 10) {
-                    ForEach(PostModel.MockPosts) { post in
-                        FeedCell(post: post)
+                    if let posts = viewModel.posts {
+                        ForEach(posts) { post in
+                            FeedCell(post: post)
+                        }
                     }
                 }
                 .padding(.top, 20)
@@ -44,6 +46,9 @@ public struct FeedView: View {
             .background(Color(CGColor(gray: 0.9, alpha: 0.5)))
             .sheet(isPresented: $addPost) {
                 AddPostView()
+            }
+            .task {
+                await viewModel.fetchFeed()
             }
         }
     }

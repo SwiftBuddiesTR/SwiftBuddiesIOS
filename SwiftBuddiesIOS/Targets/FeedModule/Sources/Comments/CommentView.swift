@@ -15,9 +15,9 @@ struct CommentView: View {
             VStack{
                 ScrollView{
                     LazyVStack(spacing: 12) {
-                        ForEach(PostModel.MockPosts) { post in
-                            CommentCell(post: post)
-                        }
+//                        ForEach(PostModel.MockPosts) { post in
+//                            CommentCell(post: post)
+//                        }
                     }
                     .padding(.top, 20)
                     .padding(.horizontal, 12)

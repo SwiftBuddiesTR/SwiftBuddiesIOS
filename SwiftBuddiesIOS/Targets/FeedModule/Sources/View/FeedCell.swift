@@ -26,7 +26,7 @@ struct FeedCell: View {
         .clipShape(RoundedRectangle(cornerRadius: 15))
     }
 }
-
-#Preview {
-    FeedCell(post: PostModel.MockPosts[0])
-}
+//
+//#Preview {
+//    FeedCell(post: PostModel.MockPosts[0])
+//}

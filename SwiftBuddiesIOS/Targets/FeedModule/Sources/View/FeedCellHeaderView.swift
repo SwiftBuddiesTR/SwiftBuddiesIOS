@@ -16,7 +16,7 @@ struct FeedCellHeaderView: View {
         HStack {
             if let user = post.user {
                 // MARK: - User photo
-                Image(user.profileImageUrl, bundle: DesignResources.bundle)
+                Image(user.profileImageUrl ?? "", bundle: DesignResources.bundle)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 43, height: 43)
@@ -46,6 +46,6 @@ struct FeedCellHeaderView: View {
     }
 }
 
-#Preview {
-    FeedCellHeaderView(post: PostModel.MockPosts[0])
-}
+//#Preview {
+//    FeedCellHeaderView(post: PostModel.MockPosts[0])
+//}
