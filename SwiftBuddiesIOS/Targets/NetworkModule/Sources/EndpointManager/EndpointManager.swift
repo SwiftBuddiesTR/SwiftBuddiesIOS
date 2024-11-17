@@ -7,6 +7,8 @@
 
 import Foundation
 
+// APIs.Map.getEvents.url(),
+
 public enum APIs {
     /// if you need to add a new endpoint see the example below
     public enum Login: Endpoint {
@@ -47,6 +49,7 @@ extension Endpoint {
     public func url(_ host: Hosts = .qa) -> URL {
         host.env.url(path: self)
     }
+    
 }
 
 protocol Host {

@@ -10,8 +10,7 @@ import MapKit
 import SwiftData
 
 struct LocationSelectionView: View {
-    //BUTON FOCUS PROBLEMİ VAR.
-    @Environment(\.modelContext) private var context
+    
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var coordinator: MapNavigationCoordinator
     @StateObject var vm = LocationSelectionViewViewModel()
@@ -76,30 +75,17 @@ extension LocationSelectionView {
             }
             .padding(.top, 80)
         }
-        
-//        VStack {
-//            MapViewRepresentable(tappedLocation: $tappedLocation)
-//                .mapControls {
-//                    MapUserLocationButton()
-//                    MapPitchToggle()
-//                }
-//        }
-//        .aspectRatio(1, contentMode: .fill)
-//        .cornerRadius(15)
-//        .padding(.horizontal)
-         
     }
     
     private var createButton: some View {
         Button(action: {
-            // Save the event into core data
             if tappedLocation != nil {
                 newEvent.latitude = tappedLocation?.latitude
                 newEvent.longitude = tappedLocation?.longitude
                 Task {
-                    await vm.createEvent(event: newEvent) { uid in
-                        vm.addItem(uid: uid, modelContext: context, newEventModel: newEvent)
-                    }
+                    await vm.createEvent(event: newEvent)
+                    print("created")
+                   
                 }
                 coordinator.popToRoot()
                 

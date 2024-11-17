@@ -7,9 +7,7 @@ public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
     @StateObject var coordinator = MapNavigationCoordinator()
-    
-
-    @Query private var items: [EventModel]
+    @Environment(\.modelContext) private var context
     
     public init() {}
     
@@ -25,11 +23,12 @@ public struct MapView: View {
                     categoryFilterButton
                         .padding(.leading)
                     Spacer()
+                    
                     if !vm.categoryModalShown {
                         VStack {
                             HStack {
                                 VStack {
-                                    // add explanation text here
+
                                     if vm.showExplanationText == true , vm.currentEvent != nil {
                                         explanationText
                                     }
@@ -37,6 +36,7 @@ public struct MapView: View {
                                         learnMoreButton
                                             .allowsHitTesting(vm.currentEvent != nil)
                                     }
+                                    
                                 }
                                 .frame(maxHeight: .infinity, alignment: .bottom)
                                
@@ -47,6 +47,7 @@ public struct MapView: View {
                             .padding()
                         }
                     }
+                    
                 }
             }
             .bottomSheet(
@@ -61,7 +62,7 @@ public struct MapView: View {
                     )
                 } onDismiss: {
                     withAnimation(.easeInOut) {
-                        vm.filteredItems(items: items, selectedItems: &vm.selectedItems)
+                        vm.filterItems()
                     }
                 }
             .navigationDestination(for: MapNavigationCoordinator.NavigationDestination.self) { destination in
@@ -75,10 +76,15 @@ public struct MapView: View {
                 }
             }
         }
+        .onAppear {
+            vm.dataManager.modelContext = context
+        }
         .environmentObject(vm)
         .environmentObject(coordinator)
     }
 }
+
+
 #Preview {
     MapView()
 }
@@ -89,28 +95,14 @@ extension MapView {
     
     private var mapLayer: some View {
 
-//        Map(position: $vm.region) {
-//            ForEach(vm.selectedItems) { item in
-//                // Using Annotation for full control over appearance
-//                Annotation("", coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
-//                    AnnotationView(color: Color(hex: item.category.color))
-//                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-//                        .onTapGesture {
-//                            withAnimation(.easeInOut) {
-//                                vm.currentEvent = item
-//                                vm.showEventListView = false
-//                            }
-//                        }
-//                        .shadow(radius: 10)
-//                }
-//            }
-//        }
-//        .frame(maxWidth: .infinity, maxHeight: .infinity)
-//        .ignoresSafeArea(edges: [.top, .leading, .trailing])
-      
-        
-        Map(coordinateRegion: $vm.region, showsUserLocation: true, annotationItems: vm.selectedItems) { item in
-            MapAnnotation(coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)) {
+        Map(
+            coordinateRegion: $vm.region,
+            showsUserLocation: true,
+            annotationItems: vm.selectedItems
+        ) { item in
+            MapAnnotation(
+                coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
+            ) {
                 AnnotationView(color: Color(hex: item.category.color))
                     .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
                     .onTapGesture {
@@ -123,12 +115,14 @@ extension MapView {
             }
         }
         .task {
-            await vm.getEvents()
+            await vm.updateAllEvents()
         }
         .onAppear{
             vm.startUpdatingLocation()
-            vm.selectedItems = items
+            vm.filterItems()
             vm.currentEvent = vm.selectedItems.first
+            
+            print("all events count:\(vm.allEvents.count)")
             
         }
         .onDisappear {

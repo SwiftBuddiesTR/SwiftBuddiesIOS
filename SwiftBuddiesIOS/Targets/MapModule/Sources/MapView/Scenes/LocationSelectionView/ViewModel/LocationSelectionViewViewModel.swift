@@ -26,26 +26,6 @@ class LocationSelectionViewViewModel: ObservableObject {
         self.apiClient = .shared
     }
     
-    func addItem(
-        uid: String?,
-        modelContext: ModelContext,
-        newEventModel: NewEventModel
-    ) {
-        guard let latitude = newEventModel.latitude,
-              let longitude = newEventModel.longitude else { return }
-        let event = EventModel(
-            uid: uid ?? "asdfasfafaf",
-            category: newEventModel.category,
-            name: newEventModel.name,
-            aboutEvent: newEventModel.aboutEvent,
-            startDate: newEventModel.startDate,
-            dueDate: newEventModel.dueDate,
-            latitude: latitude,
-            longitude: longitude
-        )
-        modelContext.insert(event)
-    }
-    
     func search() {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = searchText
@@ -58,7 +38,7 @@ class LocationSelectionViewViewModel: ObservableObject {
         }
     }
     
-    func createEvent(event: NewEventModel, completion: @escaping (String?) -> Void) async {
+    func createEvent(event: NewEventModel) async {
         let request = MapCreateEventRequest(
             category: event.category.name,
             name: event.name,
@@ -71,7 +51,8 @@ class LocationSelectionViewViewModel: ObservableObject {
         
         do {
             let data = try await apiClient.perform(request)
-            completion(data.uid)
+            print("new event created \(data)")
+            
         } catch {
             debugPrint(error)
         }
