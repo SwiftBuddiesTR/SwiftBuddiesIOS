@@ -33,6 +33,9 @@ struct RootView: View {
             .onReceive(loggedIn) { _ in
                 isLoggedOut = false
             }
+            .task {
+                await BuddiesAuthenticationService.shared.checkIfLoggedIn()
+            }
         } else {
             OnboardingBuilder.build()
         }
