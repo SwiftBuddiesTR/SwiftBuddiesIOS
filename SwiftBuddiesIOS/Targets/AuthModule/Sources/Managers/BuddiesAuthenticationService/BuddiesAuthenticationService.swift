@@ -43,6 +43,14 @@ public final class BuddiesAuthenticationService {
         }
     }
     
+    public func checkIfLoggedIn() async {
+        if let token = KeychainManager.shared.get(key: .accessToken) {
+            await loginState(token: token)
+        } else {
+            await loginState()
+        }
+    }
+    
     @MainActor
     private func loginState(token: String? = nil) async {
         if let token {
