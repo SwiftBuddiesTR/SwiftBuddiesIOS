@@ -14,7 +14,6 @@ struct MapEventsResponseModel: Codable {
 
 // MARK: - Event
 struct MapEventModel: Codable {
-    let id: String?
     let uid: String?
     let ownerUid: String?
     let category: String?
@@ -24,10 +23,8 @@ struct MapEventModel: Codable {
     let dueDate: String?
     let latitude: Double?
     let longitude: Double?
-    let v: Int?
     
     enum CodingKeys: String, CodingKey {
-        case id = "_id"
         case uid = "uid"
         case ownerUid = "owner_uid"
         case category = "category"
@@ -37,7 +34,6 @@ struct MapEventModel: Codable {
         case dueDate = "dueDate"
         case latitude = "latitude"
         case longitude = "longitude"
-        case v = "__v"
     }
 }
 

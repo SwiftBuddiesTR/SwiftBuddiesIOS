@@ -39,6 +39,16 @@ public class EventModel: Identifiable {
     }
 }
 
+struct NewEventModel: Hashable, Codable {
+    var category: Category
+    var name: String
+    var aboutEvent: String
+    var startDate: String
+    var dueDate: String
+    var latitude: Double?
+    var longitude: Double?
+}
+
 typealias Categories = [Category]
 
 public struct Category: Identifiable, Codable, Hashable {

@@ -22,10 +22,10 @@ class MapDataManager {
     func getAllEvents() -> [EventModel] {
         guard let modelContext else { return [] }
         do {
-            print("Fetching all events from context...")
+            print("Loading all events from context...")
             let fetchDescriptor = FetchDescriptor<EventModel>()
             let events = try modelContext.fetch(fetchDescriptor)
-            print("Fetched events count: \(events.count)")
+            print("Loaded events count: \(events.count)")
             return events
         } catch {
             print("Error fethed data: \(error)")
@@ -33,6 +33,26 @@ class MapDataManager {
         }
         
     }
+    
+
+    
+    func addUniqueItems(
+        events: [EventModel]
+    ) {
+        guard let modelContext else { return }
+
+        let existingEvents = Set(getAllEvents().map { $0.id })
+        debugPrint(existingEvents)
+        for event in events {
+            if !existingEvents.contains(event.id) {
+                modelContext.insert(event)
+                print("existing event name: \(event.name)")
+                debugPrint("Added event: \(event.id)")
+                print("local events count: \(events.count)")
+            }
+        }
+    }
+    
     
     func deleteAllEvents() {
         guard let modelContext else { return }
@@ -50,23 +70,4 @@ class MapDataManager {
             print(errorMessage)
         }
     }
-    
-    func addUniqueItems(
-        events: [EventModel]
-    ) {
-        guard let modelContext else { return }
-
-        let existingEvents = Set(getAllEvents().map { $0.id })
-        
-        for event in events {
-            if !existingEvents.contains(event.id) {
-                modelContext.insert(event)
-            }
-        }
-    }
-    
-    
-   
-    
-    
 }

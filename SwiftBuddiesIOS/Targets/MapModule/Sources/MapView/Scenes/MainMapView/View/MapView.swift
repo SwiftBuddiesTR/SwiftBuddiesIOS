@@ -62,7 +62,7 @@ public struct MapView: View {
                     )
                 } onDismiss: {
                     withAnimation(.easeInOut) {
-                        vm.filterItems()
+                        vm.filteredItems(items: vm.allEvents, selectedItems: &vm.selectedEvents)
                     }
                 }
             .navigationDestination(for: MapNavigationCoordinator.NavigationDestination.self) { destination in
@@ -72,12 +72,13 @@ public struct MapView: View {
                 case .newEventView:
                     NewEventView()
                 case .selectLocationMapView(let event):
-                    LocationSelectionView(newEvent: event)
+                    LocationSelectionView(newEvent: event) {
+//                        Task {
+//                            await vm.updateAllEvents()
+//                        }
+                    }
                 }
             }
-        }
-        .onAppear {
-            vm.dataManager.modelContext = context
         }
         .environmentObject(vm)
         .environmentObject(coordinator)
@@ -98,7 +99,7 @@ extension MapView {
         Map(
             coordinateRegion: $vm.region,
             showsUserLocation: true,
-            annotationItems: vm.selectedItems
+            annotationItems: vm.selectedEvents
         ) { item in
             MapAnnotation(
                 coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
@@ -115,14 +116,11 @@ extension MapView {
             }
         }
         .task {
-            await vm.updateAllEvents()
+            await vm.getAllEvents()
         }
         .onAppear{
             vm.startUpdatingLocation()
-            vm.filterItems()
-            vm.currentEvent = vm.selectedItems.first
-            
-            print("all events count:\(vm.allEvents.count)")
+            vm.currentEvent = vm.selectedEvents.last
             
         }
         .onDisappear {
@@ -152,7 +150,7 @@ extension MapView {
             }
             
             if vm.showEventListView {
-                EventListView(events: vm.selectedItems)
+                EventListView(events: vm.selectedEvents)
             }
         }
         .background(.thickMaterial)

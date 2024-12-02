@@ -17,7 +17,6 @@ struct NewEventView: View {
     @EnvironmentObject var mapVM: MapViewModel
     @StateObject private var vm = NewEventViewViewModel()
     
-    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -45,6 +44,7 @@ struct NewEventView: View {
 #Preview {
     NewEventView()
 }
+
 
 // MARK: COMPONENTS
 extension NewEventView {

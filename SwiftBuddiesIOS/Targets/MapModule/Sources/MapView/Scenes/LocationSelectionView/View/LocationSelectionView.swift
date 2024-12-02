@@ -19,10 +19,13 @@ struct LocationSelectionView: View {
     @State var tappedLocation: CLLocationCoordinate2D? = nil
     @State private var showAlert: Bool = false
     
+    var createdCompletion: (() -> Void)?
+    
     init(
-        newEvent: NewEventModel
+        newEvent: NewEventModel, completion: @escaping (()->Void)
     ) {
         self.newEvent = newEvent
+        self.createdCompletion = completion
     }
     
     var body: some View {
@@ -55,7 +58,7 @@ struct LocationSelectionView: View {
             latitude: 0.00,
             longitude: 0.00
         )
-    )
+    ) {}
 }
 
 // MARK: COMPONENTS
@@ -85,10 +88,10 @@ extension LocationSelectionView {
                 Task {
                     await vm.createEvent(event: newEvent)
                     print("created")
-                   
+                    print("new event name: \(newEvent.name)")
+                    createdCompletion?()
                 }
                 coordinator.popToRoot()
-                
             } else {
                 showAlert = true
             }

@@ -19,11 +19,12 @@ class MapViewModel: ObservableObject {
     
     private let apiClient: BuddiesClient
     private var locationManager = LocationManager()
-    var dataManager: MapDataManager = .init()
+    private let databaseManager = DatabaseManager()
+//    var dataManager: MapDataManager = .init()
     
     
     @Published var allEvents: [EventModel] = []
-    @Published var selectedItems: [EventModel] = []
+    @Published var selectedEvents: [EventModel] = []
 
     @Published var currentEvent: EventModel? {
         didSet {
@@ -53,9 +54,12 @@ class MapViewModel: ObservableObject {
     init() {
         self.categories = .mock
         self.apiClient = .shared
+        self.selectedCategory = self.categories.first
         addSubscribers()
     }
     
+    
+    // MARK: Listen managers
     func addSubscribers() {
         locationManager.$lastKnownLocation
             .sink { [weak self] coord in
@@ -63,66 +67,15 @@ class MapViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+
     
-    
-    func addItems(events: [EventModel]) {
-        dataManager.addUniqueItems(events: events)
-    }
-    
-    func updateAllEvents() async {
-        await fetchEvents()
-        allEvents = dataManager.getAllEvents()
-    }
-    
-    func deleteAllEvents() {
-        dataManager.deleteAllEvents()
+    func getAllEvents() async {
+        allEvents = await databaseManager.fetchEvents()
+        selectedEvents = allEvents
     }
     
     
-    private func fetchEvents() async {
-        let request = MapGetEventsRequest()
-        
-        do {
-            let data = try await apiClient.perform(request)
-            debugPrint("Events Success: \(data.events?.count)")
-            
-            guard let mapEvents = data.events else {
-                return
-            }
-            
-            let events: [EventModel] = mapEvents.compactMap { mapEvent in
-                guard
-                    let uid = mapEvent.uid,
-                    let categoryString = mapEvent.category,
-                    let category = Categories.mock.first(where: { $0.name == categoryString }),
-                    let name = mapEvent.name,
-                    let description = mapEvent.description,
-                    let startDate = mapEvent.startDate,
-                    let dueDate = mapEvent.dueDate,
-                    let latitude = mapEvent.latitude,
-                    let longitude = mapEvent.longitude
-                else {
-                    return nil
-                }
-                
-                return EventModel(
-                    uid: uid,
-                    category: category,
-                    name: name,
-                    aboutEvent: description,
-                    startDate: startDate,
-                    dueDate: dueDate,
-                    latitude: latitude,
-                    longitude: longitude
-                )
-            }
-            dataManager.addUniqueItems(events: events)
-        } catch {
-            debugPrint(error)
-        }
-    }
-    
-    // MARK: DATA FILTERING AND MAP FUNCS
+    // MARK: DATA FILTERING
     private func setMapRegion(to item: EventModel?) {
         guard let item else {
             return
@@ -143,13 +96,13 @@ class MapViewModel: ObservableObject {
     }
     
     
-    func filterItems() {
+    func filteredItems(items: [EventModel], selectedItems: inout [EventModel]) {
         selectedItems.removeAll()
         if selectedCategory?.name == "All" {
-            selectedItems = allEvents
+            selectedItems = items
         }
         
-        for item in allEvents {
+        for item in items {
             if selectedCategory?.name == item.category.name {
                 selectedItems.append(item)
             }
@@ -157,7 +110,6 @@ class MapViewModel: ObservableObject {
         
         if let firstItem = selectedItems.first {
             setMapRegion(to: firstItem)
-            
         }
     }
     
@@ -166,6 +118,7 @@ class MapViewModel: ObservableObject {
             showEventListView.toggle()
         }
     }
+    
     
     // MARK: LOCATİON
     func stopUpdatingLocation() {
@@ -178,18 +131,5 @@ class MapViewModel: ObservableObject {
     
     
 }
-extension MapViewModel {
-    // MARK: - RegisterRequest
-    struct MapGetEventsRequest: Requestable {
-        
-        typealias Data = MapEventsResponseModel
-        
-        func toUrlRequest() throws -> URLRequest {
-            try URLProvider.returnUrlRequest(
-                method: .get,
-                url: APIs.Map.getEvents.url(),
-                data: self
-            )
-        }
-    }
-}
+
+
