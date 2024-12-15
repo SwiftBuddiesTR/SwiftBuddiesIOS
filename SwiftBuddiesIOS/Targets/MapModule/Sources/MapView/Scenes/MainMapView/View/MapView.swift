@@ -16,21 +16,14 @@ public struct MapView: View {
             ZStack {
                 mapLayer
                     .ignoresSafeArea(edges: [.top, .leading, .trailing])
-    
+                
                 VStack(alignment: .leading) {
                     listHeader
+                        .padding(.top, 5)
+                        .padding(.leading)
+                        .padding(.trailing, 56)
+                    categoryFilterButton
                         .padding(.horizontal)
-                    HStack {
-                        categoryFilterButton
-                        Button {
-                            vm.setUserLocation()
-                        } label: {
-                            Text("Find me")
-                                .lineLimit(2)
-                                .frame(width: 52)
-                        }
-                    }
-                    .padding(.horizontal)
                     Spacer()
                     
                     if !vm.categoryModalShown {
@@ -97,6 +90,12 @@ public struct MapView: View {
         .environmentObject(vm)
         .environmentObject(coordinator)
     }
+    
+    private func createAlert(text: String? = nil) -> Alert {
+        return Alert(title: Text("Ups 🧐"),
+                     message: Text(text ?? "Something went wrong, please try again"),
+                     dismissButton: .default(Text("OK")))
+    }
 }
 
 
@@ -110,24 +109,31 @@ extension MapView {
     
     private var mapLayer: some View {
 
-        Map(
-            coordinateRegion: $vm.region,
-            showsUserLocation: true,
-            annotationItems: vm.selectedEvents
-        ) { item in
-            MapAnnotation(
-                coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
-            ) {
-                AnnotationView(color: Color(hex: item.category.color))
-                    .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
-                    .onTapGesture {
-                        withAnimation(.easeInOut) {
-                            vm.currentEvent = item
-                            vm.showEventListView = false
+        ZStack {
+            Map(
+                coordinateRegion: $vm.region,
+                showsUserLocation: true,
+                annotationItems: vm.selectedEvents
+            ) { item in
+                MapAnnotation(
+                    coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
+                ) {
+                    AnnotationView(color: Color(hex: item.category.color))
+                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
+                        .onTapGesture {
+                            withAnimation(.easeInOut) {
+                                vm.currentEvent = item
+                                vm.showEventListView = false
+                            }
                         }
-                    }
-                    .shadow(radius: 10)
+                        .shadow(radius: 10)
+                }
             }
+        }
+        .mapControls {
+            MapUserLocationButton()
+                .mapControlVisibility(.visible)
+                .padding(.top, 100)
         }
         .task {
             await vm.getAllEvents()
@@ -151,7 +157,7 @@ extension MapView {
                     .font(.title2)
                     .fontWeight(.black)
                     .foregroundColor(.primary)
-                    .frame(height: 55)
+                    .frame(height: 44)
                     .frame(maxWidth: .infinity)
                     .overlay(alignment: .leading) {
                         Image(systemName: "arrow.down")
@@ -168,7 +174,6 @@ extension MapView {
         .background(.thickMaterial)
         .cornerRadius(10)
         .shadow(color: .black.opacity(0.3), radius: 20 ,x: 0 , y: 15)
-        
     }
     
     private var categoryFilterButton: some View {
@@ -176,13 +181,13 @@ extension MapView {
             Button(action: {
                 vm.categoryModalShown.toggle()
             }) {
-                Text("filter by category")
+                Text("Filter by Category")
                     .foregroundColor(.secondary)
-                    .font(.subheadline)
+                    .font(.footnote)
                     .padding()
             }
         }
-        .frame(height: 30)
+        .frame(height: 24)
         .background(.thickMaterial)
         .shadow(color: .black.opacity(0.3), radius: 20 ,x: 0 , y: 15)
         .cornerRadius(30)

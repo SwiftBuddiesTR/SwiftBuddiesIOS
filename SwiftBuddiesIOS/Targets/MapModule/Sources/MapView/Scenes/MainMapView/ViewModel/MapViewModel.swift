@@ -20,7 +20,6 @@ class MapViewModel: ObservableObject {
     private let apiClient: BuddiesClient
     private var locationManager = LocationManager()
     private let mapService = MapService()
-    var followUserLocation = true
     
     @Published var allEvents: [EventModel] = []
     @Published var selectedEvents: [EventModel] = []
@@ -38,6 +37,8 @@ class MapViewModel: ObservableObject {
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var showEventListView: Bool = false
     @Published var showExplanationText: Bool = true
+    @Published var showAlert: Bool = false
+
     
     @Published var region : MKCoordinateRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 40, longitude: 40),
@@ -57,8 +58,12 @@ class MapViewModel: ObservableObject {
         setUserLocation()
     }
     
-    func setUserLocation() {
-        self.setMapRegion(to: locationManager.lastKnownLocation)
+    func setUserLocation(errorCompletion: (() -> Void)? = nil) {
+        if let location = locationManager.lastKnownLocation {
+            setMapRegion(to: location)
+        } else {
+            errorCompletion
+        }
     }
     
     func getAllEvents() async {
