@@ -52,7 +52,7 @@ struct LocationSelectionView: View {
         newEvent: .init(
             category: .mock,
             name: "name",
-            aboutEvent: "about",
+            description: "about",
             startDate: "start",
             dueDate: "due",
             latitude: 0.00,

@@ -17,6 +17,7 @@ public class EventModel: Identifiable {
     var dueDate: String
     var latitude: Double
     var longitude: Double
+
     
     init(
         uid: String,
@@ -42,7 +43,7 @@ public class EventModel: Identifiable {
 struct NewEventModel: Hashable, Codable {
     var category: Category
     var name: String
-    var aboutEvent: String
+    var description: String
     var startDate: String
     var dueDate: String
     var latitude: Double?
