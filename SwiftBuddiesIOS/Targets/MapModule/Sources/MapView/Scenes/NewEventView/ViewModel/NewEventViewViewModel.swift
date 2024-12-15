@@ -9,7 +9,7 @@ import Foundation
 
 final class NewEventViewViewModel: ObservableObject {
     
-    @Published var selection: Category?
+    @Published var categorySelection: Category?
     @Published var nameText: String = ""
     @Published var descriptionText: String = ""
     @Published var adressText: String = ""

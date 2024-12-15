@@ -53,7 +53,7 @@ extension NewEventView {
         Menu {
             ForEach(mapVM.filteredCategories) { category in
                 Button(action: {
-                    vm.selection = category
+                    vm.categorySelection = category
                 }) {
                     Text(category.name.capitalized)
                         .foregroundStyle(.primary)
@@ -62,19 +62,20 @@ extension NewEventView {
             }
         } label: {
             HStack {
-                Text(vm.selection?.name ?? "Select a Category")
+                Text(vm.categorySelection?.name ?? "Select a Category")
                     .font(.headline)
                     .foregroundStyle(Color("AdaptiveColor"))
                     .padding()
                     .frame(maxWidth: .infinity)
                     .frame(height: 55)
+                    .background(
+                        Color(.secondarySystemBackground)
+                    )
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
                             .stroke(Color.primary, lineWidth: 1)
                     )
-                    .background(
-                        Color(.secondarySystemBackground)
-                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding(.horizontal)
             }
         }
@@ -87,13 +88,14 @@ extension NewEventView {
             .padding()
             .frame(maxWidth: .infinity)
             .frame(height: 55)
+            .background(
+                Color(.secondarySystemBackground)
+            )
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(Color.primary, lineWidth: 1)
             )
-            .background(
-                Color(.secondarySystemBackground)
-            )
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             .padding(.horizontal)
     }
     
@@ -103,51 +105,54 @@ extension NewEventView {
             .padding()
             .frame(maxWidth: .infinity)
             .frame(height: 55)
+            .background(
+                Color(.secondarySystemBackground)
+            )
             .overlay(
                 RoundedRectangle(cornerRadius: 10)
                     .stroke(Color.primary, lineWidth: 1)
             )
-            .background(
-                Color(.secondarySystemBackground)
-            )
+            .clipShape(RoundedRectangle(cornerRadius: 10))
             .padding(.horizontal)
     }
     
     private var datePickers: some View {
         VStack(spacing: 20) {
-            DatePicker("Start Date", selection: $vm.startDate)
+            DatePicker("Start Date", selection: $vm.startDate, displayedComponents: [.date])
                 .font(.headline)
                 .padding()
                 .frame(maxWidth: .infinity)
                 .frame(height: 55)
+                .background(
+                    Color(.secondarySystemBackground)
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.primary, lineWidth: 1)
                 )
-                .background(
-                    Color(.secondarySystemBackground)
-                )
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.horizontal)
             
-            DatePicker("Due Date", selection: $vm.dueDate)
+            DatePicker("Due Date", selection: $vm.dueDate, in: vm.startDate..., displayedComponents: [.date])
                 .font(.headline)
                 .padding()
                 .frame(maxWidth: .infinity)
                 .frame(height: 55)
+                .background(
+                    Color(.secondarySystemBackground)
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10)
                         .stroke(Color.primary, lineWidth: 1)
                 )
-                .background(
-                    Color(.secondarySystemBackground)
-                )
+                .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.horizontal)
         }
     }
     
     private var nextButton: some View {
         Button(action: {
-            if let selection = vm.selection {
+            if let selection = vm.categorySelection {
                 let newEventModel: NewEventModel = .init(
                     category: selection,
                     name: vm.nameText,
