@@ -11,7 +11,7 @@ import MapKit
 
 class LocationSelectionViewViewModel: ObservableObject {
     
-    private let databaseManager = DatabaseManager()
+    private let mapService = MapService()
     
     @Published var selectedAnnotation: MKPointAnnotation?
     @Published var searchText = ""
@@ -35,11 +35,7 @@ class LocationSelectionViewViewModel: ObservableObject {
     }
     
     
-    func createEvent(event: NewEventModel) async {
-        await databaseManager.createEvent(event: event)
+    func createEvent(event: NewEventModel) async -> String? {
+        await mapService.createEvent(event: event)
     }
-    
-
 }
-
-

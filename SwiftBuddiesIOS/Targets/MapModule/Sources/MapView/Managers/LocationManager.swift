@@ -67,6 +67,4 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
             lastKnownLocation = Coord(lat: coordinate.latitude.magnitude, lon: coordinate.longitude.magnitude)
         }
     }
-    
-    
 }

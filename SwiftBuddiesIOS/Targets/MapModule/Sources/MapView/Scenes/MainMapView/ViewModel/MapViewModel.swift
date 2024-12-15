@@ -19,9 +19,8 @@ class MapViewModel: ObservableObject {
     
     private let apiClient: BuddiesClient
     private var locationManager = LocationManager()
-    private let databaseManager = DatabaseManager()
-//    var dataManager: MapDataManager = .init()
-    
+    private let mapService = MapService()
+    var followUserLocation = true
     
     @Published var allEvents: [EventModel] = []
     @Published var selectedEvents: [EventModel] = []
@@ -40,10 +39,10 @@ class MapViewModel: ObservableObject {
     @Published var showEventListView: Bool = false
     @Published var showExplanationText: Bool = true
     
-    @Published var region : MKCoordinateRegion = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 40, longitude: 40), span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1))
-    
-    @Published private(set) var currentCoord: Coord = Coord(lat: 0, lon: 0)
-    private var cancellables = Set<AnyCancellable>()
+    @Published var region : MKCoordinateRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: 40, longitude: 40),
+        span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
+    )
     
     @Published var categories: Categories
     
@@ -55,22 +54,15 @@ class MapViewModel: ObservableObject {
         self.categories = .mock
         self.apiClient = .shared
         self.selectedCategory = self.categories.first
-        addSubscribers()
+        setUserLocation()
     }
     
-    
-    // MARK: Listen managers
-    func addSubscribers() {
-        locationManager.$lastKnownLocation
-            .sink { [weak self] coord in
-                self?.setMapRegion(to: coord)
-            }
-            .store(in: &cancellables)
+    func setUserLocation() {
+        self.setMapRegion(to: locationManager.lastKnownLocation)
     }
-
     
     func getAllEvents() async {
-        allEvents = await databaseManager.fetchEvents()
+        allEvents = await mapService.fetchEvents()
         selectedEvents = allEvents
     }
     
@@ -128,8 +120,4 @@ class MapViewModel: ObservableObject {
     func startUpdatingLocation() {
         locationManager.startUpdatingLocation()
     }
-    
-    
 }
-
-

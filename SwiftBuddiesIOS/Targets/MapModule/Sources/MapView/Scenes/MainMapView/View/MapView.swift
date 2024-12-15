@@ -20,8 +20,17 @@ public struct MapView: View {
                 VStack(alignment: .leading) {
                     listHeader
                         .padding(.horizontal)
-                    categoryFilterButton
-                        .padding(.leading)
+                    HStack {
+                        categoryFilterButton
+                        Button {
+                            vm.setUserLocation()
+                        } label: {
+                            Text("Find me")
+                                .lineLimit(2)
+                                .frame(width: 52)
+                        }
+                    }
+                    .padding(.horizontal)
                     Spacer()
                     
                     if !vm.categoryModalShown {
@@ -72,10 +81,15 @@ public struct MapView: View {
                 case .newEventView:
                     NewEventView()
                 case .selectLocationMapView(let event):
-                    LocationSelectionView(newEvent: event) {
-//                        Task {
-//                            await vm.updateAllEvents()
-//                        }
+                    LocationSelectionView(newEvent: event) { eventId in
+                        if let eventId {
+                            debugPrint("Event Created with ID: \(eventId)")
+                            Task {
+                                await vm.getAllEvents()
+                            }
+                        } else {
+                            debugPrint("EVENT CREATION FAILED")
+                        }
                     }
                 }
             }
@@ -121,7 +135,6 @@ extension MapView {
         .onAppear{
             vm.startUpdatingLocation()
             vm.currentEvent = vm.selectedEvents.last
-            
         }
         .onDisappear {
             vm.stopUpdatingLocation()
@@ -134,7 +147,7 @@ extension MapView {
             Button {
                 vm.toggleEventList()
             } label: {
-                Text(vm.currentEvent?.name ?? "")
+                Text(vm.currentEvent?.name ?? "Select an event")
                     .font(.title2)
                     .fontWeight(.black)
                     .foregroundColor(.primary)
@@ -148,7 +161,6 @@ extension MapView {
                             .rotationEffect(Angle(degrees: vm.showEventListView ? 180 : 0))
                     }
             }
-            
             if vm.showEventListView {
                 EventListView(events: vm.selectedEvents)
             }

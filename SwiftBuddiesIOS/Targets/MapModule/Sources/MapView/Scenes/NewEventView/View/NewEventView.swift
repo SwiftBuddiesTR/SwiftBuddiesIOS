@@ -151,7 +151,7 @@ extension NewEventView {
                 let newEventModel: NewEventModel = .init(
                     category: selection,
                     name: vm.nameText,
-                    aboutEvent: vm.descriptionText,
+                    description: vm.descriptionText,
                     startDate: vm.startDate.toISOString(),
                     dueDate: vm.dueDate.toISOString(),
                     latitude: nil,

@@ -1,5 +1,5 @@
 //
-//  DatabaseManager.swift
+//  MapService.swift
 //  Map
 //
 //  Created by Oğuzhan Abuhanoğlu on 2.12.2024.
@@ -9,7 +9,7 @@ import Foundation
 import BuddiesNetwork
 import Network
 
-class DatabaseManager {
+class MapService {
     
     private let apiClient: BuddiesClient!
     
@@ -17,11 +17,11 @@ class DatabaseManager {
         self.apiClient = .shared
     }
     
-    func createEvent(event: NewEventModel) async {
+    func createEvent(event: NewEventModel) async -> String? {
         let request = MapCreateEventRequest(
             category: event.category.name,
             name: event.name,
-            description: event.aboutEvent,
+            description: event.description,
             startDate: event.startDate,
             dueDate: event.dueDate,
             latitude: event.latitude,
@@ -31,14 +31,15 @@ class DatabaseManager {
         do {
             let data = try await apiClient.perform(request)
             print("new event created \(data)")
-            
+            return data.uid
         } catch {
             debugPrint(error)
+            return nil
         }
     }
     
     
-    func fetchEvents() async -> [EventModel]{
+    func fetchEvents() async -> [EventModel] {
         let request = MapGetEventsRequest()
         var fetchedEvents: [EventModel] = []
         
@@ -111,7 +112,6 @@ struct MapCreateEventRequest: Requestable {
     struct Data: Decodable {
         var uid: String?
     }
-    
     
     func toUrlRequest() throws -> URLRequest {
         try URLProvider.returnUrlRequest(
