@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Contributor: Identifiable, Equatable {
+public struct Contributor: Identifiable, Equatable, Hashable {
     public let id: String
     public let name: String
     public let avatarURL: URL?
