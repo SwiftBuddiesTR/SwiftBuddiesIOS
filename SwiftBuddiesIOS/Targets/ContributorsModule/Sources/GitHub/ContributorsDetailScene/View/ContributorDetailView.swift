@@ -1,3 +1,11 @@
+//
+//  File.swift
+//  SwiftBuddiesMain
+//
+//  Created by dogukaan on 16.12.2024.
+//  Copyright © 2024 SwiftBuddies. All rights reserved.
+//
+
 import SwiftUI
 import Design
 
@@ -12,14 +20,20 @@ struct ContributorDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 20) {
-                profileHeader
+            VStack(spacing: 8) {
+                HStack(alignment: .top) {
+                    profileHeader
+                    VStack(alignment: .leading, spacing: 8) {
+                        githubLinkButton
+                        statsSection
+                    }
+                }
+                .frame(maxWidth: .infinity)
                 
                 if let stats = viewModel.contributorStats {
                     userInfoSection(stats)
                 }
                 
-                statsSection
                 
                 if viewModel.isLoading {
                     ProgressView()
@@ -35,7 +49,6 @@ struct ContributorDetailView: View {
                     recentActivitiesSection
                 }
                 
-                githubLinkButton
             }
             .padding()
         }
@@ -130,6 +143,7 @@ struct ContributorDetailView: View {
             }
         } label: {
             Label("Open in GitHub", systemImage: "link")
+                .font(.footnote)
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.bordered)
