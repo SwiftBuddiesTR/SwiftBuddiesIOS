@@ -28,7 +28,7 @@ public final class BuddiesInterceptorProvider: InterceptorProvider {
             CacheReadInterceptor(store: cacheStore),
             BuddiesTokenProviderInterceptor(currentToken: currentToken),
             NetworkFetchInterceptor(client: client),
-            JSONDecodingInterceptor(),
+            BuddiesJSONDecodingInterceptor(),
             CacheWriteInterceptor(store: cacheStore)
         ]
     }

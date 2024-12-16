@@ -13,7 +13,7 @@ public final class GitHubInterceptorProvider: InterceptorProvider {
             MaxRetryInterceptor(maxRetry: 3),
             GitHubHeadersInterceptor(),
             NetworkFetchInterceptor(client: client),
-            JSONDecodingInterceptor()
+            BuddiesJSONDecodingInterceptor()
         ]
     }
     
@@ -56,6 +56,8 @@ final class GitHubErrorHandler: ChainErrorHandler {
             completion(.failure(GitHubAPIError.rateLimitExceeded))
         } else if response?.httpResponse.statusCode == 404 {
             completion(.failure(GitHubAPIError.repositoryNotFound))
+        } else if response?.httpResponse.statusCode == 304 {
+            completion(.failure(GitHubAPIError.notModified))
         } else {
             completion(.failure(error))
         }
@@ -70,6 +72,7 @@ public enum GitHubAPIError: Error, LocalizedError {
     case invalidResponse
     case rateLimitExceeded
     case repositoryNotFound
+    case notModified
     
     public var errorDescription: String? {
         switch self {
@@ -85,6 +88,8 @@ public enum GitHubAPIError: Error, LocalizedError {
             return "GitHub API rate limit exceeded. Please try again later."
         case .repositoryNotFound:
             return "Repository not found"
+        case .notModified:
+            return "Not modified"
         }
     }
 }

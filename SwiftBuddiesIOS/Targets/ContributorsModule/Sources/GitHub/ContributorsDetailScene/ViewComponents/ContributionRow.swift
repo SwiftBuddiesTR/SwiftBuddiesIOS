@@ -37,24 +37,40 @@ struct ContributionRow: View {
         case .push: "arrow.up.circle"
         case .pullRequest: "arrow.triangle.branch"
         case .pullRequestReview: "checkmark.circle"
+        case .pullRequestReviewComment, .pullRequestReviewThread: "bubble.left"
         case .issue: "exclamationmark.circle"
+        case .issueComment: "text.bubble"
+        case .commitComment: "text.bubble.fill"
         case .create: "plus.circle"
+        case .delete: "minus.circle"
         case .fork: "tuningfork"
         case .watch: "star"
-        case .other: "circle"
+        case .member: "person"
+        case .release: "tag"
+        case .sponsorship: "heart"
+        case .gollum: "book"
+        case .public: "lock.open"
+        case .other: "circle.dotted"
         }
     }
     
     private var iconColor: Color {
         switch contribution.type {
         case .push: .blue
-        case .pullRequest: .green
+        case .pullRequest, .create: .green
         case .pullRequestReview: .purple
+        case .pullRequestReviewComment, .pullRequestReviewThread: .cyan
         case .issue: .orange
-        case .create: .green
+        case .issueComment, .commitComment: .cyan
+        case .delete: .red
         case .fork: .blue
         case .watch: .yellow
-        case .other: .gray
+        case .member: .pink
+        case .release: .mint
+        case .sponsorship: .pink
+        case .gollum: .indigo
+        case .public: .green
+        case .other: .secondary
         }
     }
 } 
