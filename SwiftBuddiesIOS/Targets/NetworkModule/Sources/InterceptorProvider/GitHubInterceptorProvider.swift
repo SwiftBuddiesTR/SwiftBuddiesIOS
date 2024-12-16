@@ -61,3 +61,30 @@ final class GitHubErrorHandler: ChainErrorHandler {
         }
     }
 } 
+
+// GitHubAPIError
+public enum GitHubAPIError: Error, LocalizedError {
+    case invalidURL
+    case networkError(Error)
+    case decodingError(Error)
+    case invalidResponse
+    case rateLimitExceeded
+    case repositoryNotFound
+    
+    public var errorDescription: String? {
+        switch self {
+        case .invalidURL:
+            return "Invalid URL"
+        case .networkError(let error):
+            return "Network error: \(error.localizedDescription)"
+        case .decodingError(let error):
+            return "Failed to decode response: \(error.localizedDescription)"
+        case .invalidResponse:
+            return "Invalid response from server"
+        case .rateLimitExceeded:
+            return "GitHub API rate limit exceeded. Please try again later."
+        case .repositoryNotFound:
+            return "Repository not found"
+        }
+    }
+}

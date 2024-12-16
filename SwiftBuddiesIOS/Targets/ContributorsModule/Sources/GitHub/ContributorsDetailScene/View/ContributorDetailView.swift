@@ -62,7 +62,7 @@ struct ContributorDetailView: View {
     private var statsSection: some View {
         HStack(spacing: 40) {
             StatView(title: "Contributions", value: "\(contributor.contributions)")
-            if let stats = $viewModel.contributorStats {
+            if let stats = viewModel.contributorStats {
                 StatView(title: "Repositories", value: "\(stats.repositories)")
                 StatView(title: "Followers", value: "\(stats.followers)")
             }
@@ -75,7 +75,7 @@ struct ContributorDetailView: View {
             Text("Recent Contributions")
                 .font(.headline)
             
-            if let contributions = $viewModel.recentContributions {
+            if let contributions = viewModel.recentContributions {
                 ForEach(contributions) { contribution in
                     ContributionRow(contribution: contribution)
                 }

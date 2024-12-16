@@ -3,8 +3,9 @@ import Network
 import BuddiesNetwork
 
 struct ContributorActivitiesRequest: Requestable {
+    @EncoderIgnorable var username: String?
+    
     typealias Data = [ContributorContribution]
-    let username: String
     
     func toUrlRequest() throws -> URLRequest {
         try URLProvider.returnUrlRequest(
