@@ -37,7 +37,15 @@ struct ContributorDetailView: View {
                     userInfoSection(stats)
                 }
                 
-                activitiesSection
+                ActivitiesLoadingView(
+                    isLoading: viewModel.isActivitiesLoading,
+                    filters: viewModel.availableRepoFilters,
+                    onFilterToggle: viewModel.toggleRepoFilter,
+                    onClearFilters: viewModel.clearFilters,
+                    content: { contributions in
+                        contributionsList(contributions)
+                    }
+                )
                 
                 ScrollPositionIndicator(
                     coordinateSpace: "scroll",
@@ -53,6 +61,15 @@ struct ContributorDetailView: View {
         .coordinateSpace(name: "scroll")
         .refreshable {
             await viewModel.refresh()
+        }
+    }
+    
+    private func contributionsList(_ contributions: [ContributorContribution]) -> some View {
+        LazyVStack(spacing: 8) {
+            ForEach(contributions) { contribution in
+                ContributionRow(contribution: contribution)
+                    .frame(maxWidth: .infinity)
+            }
         }
     }
     
@@ -109,43 +126,16 @@ struct ContributorDetailView: View {
     
     private func statsSection(_ stats: ContributorStats) -> some View {
         VStack(spacing: 8) {
-           HStack {
+            HStack(spacing: 16) {
                 StatView(title: "Contributions", value: "\(contributor.contributions)")
-                StatView(title: "Repositories", value: "\(stats.publicRepos)")
-            }   
-            HStack {
+                StatView(title: "Repos", value: "\(stats.publicRepos)")
+            }
+            HStack(spacing: 16) {
                 StatView(title: "Followers", value: "\(stats.followers)")
                 StatView(title: "Following", value: "\(stats.following)")
             }
         }
         .padding(.vertical)
-    }
-    
-    private var activitiesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Recent Activities")
-                .font(.headline)
-            
-            if let contributions = viewModel.recentContributions {
-                if contributions.isEmpty {
-                    Text("No recent activities")
-                        .foregroundColor(.secondary)
-                } else {
-                    PaginationView(
-                        isLoading: viewModel.isActivitiesLoading,
-                        hasMorePages: viewModel.canLoadMore,
-                        onLoadMore: viewModel.fetchActivities
-                    ) {
-                        LazyVStack(spacing: 8) {
-                            ForEach(contributions) { contribution in
-                                ContributionRow(contribution: contribution)
-                                    .frame(maxWidth: .infinity)
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
     
     private var githubLinkButton: some View {

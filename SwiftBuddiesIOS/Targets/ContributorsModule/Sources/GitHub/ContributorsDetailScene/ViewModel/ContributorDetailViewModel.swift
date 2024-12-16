@@ -76,7 +76,6 @@ class ContributorDetailViewModel: ObservableObject {
 
         defer { 
             isActivitiesLoading = false
-            paginationInfo.isFetching = false
         }
         
         do {
