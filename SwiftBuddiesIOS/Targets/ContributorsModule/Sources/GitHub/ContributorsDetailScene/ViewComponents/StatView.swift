@@ -15,7 +15,7 @@ struct StatView: View {
     var body: some View {
         VStack {
             Text(value)
-                .font(.title3)
+                .font(.callout)
                 .bold()
             Text(title)
                 .font(.caption)

@@ -21,19 +21,24 @@ struct ContributorDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
-                HStack(alignment: .top) {
-                    profileHeader
-                    VStack(alignment: .leading, spacing: 8) {
-                        githubLinkButton
-                        statsSection
+                Group {
+                    HStack(alignment: .top) {
+                        profileHeader
+                        Spacer()
+                        if viewModel.isLoading {
+                            ProgressView()
+                        } else {
+                            if let stats = viewModel.contributorStats {
+                                statsSection(stats)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    if let stats = viewModel.contributorStats {
+                        userInfoSection(stats)
                     }
                 }
-                .frame(maxWidth: .infinity)
-                
-                if let stats = viewModel.contributorStats {
-                    userInfoSection(stats)
-                }
-                
+                .padding(.horizontal, 16)
                 
                 if viewModel.isLoading {
                     ProgressView()
@@ -44,13 +49,16 @@ struct ContributorDetailView: View {
                             onFilterToggle: viewModel.toggleRepoFilter,
                             onClearFilters: viewModel.clearFilters
                         )
+                    } else {
+                        Text("No repositories found")
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .font(.subheadline)
                     }
-                    
                     recentActivitiesSection
+                        .padding(.horizontal, 16)
                 }
-                
             }
-            .padding()
         }
         .navigationTitle(viewModel.contributorStats?.name ?? contributor.name)
         .task(id: "fetchContributorDetails") {
@@ -69,7 +77,7 @@ struct ContributorDetailView: View {
                     Circle()
                         .foregroundColor(.gray.opacity(0.3))
                 }
-                .frame(width: 120, height: 120)
+                .frame(height: 120)
                 .clipShape(Circle())
                 .shadow(radius: 5)
             }
@@ -77,18 +85,20 @@ struct ContributorDetailView: View {
             Text(contributor.name)
                 .font(.title2)
                 .bold()
+            githubLinkButton
         }
+        .frame(width: 140)
     }
     
     private func userInfoSection(_ stats: ContributorStats) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 0) {
             if let bio = stats.bio {
                 Text(bio)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
                 if let company = stats.company {
                     Label(company, systemImage: "building.2")
                 }
@@ -107,12 +117,15 @@ struct ContributorDetailView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private var statsSection: some View {
-        HStack(spacing: 40) {
-            StatView(title: "Contributions", value: "\(contributor.contributions)")
-            if let stats = viewModel.contributorStats {
+    private func statsSection(_ stats: ContributorStats) -> some View {
+        VStack(spacing: 8) {
+           HStack {
+                StatView(title: "Contributions", value: "\(contributor.contributions)")
                 StatView(title: "Repositories", value: "\(stats.publicRepos)")
+            }   
+            HStack {
                 StatView(title: "Followers", value: "\(stats.followers)")
+                StatView(title: "Following", value: "\(stats.following)")
             }
         }
         .padding(.vertical)

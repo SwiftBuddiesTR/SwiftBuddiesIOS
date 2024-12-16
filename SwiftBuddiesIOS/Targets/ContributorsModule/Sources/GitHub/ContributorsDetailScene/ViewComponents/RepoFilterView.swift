@@ -1,11 +1,3 @@
-//
-//  File.swift
-//  SwiftBuddiesMain
-//
-//  Created by dogukaan on 16.12.2024.
-//  Copyright © 2024 SwiftBuddies. All rights reserved.
-//
-
 import SwiftUI
 
 struct RepoFilterView: View {
@@ -18,7 +10,6 @@ struct RepoFilterView: View {
             HStack {
                 Text("Filter by Repository")
                     .font(.headline)
-                
                 Spacer()
                 
                 if filters.contains(where: \.isSelected) {
@@ -26,6 +17,7 @@ struct RepoFilterView: View {
                         .font(.subheadline)
                 }
             }
+            .padding(.horizontal, 16)
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -40,6 +32,8 @@ struct RepoFilterView: View {
                 }
                 .padding(.horizontal, 4)
             }
+            .contentMargins(.horizontal, 16)
+
         }
     }
 }
