@@ -21,48 +21,38 @@ struct ContributorDetailView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
-                Group {
-                    HStack(alignment: .top) {
-                        profileHeader
-                        Spacer()
-                        if viewModel.isLoading {
-                            ProgressView()
-                        } else {
-                            if let stats = viewModel.contributorStats {
-                                statsSection(stats)
-                            }
+                HStack(alignment: .top) {
+                    profileHeader
+                    Spacer()
+                    StatsLoadingView(
+                        isLoading: viewModel.isStatsLoading,
+                        content: { stats in
+                            statsSection(stats)
                         }
-                    }
-                    .frame(maxWidth: .infinity)
-                    if let stats = viewModel.contributorStats {
-                        userInfoSection(stats)
-                    }
+                    )
                 }
-                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity)
                 
-                if viewModel.isLoading {
-                    ProgressView()
-                } else {
-                    if !viewModel.availableRepoFilters.isEmpty {
-                        RepoFilterView(
-                            filters: viewModel.availableRepoFilters,
-                            onFilterToggle: viewModel.toggleRepoFilter,
-                            onClearFilters: viewModel.clearFilters
-                        )
-                    } else {
-                        Text("No repositories found")
-                            .foregroundColor(.secondary)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .font(.subheadline)
-                    }
-                    recentActivitiesSection
-                        .padding(.horizontal, 16)
+                if let stats = viewModel.contributorStats {
+                    userInfoSection(stats)
                 }
+                
+                activitiesSection
+                
+                ScrollPositionIndicator(
+                    coordinateSpace: "scroll",
+                    onReachBottom: viewModel.fetchActivities
+                )
             }
+            .padding(.horizontal, 16)
         }
         .navigationTitle(viewModel.contributorStats?.name ?? contributor.name)
         .task(id: "fetchContributorDetails") {
             await viewModel.fetchContributorDetails()
+        }
+        .coordinateSpace(name: "scroll")
+        .refreshable {
+            await viewModel.refresh()
         }
     }
     
@@ -131,7 +121,7 @@ struct ContributorDetailView: View {
         .padding(.vertical)
     }
     
-    private var recentActivitiesSection: some View {
+    private var activitiesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Recent Activities")
                 .font(.headline)
@@ -141,8 +131,17 @@ struct ContributorDetailView: View {
                     Text("No recent activities")
                         .foregroundColor(.secondary)
                 } else {
-                    ForEach(contributions) { contribution in
-                        ContributionRow(contribution: contribution)
+                    PaginationView(
+                        isLoading: viewModel.isActivitiesLoading,
+                        hasMorePages: viewModel.canLoadMore,
+                        onLoadMore: viewModel.fetchActivities
+                    ) {
+                        LazyVStack(spacing: 8) {
+                            ForEach(contributions) { contribution in
+                                ContributionRow(contribution: contribution)
+                                    .frame(maxWidth: .infinity)
+                            }
+                        }
                     }
                 }
             }
@@ -161,5 +160,49 @@ struct ContributorDetailView: View {
         }
         .buttonStyle(.bordered)
         .tint(.primary)
+    }
+}
+
+// Loading wrapper views
+private struct StatsLoadingView<Content: View>: View {
+    let isLoading: Bool
+    let content: (ContributorStats) -> Content
+    @State private var stats: ContributorStats?
+    
+    var body: some View {
+        if isLoading && stats == nil {
+            ProgressView()
+        } else if let stats {
+            content(stats)
+                .transition(.opacity)
+        }
+    }
+}
+
+private struct ActivitiesLoadingView<Content: View>: View {
+    let isLoading: Bool
+    let filters: [RepoFilter]
+    let onFilterToggle: (RepoFilter) -> Void
+    let onClearFilters: () -> Void
+    let content: ([ContributorContribution]) -> Content
+    @State private var contributions: [ContributorContribution] = []
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            if !filters.isEmpty {
+                RepoFilterView(
+                    filters: filters,
+                    onFilterToggle: onFilterToggle,
+                    onClearFilters: onClearFilters
+                )
+            }
+            
+            if isLoading && contributions.isEmpty {
+                ProgressView()
+            } else {
+                content(contributions)
+                    .transition(.opacity)
+            }
+        }
     }
 }

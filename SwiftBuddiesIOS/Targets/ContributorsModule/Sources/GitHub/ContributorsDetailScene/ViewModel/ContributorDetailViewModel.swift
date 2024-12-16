@@ -14,11 +14,18 @@ import BuddiesNetwork
 class ContributorDetailViewModel: ObservableObject {
     @Published private(set) var contributorStats: ContributorStats?
     @Published private(set) var recentContributions: [ContributorContribution]?
-    @Published private(set) var isLoading = false
+    @Published private(set) var isStatsLoading = false
+    @Published private(set) var isActivitiesLoading = false
     @Published private(set) var error: Error?
     @Published var availableRepoFilters: [RepoFilter] = []
     
     private var allContributions: [ContributorContribution] = []
+    private var paginationInfo = PaginationInfo()
+    
+    var canLoadMore: Bool {
+        paginationInfo.canLoadMore
+    }
+    
     private let contributor: Contributor
     private let client: BuddiesClient
     
@@ -36,25 +43,70 @@ class ContributorDetailViewModel: ObservableObject {
     }
     
     func fetchContributorDetails() async {
-        isLoading = true
-        defer { isLoading = false }
+        defer {
+            isStatsLoading = false
+            isActivitiesLoading = false
+            paginationInfo.isFetching = false
+        }
+        
+        isStatsLoading = true
+        isActivitiesLoading = true
+
+        await fetchStats()
+        await fetchActivities()
+    }
+    
+    private func fetchStats() async {
+        let request = ContributorStatsRequest(username: contributor.name)
         
         do {
-            async let statsTask = fetchStats()
-            async let contributionsTask = fetchRecentContributions()
-            
-            let (stats, contributions) = try await (statsTask, contributionsTask)
-            self.contributorStats = stats
-            self.allContributions = contributions
-            
-            // Create repo filters from unique repositories
-            let uniqueRepos = Set(contributions.map { $0.repo.name })
-            self.availableRepoFilters = uniqueRepos.map { RepoFilter(name: $0) }
-            
-            updateFilteredContributions()
+            let data = try await client.perform(request)
+            self.contributorStats = data
         } catch {
             self.error = error
         }
+    }
+    
+    func fetchActivities() async {
+        guard canLoadMore else { return }
+        
+        paginationInfo.nextPage()
+        isActivitiesLoading = true
+        paginationInfo.isFetching = true
+
+        defer { 
+            isActivitiesLoading = false
+            paginationInfo.isFetching = false
+        }
+        
+        do {
+            var request = ContributorActivitiesRequest(username: contributor.name)
+            request.page = paginationInfo.currentPage
+            request.per_page = paginationInfo.itemsPerPage
+            
+            let newContributions = try await client.perform(request)
+            
+            if newContributions.isEmpty {
+                paginationInfo.totalCount = allContributions.count
+            } else {
+                if paginationInfo.currentPage == 1 {
+                    allContributions = newContributions
+                } else {
+                    allContributions.append(contentsOf: newContributions)
+                }
+                paginationInfo.totalCount = allContributions.count
+                updateFilters(with: allContributions)
+                updateFilteredContributions()
+            }
+        } catch {
+            self.error = error
+        }
+    }
+    
+    func refresh() async {
+        paginationInfo.reset()
+        allContributions.removeAll()
+        await fetchContributorDetails()
     }
     
     func toggleRepoFilter(_ filter: RepoFilter) {
@@ -79,24 +131,14 @@ class ContributorDetailViewModel: ObservableObject {
         }
     }
     
-    private func fetchStats() async throws -> ContributorStats {
-        let request = ContributorStatsRequest(username: contributor.name)
-        
-        do {
-            let data = try await client.perform(request)
-            return data
-        } catch {
-            throw error
+    private func updateFilters(with contributions: [ContributorContribution]) {
+        let uniqueRepos = Set(contributions.map { $0.repo.name })
+        let newFilters = uniqueRepos.map { name in
+            if let existing = availableRepoFilters.first(where: { $0.name == name }) {
+                return existing
+            }
+            return RepoFilter(name: name)
         }
-    }
-    
-    private func fetchRecentContributions() async throws -> [ContributorContribution] {
-        let request = ContributorActivitiesRequest(username: contributor.name)
-        do {
-            let data = try await client.perform(request)
-            return data
-        } catch {
-            throw error
-        }
+        availableRepoFilters = newFilters.sorted(by: { $0.name < $1.name })
     }
 }
