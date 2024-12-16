@@ -13,26 +13,36 @@ struct ContributionRow: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            HStack {
+            HStack(spacing: 8) {
                 eventIcon
-                Text(contribution.title)
-                    .font(.subheadline)
-                    .bold()
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(contribution.title)
+                        .font(.subheadline)
+                        .bold()
+                        .lineLimit(2)
+                    
+                    if !contribution.description.isEmpty {
+                        Text(contribution.description)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .lineLimit(1)
+                    }
+                    
+                    Text(contribution.createdAt.formatted(date: .abbreviated, time: .shortened))
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer(minLength: 0)
             }
-            
-            if !contribution.description.isEmpty {
-                Text(contribution.description)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            
-            Text(contribution.createdAt.formatted(date: .abbreviated, time: .shortened))
-                .font(.caption2)
-                .foregroundColor(.secondary)
         }
         .padding()
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.gray.opacity(0.1))
+        )
     }
     
     private var eventIcon: some View {

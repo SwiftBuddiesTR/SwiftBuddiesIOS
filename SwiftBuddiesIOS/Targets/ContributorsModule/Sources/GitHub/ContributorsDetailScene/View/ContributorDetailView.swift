@@ -35,6 +35,7 @@ struct ContributorDetailView: View {
                 
                 if let stats = viewModel.contributorStats {
                     userInfoSection(stats)
+                        .padding(.vertical, 8)
                 }
                 
                 ActivitiesLoadingView(
@@ -44,7 +45,8 @@ struct ContributorDetailView: View {
                     onClearFilters: viewModel.clearFilters,
                     content: { contributions in
                         contributionsList(contributions)
-                    }
+                    },
+                    contributions: viewModel.recentContributions ?? []
                 )
                 
                 ScrollPositionIndicator(
@@ -65,12 +67,17 @@ struct ContributorDetailView: View {
     }
     
     private func contributionsList(_ contributions: [ContributorContribution]) -> some View {
-        LazyVStack(spacing: 8) {
+        LazyVStack(spacing: 12) {
             ForEach(contributions) { contribution in
                 ContributionRow(contribution: contribution)
-                    .frame(maxWidth: .infinity)
+            }
+            
+            if viewModel.isActivitiesLoading {
+                ProgressView()
+                    .padding()
             }
         }
+        .frame(maxWidth: .infinity)
     }
     
     private var profileHeader: some View {
@@ -175,20 +182,92 @@ private struct ActivitiesLoadingView<Content: View>: View {
     let onFilterToggle: (RepoFilter) -> Void
     let onClearFilters: () -> Void
     let content: ([ContributorContribution]) -> Content
-    @State private var contributions: [ContributorContribution] = []
+    let contributions: [ContributorContribution]
     
     var body: some View {
-        VStack(spacing: 8) {
-            if !filters.isEmpty {
-                RepoFilterView(
-                    filters: filters,
-                    onFilterToggle: onFilterToggle,
-                    onClearFilters: onClearFilters
-                )
+        VStack(spacing: 16) {
+            // Section Header with Filter Button
+            HStack {
+                Text("Recent Activities")
+                    .font(.title3)
+                    .bold()
+                
+                Spacer()
+                
+                if !filters.isEmpty {
+                    Menu {
+                        ForEach(filters) { filter in
+                            Button(action: { onFilterToggle(filter) }) {
+                                HStack {
+                                    Text(filter.name)
+                                    if filter.isSelected {
+                                        Image(systemName: "checkmark")
+                                    }
+                                }
+                            }
+                        }
+                        
+                        Divider()
+                        
+                        Button(role: .destructive, action: onClearFilters) {
+                            Text("Clear Filters")
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Text("Filter")
+                            Image(systemName: "line.3.horizontal.decrease.circle")
+                        }
+                        .foregroundStyle(filters.contains(where: \.isSelected) ? .blue : .secondary)
+                    }
+                }
             }
             
+            // Active Filters
+            if !filters.isEmpty && filters.contains(where: \.isSelected) {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(filters.filter(\.isSelected)) { filter in
+                            HStack(spacing: 4) {
+                                Text(filter.name)
+                                    .font(.caption)
+                                Button {
+                                    onFilterToggle(filter)
+                                } label: {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.caption)
+                                }
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                Capsule()
+                                    .fill(Color.blue.opacity(0.1))
+                            )
+                            .overlay(
+                                Capsule()
+                                    .strokeBorder(Color.blue.opacity(0.3), lineWidth: 1)
+                            )
+                        }
+                    }
+                    .padding(.horizontal, 4)
+                }
+            }
+            
+            // Content
             if isLoading && contributions.isEmpty {
                 ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .frame(height: 200)
+            } else if contributions.isEmpty {
+                VStack(spacing: 8) {
+                    Image(systemName: "doc.text.image")
+                        .font(.largeTitle)
+                        .foregroundStyle(.secondary)
+                    Text("No recent activities")
+                        .foregroundStyle(.secondary)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 200)
             } else {
                 content(contributions)
                     .transition(.opacity)
