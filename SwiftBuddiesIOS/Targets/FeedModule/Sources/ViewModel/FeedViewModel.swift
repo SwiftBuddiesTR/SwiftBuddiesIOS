@@ -23,21 +23,8 @@ class FeedViewModel: ObservableObject {
         
         do {
             let response = try await apiClient.perform(request)
-            self.posts = response.feed?.map { postResponse in
-                PostModel(
-                    id: postResponse.post?.uid ?? "",
-                    authorId: "", // Add authorId if available
-                    likeCount: postResponse.post?.likeCount ?? 0,
-                    commentsCount: postResponse.post?.commentCount ?? 0,
-                    content: postResponse.post?.content ?? "",
-                    imageUrl: postResponse.post?.images?.first ?? "",
-                    user: UserModel(
-                        id: UUID().uuidString,  // Use a unique ID
-                        name: postResponse.user?.name ?? "",
-                        profileImageUrl: postResponse.user?.picture
-                    )
-                )
-            }
+            debugPrint(response)
+            
         } catch {
             print("Failed to fetch feed: \(error)")
         }
