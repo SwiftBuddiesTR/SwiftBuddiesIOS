@@ -10,24 +10,54 @@ import BuddiesNetwork
 import Network
 
 @MainActor
-class FeedViewModel: ObservableObject {
-    @Published var posts: [PostModel]? 
+class BuddiesFeedViewModel: ObservableObject {
+    @Published var posts: [Feed] = []
+    @Published var isLoading = false
+    
     private let apiClient: BuddiesClient
+    private var paginationInfo = PaginationInfo(itemsPerPage: 10) // Smaller page size for feed
     
     init() {
         self.apiClient = .shared
     }
     
-    func fetchFeed() async {
-        var request = FeedRequest(range: "0-2")
+    func fetchFeed(isRefreshing: Bool = false) async {
+        if isRefreshing {
+            paginationInfo.reset()
+            posts = []
+        }
+        
+        guard paginationInfo.canLoadMore else { return }
+        
+        paginationInfo.nextPage()
+        isLoading = true
+        
+        let startIndex = (paginationInfo.currentPage - 1) * paginationInfo.itemsPerPage
+        let endIndex = startIndex + paginationInfo.itemsPerPage
+        let range = "\(startIndex)-\(endIndex)"
+        
+        var request = FeedRequest(range: range)
         
         do {
             let response = try await apiClient.perform(request)
-            debugPrint(response)
             
+            if let newPosts = response.feed {
+                if paginationInfo.currentPage == 1 {
+                    posts = newPosts
+                } else {
+                    posts.append(contentsOf: newPosts)
+                }
+                
+                // Update total count based on the response
+                paginationInfo.totalCount = (posts.count) + (newPosts.isEmpty ? 0 : paginationInfo.itemsPerPage)
+            }
         } catch {
             print("Failed to fetch feed: \(error)")
+            paginationInfo.currentPage -= 1 // Revert page increment on error
         }
+        
+        paginationInfo.isFetching = false
+        isLoading = false
     }
 }
 
@@ -35,7 +65,7 @@ class FeedViewModel: ObservableObject {
 struct FeedRequest: Requestable {
     var range: String
     
-    typealias Data = FeedResponse
+    typealias Data = FeedResponseModel
     
     func toUrlRequest() throws -> URLRequest {
         // Construct the base URL with the endpoint
