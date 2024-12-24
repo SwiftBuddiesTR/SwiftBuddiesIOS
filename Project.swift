@@ -42,6 +42,7 @@ let project = Project(
                     "UILaunchStoryboardName": "LaunchScreen",
                     "CLIENT_ID": "1015261010783-dq3s025o2j6pcj81ped6nqpbiv5m1fvr.apps.googleusercontent.com",
                     "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1015261010783-dq3s025o2j6pcj81ped6nqpbiv5m1fvr",
+                    "NSLocationWhenInUseUsageDescription": "Your location is needed to provide location-based features.",
                     "CFBundleURLTypes": [
                         ["CFBundleURLSchemes": ["com.googleusercontent.apps.1015261010783-dq3s025o2j6pcj81ped6nqpbiv5m1fvr"]]
                     ]
