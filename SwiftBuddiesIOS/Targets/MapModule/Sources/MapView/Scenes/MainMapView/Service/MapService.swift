@@ -123,11 +123,13 @@ struct MapCreateEventRequest: Requestable {
 }
 
 
-
 struct MapGetEventsRequest: Requestable {
     
-    typealias Data = MapEventsResponseModel
-    
+    struct Data: Codable {
+        let count: Int?
+        let events: [MapEventModel]?
+    }
+        
     func toUrlRequest() throws -> URLRequest {
         try URLProvider.returnUrlRequest(
             method: .get,

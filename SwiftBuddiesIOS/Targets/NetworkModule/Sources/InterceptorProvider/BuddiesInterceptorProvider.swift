@@ -10,9 +10,13 @@ import BuddiesNetwork
 
 public final class BuddiesInterceptorProvider: InterceptorProvider {
     let client: URLSessionClient
+    var cacheStore: any CacheStore
     
-    public init(client: URLSessionClient, currentToken: @escaping (() -> String?)) {
+    public init(client: URLSessionClient,
+                cacheStore: any CacheStore = URLCacheStore(), 
+                currentToken: @escaping (() -> String?)) {
         self.client = client
+        self.cacheStore = cacheStore
         self.currentToken = currentToken
     }
     
@@ -21,9 +25,11 @@ public final class BuddiesInterceptorProvider: InterceptorProvider {
     public  func interceptors(for request: some Requestable) -> [Interceptor] {
         [
             MaxRetryInterceptor(maxRetry: 3),
+            CacheReadInterceptor(store: cacheStore),
             BuddiesTokenProviderInterceptor(currentToken: currentToken),
             NetworkFetchInterceptor(client: client),
-            JSONDecodingInterceptor()
+            JSONDecodingInterceptor(),
+            CacheWriteInterceptor(store: cacheStore)
         ]
     }
     
