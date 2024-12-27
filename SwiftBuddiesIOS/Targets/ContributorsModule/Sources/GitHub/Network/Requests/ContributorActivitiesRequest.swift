@@ -14,11 +14,11 @@ struct ContributorActivitiesRequest: Requestable {
         case per_page
     }
     
-    func toUrlRequest() throws -> URLRequest {
-        try URLProvider.returnUrlRequest(
-            method: .get,
+    func httpProperties() -> HTTPOperation<ContributorActivitiesRequest>.HTTPProperties {
+        .init(
             url: APIs.GitHub.userActivities(username: username).url(.github),
+            httpMethod: .get,
             data: self
         )
     }
-} 
+}

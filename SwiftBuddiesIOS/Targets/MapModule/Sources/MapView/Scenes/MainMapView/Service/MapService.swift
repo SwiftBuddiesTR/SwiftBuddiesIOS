@@ -90,7 +90,6 @@ class MapService {
 
 
 struct MapCreateEventRequest: Requestable {
-    
     let category: String?
     let name: String?
     let description: String?
@@ -113,10 +112,10 @@ struct MapCreateEventRequest: Requestable {
         var uid: String?
     }
     
-    func toUrlRequest() throws -> URLRequest {
-        try URLProvider.returnUrlRequest(
-            method: .post,
+    func httpProperties() -> BuddiesNetwork.HTTPOperation<MapCreateEventRequest>.HTTPProperties {
+        .init(
             url: APIs.Map.createEvent.url(),
+            httpMethod: .post,
             data: self
         )
     }
@@ -124,16 +123,15 @@ struct MapCreateEventRequest: Requestable {
 
 
 struct MapGetEventsRequest: Requestable {
-    
     struct Data: Codable {
         let count: Int?
         let events: [MapEventModel]?
     }
-        
-    func toUrlRequest() throws -> URLRequest {
-        try URLProvider.returnUrlRequest(
-            method: .get,
+    
+    func httpProperties() -> HTTPOperation<MapGetEventsRequest>.HTTPProperties {
+        .init(
             url: APIs.Map.getEvents.url(),
+            httpMethod: .get,
             data: self
         )
     }

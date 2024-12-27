@@ -5,12 +5,11 @@ import BuddiesNetwork
 struct ContributorStatsRequest: Requestable {
     @EncoderIgnorable var username: String?
     typealias Data = ContributorStats
-    
-    func toUrlRequest() throws -> URLRequest {
-        try URLProvider.returnUrlRequest(
-            method: .get,
+    func httpProperties() -> HTTPOperation<ContributorStatsRequest>.HTTPProperties {
+        .init(
             url: APIs.GitHub.userStats(username: username).url(.github),
+            httpMethod: .get,
             data: self
         )
     }
-} 
+}

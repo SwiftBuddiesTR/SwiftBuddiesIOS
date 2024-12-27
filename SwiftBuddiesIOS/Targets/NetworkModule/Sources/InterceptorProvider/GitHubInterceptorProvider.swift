@@ -2,18 +2,22 @@ import Foundation
 import BuddiesNetwork
 
 public final class GitHubInterceptorProvider: InterceptorProvider {
-    let client: URLSessionClient
     
-    public init(client: URLSessionClient) {
+    let client: URLSessionClient
+    let cacheStore: URLCacheStore
+    public init(client: URLSessionClient, cacheStore: URLCacheStore = .init()) {
+        self.cacheStore = cacheStore
         self.client = client
     }
     
-    public func interceptors(for request: some Requestable) -> [Interceptor] {
+    public func interceptors<Request: Requestable>(for operation: HTTPOperation<Request>) -> [Interceptor] {
         [
             MaxRetryInterceptor(maxRetry: 3),
+            CacheReadInterceptor(store: cacheStore),
             GitHubHeadersInterceptor(),
             NetworkFetchInterceptor(client: client),
-            BuddiesJSONDecodingInterceptor()
+            BuddiesJSONDecodingInterceptor(),
+            CacheWriteInterceptor(store: cacheStore)
         ]
     }
     
@@ -27,15 +31,15 @@ final class GitHubHeadersInterceptor: Interceptor {
     
     public func intercept<Request>(
         chain: RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, Error>) -> Void
+        completion: @escaping HTTPResultHandler<Request>
     ) where Request: Requestable {
         // Add GitHub API specific headers
-        request.addHeader(key: "Accept", val: "application/vnd.github.v3+json")
+        operation.addHeader(key: "Accept", val: "application/vnd.github.v3+json")
         
         chain.proceed(
-            request: request,
+            operation: operation,
             interceptor: self,
             response: response,
             completion: completion
@@ -47,9 +51,9 @@ final class GitHubErrorHandler: ChainErrorHandler {
     func handleError<Request>(
         error: any Error,
         chain: any RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, any Error>) -> Void
+        completion: @escaping HTTPResultHandler<Request>
     ) where Request: Requestable {
         if response?.httpResponse.statusCode == 403 {
             // Handle rate limiting

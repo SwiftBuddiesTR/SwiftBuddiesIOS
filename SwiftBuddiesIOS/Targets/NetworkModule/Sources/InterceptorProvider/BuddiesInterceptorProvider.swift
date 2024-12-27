@@ -22,7 +22,7 @@ public final class BuddiesInterceptorProvider: InterceptorProvider {
     
     public var currentToken: () -> String?
     
-    public  func interceptors(for request: some Requestable) -> [Interceptor] {
+    public  func interceptors<Request: Requestable>(for operation: some HTTPOperation<Request>) -> [Interceptor] {
         [
             MaxRetryInterceptor(maxRetry: 3),
             CacheReadInterceptor(store: cacheStore),
@@ -42,9 +42,9 @@ class AuthenticationErrorHandler: ChainErrorHandler {
     func handleError<Request>(
         error: any Error,
         chain: any RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, any Error>) -> Void
+        completion: @escaping HTTPResultHandler<Request>
     ) where Request: Requestable {
         if response?.httpResponse.statusCode == 401 {
             Task { @MainActor in
@@ -89,16 +89,16 @@ public final class BuddiesTokenProviderInterceptor: Interceptor {
     
     public func intercept<Request>(
         chain: RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, Error>) -> Void
+        completion: @escaping HTTPResultHandler<Request>
     ) where Request: Requestable {
         if let token = currentToken() {
-            request.addHeader(key: "Authorization", val: "\(token)")
+            operation.addHeader(key: "Authorization", val: "\(token)")
         }
         
         chain.proceed(
-            request: request,
+            operation: operation,
             interceptor: self,
             response: response,
             completion: completion

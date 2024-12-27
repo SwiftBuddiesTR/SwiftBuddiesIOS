@@ -21,6 +21,20 @@ public enum APIs {
         }
     }
     
+    public enum Map: Endpoint {
+        case getEvents
+        case createEvent
+        
+        public var value: String {
+            switch self {
+            case .getEvents:
+                "getEvents"
+            case .createEvent:
+                "createEvent"
+            }
+        }
+    }
+    
     public enum GitHub: Endpoint {
         case contributors
         case userStats(username: String?)

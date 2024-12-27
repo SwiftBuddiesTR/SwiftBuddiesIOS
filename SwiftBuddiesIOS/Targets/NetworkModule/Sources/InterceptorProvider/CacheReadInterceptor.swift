@@ -20,96 +20,94 @@ final class CacheReadInterceptor: Interceptor {
     var store: any CacheStore
     
     func fetchFromCache<Request>(
-        for request: HTTPRequest<Request>,
+        for operation: HTTPOperation<Request>,
         chain: any RequestChain,
-        completion: @escaping (
-            Result<
-            Request.Data,
-            any Error
-            >
-        ) -> Void
+        completion: @escaping (Result<Request.Data, any Error>) -> Void
     ) where Request: Requestable {
-        store.read(for: request, chain: chain, completion: completion)
+        store.read(for: operation, chain: chain, completion: completion)
     }
     
     func intercept<Request>(
         chain: any RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, any Error>) -> Void
+        completion: @escaping HTTPResultHandler<Request>
     ) where Request : Requestable {
         
         // request == .get else continue with the chain
         
-        switch request.cachePolicy {
+        switch operation.cachePolicy {
         case .fetchIgnoringCacheCompletely,
                 .fetchIgnoringCacheData:
             chain.proceed(
-                request: request,
+                operation: operation,
                 interceptor: self,
                 response: response,
                 completion: completion
             )
             
         case .returnCacheDataAndFetch:
-                        self.fetchFromCache(for: request, chain: chain) { cacheFetchResult in
+                        self.fetchFromCache(for: operation, chain: chain) { cacheFetchResult in
                             switch cacheFetchResult {
                             case .failure:
                                 // Don't return a cache miss error, just keep going
                                 break
-                            case .success(let graphQLResult):
+                            case .success(let decodedData):
+                                let result = HTTPResult<Request>(source: .cache, data: decodedData)
                                 chain.returnValue(
-                                    for: request,
-                                    value: graphQLResult,
+                                    for: operation,
+                                    result: result,
                                     completion: completion
                                 )
                             }
             
                             // In either case, keep going asynchronously
                             chain.proceed(
-                                request: request,
+                                operation: operation,
                                 interceptor: self,
                                 response: response,
                                 completion: completion
                             )
                         }
         case .returnCacheDataElseFetch:
-                        self.fetchFromCache(for: request, chain: chain) { cacheFetchResult in
+                        self.fetchFromCache(for: operation, chain: chain) { cacheFetchResult in
                             switch cacheFetchResult {
                             case .failure:
                                 // Cache miss, proceed to network without returning error
                                 chain.proceed(
-                                    request: request,
+                                    operation: operation,
                                     interceptor: self,
                                     response: response,
                                     completion: completion
                                 )
             
-                            case .success(let graphQLResult):
+                            case .success(let decodedData):
                                 // Cache hit! We're done.
+                                let result = HTTPResult<Request>(source: .cache, data: decodedData)
                                 chain.returnValue(
-                                    for: request,
-                                    value: graphQLResult,
+                                    for: operation,
+                                    result: result,
                                     completion: completion
                                 )
                             }
                         }
         case .returnCacheDataDontFetch:
-                        self.fetchFromCache(for: request, chain: chain) { cacheFetchResult in
+                        self.fetchFromCache(for: operation, chain: chain) { cacheFetchResult in
                             switch cacheFetchResult {
                             case .failure(let error):
                                 // Cache miss - don't hit the network, just return the error.
                                 chain.handleErrorAsync(
                                     error,
-                                    request: request,
+                                   operation: operation,
                                     response: response,
                                     completion: completion
                                 )
             
-                            case .success(let result):
+                            case .success(let decodedData):
+                                let result = HTTPResult<Request>(source: .cache, data: decodedData)
                                 chain.returnValue(
-                                    for: request,
-                                    value: result,
+                                    for: operation,
+                                    result: result,
                                     completion: completion
                                 )
                             }

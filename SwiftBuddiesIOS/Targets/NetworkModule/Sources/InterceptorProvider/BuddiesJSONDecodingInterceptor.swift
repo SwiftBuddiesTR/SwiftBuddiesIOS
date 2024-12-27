@@ -6,12 +6,17 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
     
     public func intercept<Request>(
         chain: RequestChain,
-        request: HTTPRequest<Request>,
+        operation: HTTPOperation<Request>,
         response: HTTPResponse<Request>?,
-        completion: @escaping (Result<Request.Data, Error>) -> Void
+        completion: @escaping HTTPResultHandler<Request>
     ) where Request: Requestable {
         guard let response = response else {
-            chain.proceed(request: request, interceptor: self, response: response, completion: completion)
+            chain.proceed(
+                operation: operation,
+                interceptor: self,
+                response: response,
+                completion: completion
+            )
             return
         }
         
@@ -20,7 +25,12 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
             decoder.dateDecodingStrategy = .iso8601
             
             let result = try decoder.decode(Request.Data.self, from: response.rawData)
-            completion(.success(result))
+            chain.proceed(
+                operation: operation,
+                interceptor: self,
+                response: response,
+                completion: completion
+            )
         } catch let decodingError as DecodingError {
             let detailedError = handleDecodingError(decodingError, data: response.rawData)
             completion(.failure(detailedError))

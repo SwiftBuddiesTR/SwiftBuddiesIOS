@@ -2,7 +2,6 @@ import Foundation
 import Network
 import BuddiesNetwork
 
-@MainActor
 public class GitHubContributorsViewModel: ObservableObject {
     @Published private(set) var contributors: [Contributor] = []
     @Published private(set) var isLoading = false
@@ -14,6 +13,7 @@ public class GitHubContributorsViewModel: ObservableObject {
         self.client = client
     }
     
+    @MainActor
     func fetchContributors() async {
         defer {
             isLoading = false
@@ -22,15 +22,16 @@ public class GitHubContributorsViewModel: ObservableObject {
         error = nil
         let request = ContributorsRequest()
         do {
-            let response = try await client.perform(request)
-            contributors = response.map { contributor in
-                Contributor(
-                    id: String(contributor.id),
-                    name: contributor.login,
-                    avatarURL: URL(string: contributor.avatarURL),
-                    githubURL: URL(string: contributor.htmlURL),
-                    contributions: contributor.contributions
-                )
+            for try await result in client.watch(request) {
+                contributors = result.map { contributor in
+                    Contributor(
+                        id: String(contributor.id),
+                        name: contributor.login,
+                        avatarURL: URL(string: contributor.avatarURL),
+                        githubURL: URL(string: contributor.htmlURL),
+                        contributions: contributor.contributions
+                    )
+                }
             }
         } catch {
             self.error = error
@@ -57,11 +58,10 @@ struct ContributorsRequest: Requestable {
             case contributions
         }
     }
-
-    func toUrlRequest() throws -> URLRequest {
-        try URLProvider.returnUrlRequest(
-            method: .get,
+    func httpProperties() -> HTTPOperation<ContributorsRequest>.HTTPProperties {
+        .init(
             url: APIs.GitHub.contributors.url(.github),
+            httpMethod: .get,
             data: self
         )
     }
