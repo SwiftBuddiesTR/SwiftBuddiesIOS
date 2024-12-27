@@ -27,10 +27,33 @@ public enum APIs {
         
         public var value: String {
             switch self {
-            case .getEvents: 
+            case .getEvents:
                 "getEvents"
             case .createEvent:
                 "createEvent"
+            }
+        }
+    }
+    
+    public enum GitHub: Endpoint {
+        case contributors
+        case userStats(username: String?)
+        case userActivities(username: String?)
+        case userEvents(username: String?)
+        case userRepos(username: String?)
+        
+        public var value: String {
+            switch self {
+            case .contributors:
+                "repos/SwiftBuddiesTR/BuddiesIOS/contributors"
+            case .userStats(let username):
+                "users/\(username ?? "")"
+            case .userActivities(let username):
+                "users/\(username ?? "")/events/public"
+            case .userEvents(let username):
+                "users/\(username ?? "")/received_events"
+            case .userRepos(let username):
+                "users/\(username ?? "")/repos"
             }
         }
     }
@@ -66,13 +89,19 @@ public enum Hosts {
         static let baseUrl: URL = URL(string: "https://swiftbuddies.vercel.app/api/")!
     }
     
+    struct GitHub: Host {
+        static let baseUrl: URL = URL(string: "https://api.github.com/")!
+    }
+    
     case prod
     case qa
+    case github
     
     var env: Host {
         switch self {
         case .prod: Prod()
         case .qa: Qa()
+        case .github: GitHub()
         }
     }
 }

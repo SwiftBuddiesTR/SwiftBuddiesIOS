@@ -26,7 +26,7 @@ let project = Project(
     packages: [
         .remote(url: "https://github.com/google/GoogleSignIn-iOS.git", requirement: .exact("7.0.0")),
         .remote(url: "https://github.com/apple/swift-argument-parser.git", requirement: .exact("1.3.0")),
-        .remote(url: "https://github.com/darkbringer1/BuddiesNetwork.git", requirement: .branch("main"))
+        .remote(url: "https://github.com/darkbringer1/BuddiesNetwork.git", requirement: .upToNextMajor(from: .init(0, 0, 1)))
     ],
     targets: [
         .target(

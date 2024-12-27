@@ -32,7 +32,10 @@ public final class BuddiesAuthenticationService {
         )
         
         do {
-            let data = try await apiClient.perform(request)
+            let data: RegisterRequest.Data = try await apiClient.perform(
+                request,
+                cachePolicy: .fetchIgnoringCacheCompletely
+            )
             let token = data.token
             let type = data.type
             debugPrint("token: \(token), \ntype: \(type)")
@@ -65,6 +68,15 @@ public final class BuddiesAuthenticationService {
 
 // MARK: - RegisterRequest
 struct RegisterRequest: Requestable {
+    func httpProperties() -> BuddiesNetwork.HTTPOperation<Self>.HTTPProperties {
+        .init(
+            url: APIs.Login.register.url(),
+            httpMethod: .post,
+            additionalHeaders: [:],
+            data: self
+        )
+    }
+    
     var accessToken: String
     var registerType: String
     
@@ -72,12 +84,5 @@ struct RegisterRequest: Requestable {
         let token: String
         let type: String
     }
-    
-    func toUrlRequest() throws -> URLRequest {
-        try URLProvider.returnUrlRequest(
-            method: .post,
-            url: APIs.Login.register.url(),
-            data: self
-        )
-    }
+
 }

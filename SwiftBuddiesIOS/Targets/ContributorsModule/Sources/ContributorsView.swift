@@ -2,14 +2,14 @@ import SwiftUI
 import Design
 
 public struct ContributorsView: View {
+    private let module: GitHubContributorsModule
     
-    public init() { }
+    public init() {
+        self.module = GitHubContributorsModule()
+    }
     
     public var body: some View {
-        VStack {
-            Text("Contributors Module")
-            Text(ViewEnum.hello.rawValue)
-        }
+        GitHubContributorsFlow(module: module)
     }
 }
 
