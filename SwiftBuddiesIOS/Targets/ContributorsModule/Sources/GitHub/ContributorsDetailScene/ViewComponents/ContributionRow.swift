@@ -29,7 +29,7 @@ struct ContributionRow: View {
                             .lineLimit(1)
                     }
                     
-                    Text(contribution.createdAt.formatted(date: .abbreviated, time: .shortened))
+                    Text(contribution.createdAt ?? "")
                         .font(.caption2)
                         .foregroundColor(.secondary)
                 }

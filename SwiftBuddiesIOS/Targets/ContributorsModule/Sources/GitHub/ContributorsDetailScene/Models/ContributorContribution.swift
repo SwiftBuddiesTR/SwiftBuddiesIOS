@@ -8,11 +8,20 @@
 
 import Foundation
 
-struct ContributorContribution: Identifiable, Codable {
+struct ContributorContribution: Identifiable, Codable, Hashable {
+    static func == (lhs: ContributorContribution, rhs: ContributorContribution) -> Bool {
+        lhs.id == rhs.id
+    }
+    // hash method
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    
     let id: String
     let type: EventType
     let repo: Repository
-    let createdAt: Date
+    let createdAt: String?
     let payload: Payload
     
     struct Repository: Codable {

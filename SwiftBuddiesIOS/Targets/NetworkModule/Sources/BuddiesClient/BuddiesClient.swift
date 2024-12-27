@@ -64,7 +64,7 @@ final public class BuddiesClient {
     @discardableResult
     public func perform<Request: Requestable>(
         _ request: Request,
-        cachePolicy: CachePolicy = .returnCacheDataAndFetch,
+        cachePolicy: CachePolicy = .returnCacheDataElseFetch,
         dispatchQueue: DispatchQueue = .main
     ) async throws -> Request.Data {
         try await apiClient.perform(request, cachePolicy: cachePolicy, dispatchQueue: dispatchQueue)

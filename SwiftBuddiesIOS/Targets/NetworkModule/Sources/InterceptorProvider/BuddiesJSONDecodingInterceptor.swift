@@ -25,6 +25,8 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
             decoder.dateDecodingStrategy = .iso8601
             
             let result = try decoder.decode(Request.Data.self, from: response.rawData)
+            response.parsedData = result
+            
             chain.proceed(
                 operation: operation,
                 interceptor: self,
@@ -32,14 +34,14 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
                 completion: completion
             )
         } catch let decodingError as DecodingError {
-            let detailedError = handleDecodingError(decodingError, data: response.rawData)
+            let detailedError = handleDecodingError(decodingError, data: response.rawData, for: operation.properties.requestName)
             completion(.failure(detailedError))
         } catch {
             completion(.failure(error))
         }
     }
     
-    private func handleDecodingError(_ error: DecodingError, data: Data) -> Error {
+    private func handleDecodingError(_ error: DecodingError, data: Data, for model: any Decodable) -> Error {
         let description: String
         
         switch error {
@@ -48,6 +50,7 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
                 Key '\(key.stringValue)' not found
                 Debug: \(context.debugDescription)
                 Coding Path: \(context.codingPath.map(\.stringValue).joined(separator: " -> "))
+                for model: \(model)
                 """
             
         case .valueNotFound(let type, let context):
@@ -55,6 +58,7 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
                 Value of type '\(type)' not found
                 Debug: \(context.debugDescription)
                 Coding Path: \(context.codingPath.map(\.stringValue).joined(separator: " -> "))
+                for model: \(model)
                 """
             
         case .typeMismatch(let type, let context):
@@ -62,6 +66,7 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
                 Type mismatch for type '\(type)'
                 Debug: \(context.debugDescription)
                 Coding Path: \(context.codingPath.map(\.stringValue).joined(separator: " -> "))
+                for model: \(model)
                 """
             
         case .dataCorrupted(let context):
@@ -69,6 +74,7 @@ public final class BuddiesJSONDecodingInterceptor: Interceptor {
                 Data corrupted
                 Debug: \(context.debugDescription)
                 Coding Path: \(context.codingPath.map(\.stringValue).joined(separator: " -> "))
+                for model: \(model)
                 """
             
         @unknown default:

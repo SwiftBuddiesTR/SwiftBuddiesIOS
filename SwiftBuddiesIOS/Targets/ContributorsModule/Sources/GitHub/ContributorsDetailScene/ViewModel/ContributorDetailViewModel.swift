@@ -13,13 +13,13 @@ import BuddiesNetwork
 @MainActor
 class ContributorDetailViewModel: ObservableObject {
     @Published private(set) var contributorStats: ContributorStats?
-    @Published private(set) var recentContributions: [ContributorContribution]?
+    @Published private(set) var recentContributions: Set<ContributorContribution>?
     @Published private(set) var isStatsLoading = false
     @Published private(set) var isActivitiesLoading = false
     @Published private(set) var error: Error?
     @Published var availableRepoFilters: [RepoFilter] = []
     
-    private var allContributions: [ContributorContribution] = []
+    private var allContributions: Set<ContributorContribution> = []
     private var paginationInfo = PaginationInfo()
     
     var canLoadMore: Bool {
@@ -83,19 +83,17 @@ class ContributorDetailViewModel: ObservableObject {
             request.page = paginationInfo.currentPage
             request.per_page = paginationInfo.itemsPerPage
             
-            let newContributions = try await client.perform(request)
-            
-            if newContributions.isEmpty {
-                paginationInfo.totalCount = allContributions.count
-            } else {
-                if paginationInfo.currentPage == 1 {
-                    allContributions = newContributions
+            for try await newContributions in client.watch(request, cachePolicy: .returnCacheDataAndFetch) {
+                if newContributions.isEmpty {
+                    paginationInfo.totalCount = allContributions.count
                 } else {
-                    allContributions.append(contentsOf: newContributions)
+                    for newContribution in newContributions {
+                        allContributions.insert(newContribution)
+                    }
+                    paginationInfo.totalCount = allContributions.count
+                    updateFilters(with: allContributions)
+                    updateFilteredContributions()
                 }
-                paginationInfo.totalCount = allContributions.count
-                updateFilters(with: allContributions)
-                updateFilteredContributions()
             }
         } catch {
             self.error = error
@@ -130,7 +128,7 @@ class ContributorDetailViewModel: ObservableObject {
         }
     }
     
-    private func updateFilters(with contributions: [ContributorContribution]) {
+    private func updateFilters(with contributions: Set<ContributorContribution>) {
         let uniqueRepos = Set(contributions.map { $0.repo.name })
         let newFilters = uniqueRepos.map { name in
             if let existing = availableRepoFilters.first(where: { $0.name == name }) {

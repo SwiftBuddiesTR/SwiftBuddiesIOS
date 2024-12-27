@@ -46,8 +46,10 @@ public class URLCacheStore: CacheStore {
         do {
             let urlRequest = try  URLProvider.urlRequest(from: operation.properties)
             cache.storeCachedResponse(cachedURLResponse, for: urlRequest)
+            print("Cache stored for \(operation.properties.requestName)")
         } catch {
             print("Error while storing cache: \(error)")
+            return
         }
     }
     
@@ -60,9 +62,11 @@ public class URLCacheStore: CacheStore {
                 completion(.success(decodedData))
             } else {
                 completion(.failure(CacheStoreError.noResponseToParse))
+                return
             }
+            print("Cache read for \(operation.properties.requestName)")
         } catch {
-            print("Error while storing cache: \(error)")
+            print("Error while reading cache: \(error)")
         }
     }
 }

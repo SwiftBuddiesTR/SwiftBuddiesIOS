@@ -22,7 +22,7 @@ public class GitHubContributorsViewModel: ObservableObject {
         error = nil
         let request = ContributorsRequest()
         do {
-            for try await result in client.watch(request) {
+            for try await result in client.watch(request, cachePolicy: .returnCacheDataAndFetch) {
                 contributors = result.map { contributor in
                     Contributor(
                         id: String(contributor.id),

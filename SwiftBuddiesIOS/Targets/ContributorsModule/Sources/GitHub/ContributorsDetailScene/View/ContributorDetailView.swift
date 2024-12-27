@@ -46,7 +46,7 @@ struct ContributorDetailView: View {
                     content: { contributions in
                         contributionsList(contributions)
                     },
-                    contributions: viewModel.recentContributions ?? []
+                    contributions: Array(viewModel.recentContributions ?? [])
                 )
                 
                 ScrollPositionIndicator(
