@@ -9,7 +9,7 @@ import SwiftUI
 import Design
 
 public struct BuddiesFeedView: View {
-    @ObservedObject private var viewModel = BuddiesFeedViewModel()
+    @ObservedObject private var viewModel: BuddiesFeedViewModel
     @EnvironmentObject private var coordinator: BuddiesFeedCoordinator
     
     init(viewModel: BuddiesFeedViewModel) {
@@ -17,30 +17,31 @@ public struct BuddiesFeedView: View {
     }
     
     public var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 16) {
-                ForEach(viewModel.posts, id: \.post.uid) { feed in
-                    feedCell(for: feed)
-                        .onAppear {
-                            // Trigger pagination when last item appears
-                            if feed.post.uid == viewModel.posts.last?.post.uid {
-                                Task {
-                                    await viewModel.fetchFeed()
-                                }
-                            }
-                        }
-                }
-                
-                if viewModel.isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                }
+        Group {
+            switch viewModel.state {
+            case .error(let error):
+                errorView(error)
+            default:
+                feedContent
             }
-            .padding(.horizontal)
         }
         .refreshable {
-            await viewModel.fetchFeed(isRefreshing: true)
+            await viewModel.refresh()
+        }
+        .task {
+            await viewModel.loadInitialContent()
+        }
+    }
+    
+    private var feedContent: some View {
+        Group {
+            PaginatedListView(state: viewModel.state) {
+                ForEach(viewModel.posts, id: \.post.id) { post in
+                    feedCell(for: post)
+                }
+            } onLoadMore: {
+                await viewModel.loadMoreIfNeeded()
+            }
         }
         .navigationTitle("Feed")
         .navigationBarTitleDisplayMode(.inline)
@@ -63,15 +64,26 @@ public struct BuddiesFeedView: View {
                 }
             }
         }
-        .task {
-            if viewModel.posts.isEmpty {
-                await viewModel.fetchFeed()
-            }
-        }
     }
+    
 }
 
 extension BuddiesFeedView {
+    @ViewBuilder
+    private func errorView(_ error: FeedState.FeedError) -> some View {
+        VStack {
+            Text(error.localizedDescription)
+                .multilineTextAlignment(.center)
+                .padding()
+            
+            Button("Try Again") {
+                Task {
+                    await viewModel.refresh()
+                }
+            }
+        }
+    }
+
     @ViewBuilder
     private func feedCell(for feed: Post) -> some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -97,11 +109,5 @@ extension BuddiesFeedView {
             Divider()
         }
         .padding(.vertical, 8)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        BuddiesFeedView(viewModel: .init())
     }
 }

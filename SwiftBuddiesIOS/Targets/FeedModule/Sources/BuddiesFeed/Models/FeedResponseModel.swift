@@ -24,7 +24,7 @@ struct FeedPost: Decodable, Identifiable, Equatable, Hashable {
         lhs.uid == rhs.uid
     }
     
-    var uid: String?
+    var uid: String
     var sharedDate: String
     var content: String?
     var images: [String?]
@@ -35,7 +35,7 @@ struct FeedPost: Decodable, Identifiable, Equatable, Hashable {
     var hashtags: [String]
     
     var id: String {
-        uid ?? UUID().uuidString
+        uid
     }
 }
 

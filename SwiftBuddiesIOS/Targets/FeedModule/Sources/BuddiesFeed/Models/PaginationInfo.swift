@@ -1,21 +1,21 @@
 struct PaginationInfo {
-    var totalCount: Int = 0
-    var itemsPerPage: Int = 30
-    var currentPage: Int = 0
-    var isFetching: Bool = false
-    
-    var canLoadMore: Bool {
-        !isFetching && (currentPage == 0 || totalCount >= (currentPage * itemsPerPage))
-    }
-    
-    mutating func nextPage() {
-        isFetching = true
-        currentPage += 1
-    }
+    var limit: Int = 10
+    var offset: Int = 0
+    var hasMore: Bool = true
+    var fetching: Bool = false
     
     mutating func reset() {
-        currentPage = 0
-        totalCount = 0
-        isFetching = false
+        offset = 0
+        hasMore = true
+        fetching = false
+    }
+    
+    func checkLoadingMore() -> Bool {
+        return hasMore && !fetching
+    }
+    
+    mutating func nextOffset() {
+        fetching = true
+        offset += limit
     }
 }

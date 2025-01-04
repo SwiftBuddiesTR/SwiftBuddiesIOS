@@ -62,7 +62,7 @@ class MapViewModel: ObservableObject {
         if let location = locationManager.lastKnownLocation {
             setMapRegion(to: location)
         } else {
-            errorCompletion
+            errorCompletion?()
         }
     }
     
