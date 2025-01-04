@@ -11,7 +11,7 @@ import Network
 
 @MainActor
 class BuddiesFeedViewModel: ObservableObject {
-    @Published var posts: [Feed] = []
+    @Published var posts: [Post] = []
     @Published var isLoading = false
     
     private let apiClient: BuddiesClient
@@ -67,11 +67,10 @@ struct FeedRequest: Requestable {
     
     typealias Data = FeedResponseModel
     
-    func toUrlRequest() throws -> URLRequest {
-        // Construct the base URL with the endpoint
-        try URLProvider.returnUrlRequest(
-            method: .get,
+    func httpProperties() -> BuddiesNetwork.HTTPOperation<FeedRequest>.HTTPProperties {
+        .init(
             url: APIs.Feed.getFeed.url(),
+            httpMethod: .get,
             data: self
         )
     }

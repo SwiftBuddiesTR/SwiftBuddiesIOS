@@ -27,8 +27,9 @@ public enum APIs {
         public var value: String {
             switch self {
             case .getFeed: return "getFeed"
-		}
-	}
+            }
+        }
+    }
     public enum Map: Endpoint {
         case getEvents
         case createEvent

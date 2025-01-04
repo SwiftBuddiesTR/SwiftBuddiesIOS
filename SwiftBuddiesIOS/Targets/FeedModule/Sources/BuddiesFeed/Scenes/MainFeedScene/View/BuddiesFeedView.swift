@@ -69,9 +69,10 @@ public struct BuddiesFeedView: View {
             }
         }
     }
-    
+}
+extension BuddiesFeedView {
     @ViewBuilder
-    private func feedCell(for feed: Feed) -> some View {
+    private func feedCell(for feed: Post) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             // User info header
             HStack {

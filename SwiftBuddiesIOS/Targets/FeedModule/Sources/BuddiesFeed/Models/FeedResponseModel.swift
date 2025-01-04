@@ -9,11 +9,11 @@ import Foundation
 
 // MARK: - FeedResponse
 struct FeedResponseModel: Decodable {
-    var feed: [Feed]?
+    var feed: [Post]?
 }
 
 // MARK: - Feed
-struct Feed: Decodable {
+struct Post: Decodable {
     var user: FeedUser
     var post: FeedPost
 }
