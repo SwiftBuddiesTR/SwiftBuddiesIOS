@@ -8,11 +8,14 @@
 import SwiftUI
 
 public struct FeedView: View {
+    private let module: BuddiesFeedModule
     
-    public init() {}
+    public init() {
+        self.module = BuddiesFeedModule()
+    }
     
     public var body: some View {
-        FeedFlow()
+        FeedFlow(module: module)
     }
 }
 

@@ -16,20 +16,26 @@ public enum APIs {
         
         public var value: String {
             switch self {
-            case .register: "register"
+            case .register: 
+                "register"
             }
         }
     }
     
     public enum Feed: Endpoint {
         case getFeed
+        case createPost
         
         public var value: String {
             switch self {
-            case .getFeed: return "getFeed"
+            case .getFeed: 
+                "getFeed"
+            case .createPost:
+                "createPost"
             }
         }
     }
+    
     public enum Map: Endpoint {
         case getEvents
         case createEvent

@@ -15,10 +15,10 @@ class BuddiesFeedViewModel: ObservableObject {
     @Published var isLoading = false
     
     private let apiClient: BuddiesClient
-    private var paginationInfo = PaginationInfo(itemsPerPage: 10) // Smaller page size for feed
+    private var paginationInfo = PaginationInfo(itemsPerPage: 18) // Smaller page size for feed
     
-    init() {
-        self.apiClient = .shared
+    init(client: BuddiesClient = .shared) {
+        self.apiClient = client
     }
     
     func fetchFeed(isRefreshing: Bool = false) async {
@@ -39,17 +39,20 @@ class BuddiesFeedViewModel: ObservableObject {
         var request = FeedRequest(range: range)
         
         do {
-            let response = try await apiClient.perform(request)
+//            let response = try await apiClient.perform(request)
             
-            if let newPosts = response.feed {
-                if paginationInfo.currentPage == 1 {
-                    posts = newPosts
-                } else {
-                    posts.append(contentsOf: newPosts)
+            for try await response in apiClient.watch(request, cachePolicy: .returnCacheDataAndFetch) {
+                print(response)
+                if let newPosts = response.feed {
+                    if paginationInfo.currentPage == 1 {
+                        posts = newPosts
+                    } else {
+                        posts.append(contentsOf: newPosts)
+                    }
+                    
+                    // Update total count based on the response
+                    paginationInfo.totalCount = (posts.count) + (newPosts.isEmpty ? 0 : paginationInfo.itemsPerPage)
                 }
-                
-                // Update total count based on the response
-                paginationInfo.totalCount = (posts.count) + (newPosts.isEmpty ? 0 : paginationInfo.itemsPerPage)
             }
         } catch {
             print("Failed to fetch feed: \(error)")

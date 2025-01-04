@@ -9,7 +9,6 @@ import SwiftUI
 
 @MainActor
 final class BuddiesFeedCoordinator: ObservableObject {
-    
     enum BuddiesFeedRoute: Hashable {
         case addPost
         case postDetail(FeedPost)
@@ -28,17 +27,23 @@ final class BuddiesFeedCoordinator: ObservableObject {
 }
 
 public struct FeedFlow: View {
-    @StateObject private var coordinator = BuddiesFeedCoordinator()
+    @StateObject private var coordinator: BuddiesFeedCoordinator
+    private let module: BuddiesFeedModule
     
-    public init() {}
+    init(module: BuddiesFeedModule = BuddiesFeedModule()) {
+        self._coordinator = StateObject(wrappedValue: BuddiesFeedCoordinator())
+        self.module = module
+    }
     
     public var body: some View {
         NavigationStack(path: $coordinator.navigationStack) {
-            BuddiesFeedView(coordinator: coordinator)
+            module.makeFeedView()
+                .environmentObject(coordinator)
                 .navigationDestination(for: BuddiesFeedCoordinator.BuddiesFeedRoute.self) { route in
                     switch route {
                     case .addPost:
-                        Text("Add Post View")
+                        AddPostView()
+                            .environmentObject(coordinator)
                     case .postDetail(let post):
                         Text("Post Detail View: \(post.content ?? "")")
                     case .userProfile(let user):
@@ -46,7 +51,6 @@ public struct FeedFlow: View {
                     }
                 }
         }
-        .environmentObject(coordinator)
     }
 }
 

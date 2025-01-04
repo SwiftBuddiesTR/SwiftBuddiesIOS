@@ -9,11 +9,11 @@ import SwiftUI
 import Design
 
 public struct BuddiesFeedView: View {
-    @StateObject private var viewModel = BuddiesFeedViewModel()
-    @ObservedObject private var coordinator: BuddiesFeedCoordinator
+    @ObservedObject private var viewModel = BuddiesFeedViewModel()
+    @EnvironmentObject private var coordinator: BuddiesFeedCoordinator
     
-    init(coordinator: BuddiesFeedCoordinator) {
-        self.coordinator = coordinator
+    init(viewModel: BuddiesFeedViewModel) {
+        self.viewModel = viewModel
     }
     
     public var body: some View {
@@ -70,6 +70,7 @@ public struct BuddiesFeedView: View {
         }
     }
 }
+
 extension BuddiesFeedView {
     @ViewBuilder
     private func feedCell(for feed: Post) -> some View {
@@ -101,6 +102,6 @@ extension BuddiesFeedView {
 
 #Preview {
     NavigationStack {
-        BuddiesFeedView(coordinator: BuddiesFeedCoordinator())
+        BuddiesFeedView(viewModel: .init())
     }
 }

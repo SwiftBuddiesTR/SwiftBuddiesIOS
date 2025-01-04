@@ -8,7 +8,7 @@
 import SwiftUI
 
 public protocol FeedModuleProtocol {
-    associatedtype FeedView: View
+    associatedtype FeedViewType: View
     
-    var view: FeedView { get }
+    func makeFeedView() -> FeedViewType
 }
