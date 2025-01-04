@@ -13,30 +13,40 @@ import Network
 final class AddPostViewModel: ObservableObject {
     @Published var postContent: String = ""
     @Published var isLoading = false
+    @Published private(set) var error: String?
     
+    let maxCharacterCount = 1000
     private let apiClient: BuddiesClient
+    
+    var isValid: Bool {
+        !postContent.isEmpty && postContent.count <= maxCharacterCount && !isLoading
+    }
     
     init() {
         self.apiClient = .shared
     }
     
     func createPost() async {
-        guard !postContent.isEmpty else { return }
+        guard isValid else { return }
         
         isLoading = true
-        defer { isLoading = false }
-        
-        let request = CreatePostRequest(content: postContent)
+        error = nil
         
         do {
-            let data = try await apiClient.perform(request)
-            print("Post created: \(postContent), \(data.uid ?? "")")
-//            for try await result in apiClient.watch(request, cachePolicy: .returnCacheDataAndFetch) {
-//                print("Post created: \(postContent), \(result.uid ?? "")")
-//            }
+            let request = CreatePostRequest(content: postContent)
+            let response = try await apiClient.perform(request)
+            
+            if response.uid != nil {
+                // Post created successfully
+                postContent = ""
+            } else {
+                error = "Failed to create post"
+            }
         } catch {
-            print("Failed to create post: \(error)")
+            self.error = error.localizedDescription
         }
+        
+        isLoading = false
     }
 } 
 
