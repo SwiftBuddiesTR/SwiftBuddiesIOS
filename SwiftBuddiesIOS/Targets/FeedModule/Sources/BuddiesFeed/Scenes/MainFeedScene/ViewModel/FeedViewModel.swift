@@ -8,11 +8,13 @@
 import Foundation
 import BuddiesNetwork
 import Network
+import UIKit
 
 @MainActor
 class BuddiesFeedViewModel: ObservableObject {
     @Published private(set) var posts: [Post] = []
     @Published private(set) var state: FeedState = .idle
+    @Published private(set) var postImages: [String: UIImage] = [:]  // Cache for images
     
     private let apiClient: BuddiesClient
     private var paginationInfo = PaginationInfo(limit: 4)
@@ -97,6 +99,10 @@ class BuddiesFeedViewModel: ObservableObject {
             let isUnique = !seenPostIds.contains(post.post.id)
             if isUnique {
                 seenPostIds.insert(post.post.id)
+                // Fetch images for new post
+                Task {
+                    await fetchImagesForPost(post)
+                }
             }
             return isUnique
         }
@@ -107,8 +113,50 @@ class BuddiesFeedViewModel: ObservableObject {
             posts.append(contentsOf: uniquePosts)
         }
     }
+    
+    private func fetchImagesForPost(_ post: Post) async {
+        guard !post.post.images.isEmpty else { return }
+        
+        for imageId in post.post.images {
+            if let uid = imageId, postImages[uid] == nil {  // Check cache first
+                do {
+                    let request = GetImageRequest(uid: uid)
+                    let response = try await apiClient.perform(request)
+                    
+                    
+                    if let base64String = response.base64 {
+                        // Remove the data URL prefix if it exists
+                        let cleanBase64String = base64String.replacingOccurrences(
+                            of: "data:image/\\w+;base64,",
+                            with: "",
+                            options: .regularExpression
+                        )
+                        
+                        if let image = cleanBase64String.imageFromBase64 {
+                            postImages[uid] = image
+                        }
+                    }
+                } catch {
+                    print("Failed to load image: \(error)")
+                }
+            }
+        }
+    }
+}
+extension UIImage {
+    var base64: String? {
+        self.jpegData(compressionQuality: 1)?.base64EncodedString()
+    }
 }
 
+extension String {
+    var imageFromBase64: UIImage? {
+        guard let imageData = Data(base64Encoded: self, options: .ignoreUnknownCharacters) else {
+            return nil
+        }
+        return UIImage(data: imageData)
+    }
+}
 // MARK: - Request Types
 extension BuddiesFeedViewModel {
     struct FeedRequest: Requestable {
@@ -127,6 +175,22 @@ extension BuddiesFeedViewModel {
         func httpProperties() -> HTTPOperation<FeedRequest>.HTTPProperties {
             .init(
                 url: APIs.Feed.getFeed.url(),
+                httpMethod: .get,
+                data: self
+            )
+        }
+    }
+    
+    struct GetImageRequest: Requestable {
+        let uid: String
+        
+        struct Data: Decodable {
+            let base64: String?
+        }
+        
+        func httpProperties() -> HTTPOperation<GetImageRequest>.HTTPProperties {
+            .init(
+                url: APIs.Feed.getImage.url(),
                 httpMethod: .get,
                 data: self
             )

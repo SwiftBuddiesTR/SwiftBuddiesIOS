@@ -25,6 +25,8 @@ public enum APIs {
     public enum Feed: Endpoint {
         case getFeed
         case createPost
+        case uploadImage
+        case getImage
         
         public var value: String {
             switch self {
@@ -32,6 +34,10 @@ public enum APIs {
                 "getFeed"
             case .createPost:
                 "createPost"
+            case .uploadImage:
+                "uploadImage"
+            case .getImage:
+                "getImage"
             }
         }
     }

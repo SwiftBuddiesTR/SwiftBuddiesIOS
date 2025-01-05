@@ -102,12 +102,33 @@ extension BuddiesFeedView {
             
             // Post content
             Text(feed.post.content ?? "")
-                .onTapGesture {
-                    coordinator.push(.postDetail(feed.post))
+            
+            // Images
+            if !feed.post.images.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 8) {
+                        ForEach(feed.post.images, id: \.self) { imageId in
+                            if let uid = imageId, let image = viewModel.postImages[uid] {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 200, height: 200)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                            } else {
+                                ProgressView()
+                                    .frame(width: 200, height: 200)
+                            }
+                        }
+                    }
                 }
+            }
             
             Divider()
         }
         .padding(.vertical, 8)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            coordinator.push(.postDetail(feed.post))
+        }
     }
 }
