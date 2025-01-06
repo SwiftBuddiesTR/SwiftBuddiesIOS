@@ -36,7 +36,7 @@ let project = Project(
             bundleId: "com.swiftbuddies.SwiftBuddiesIOS",
             infoPlist: .extendingDefault(
                 with: [
-                    "CFBundleShortVersionString": "1.0",
+                    "CFBundleShortVersionString": "0.0.1",
                     "CFBundleVersion": "1",
                     "UIMainStoryboardFile": "",
                     "UILaunchStoryboardName": "LaunchScreen",
@@ -45,11 +45,16 @@ let project = Project(
                     "NSLocationWhenInUseUsageDescription": "Your location is needed to provide location-based features.",
                     "CFBundleURLTypes": [
                         ["CFBundleURLSchemes": ["com.googleusercontent.apps.1015261010783-dq3s025o2j6pcj81ped6nqpbiv5m1fvr"]]
-                    ]
+                    ],
+                    "ITSAppUsesNonExemptEncryption": false
                 ]
             ),
             sources: ["SwiftBuddiesIOS/Sources/**"],
             resources: ["SwiftBuddiesIOS/Resources/**"],
+            entitlements: .dictionary(
+                ["com.apple.developer.applesignin": .string("Default")]
+            ),
+
             dependencies: [
                 .package(product: "GoogleSignIn", type: .runtime, condition: .none),
                 .package(product: "BuddiesNetwork", type: .runtime, condition: .none),
@@ -77,7 +82,7 @@ let project = Project(
         Modules.network.target,
         Modules.localization.target,
         Modules.core.target,
-        Modules.localicationCodegen
+        Modules.localicationCodegen,
     ]
 )
 
