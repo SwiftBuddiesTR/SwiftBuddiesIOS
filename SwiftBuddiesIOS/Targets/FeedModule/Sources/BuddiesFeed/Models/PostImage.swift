@@ -7,10 +7,12 @@ struct PostImage: Identifiable, Equatable {
     var isUploaded: Bool = false
     var isUploading: Bool = false
     var error: String?
+    var base64Value: String?
     
     init(id: String = UUID().uuidString, image: UIImage) {
         self.id = id
         self.image = image
         self.data = image.jpegData(compressionQuality: 0.7)
+        self.base64Value = image.base64
     }
 } 

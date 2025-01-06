@@ -67,12 +67,10 @@ final class AddPostViewModel: ObservableObject {
         selectedImages[index].error = nil
         
         do {
-//            guard let base64 = selectedImages[index].data?.base64EncodedString() else {
-//                selectedImages[index].error = "Failed to process image"
-//                selectedImages[index].isUploading = false
-//                return
-//            }
-            guard let base64 = selectedImages[index].image.base64 else { return }
+            guard let base64 = selectedImages[index].base64Value else {
+                selectedImages[index].error = "Failed to get base64 value"
+                return
+            }
             let request = UploadImageRequest(
                 base64: "data:image/jpeg;base64,\(base64)",
                 isPrivate: nil

@@ -66,7 +66,7 @@ class BuddiesFeedViewModel: ObservableObject {
                     since: nil
                 )
                 
-                for try await response in apiClient.watch(request, cachePolicy: .fetchIgnoringCacheCompletely) {
+                for try await response in apiClient.watch(request, cachePolicy: .returnCacheDataAndFetch) {
                     if Task.isCancelled { break }
                     
                     if let newPosts = response.feed {
