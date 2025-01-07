@@ -33,7 +33,7 @@ let project = Project(
             name: "SwiftBuddiesIOS",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.swiftbuddies.SwiftBuddiesIOS",
+            bundleId: "com.dogukaank.SwiftBuddiesIOS",
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleShortVersionString": "0.0.1",
@@ -52,9 +52,11 @@ let project = Project(
             sources: ["SwiftBuddiesIOS/Sources/**"],
             resources: ["SwiftBuddiesIOS/Resources/**"],
             entitlements: .dictionary(
-                ["com.apple.developer.applesignin": .string("Default")]
+                [
+                    "com.apple.developer.applesignin" : ["Default"],
+                    "com.apple.developer.authentication-services.autofill-credential-provider": true
+                ]
             ),
-
             dependencies: [
                 .package(product: "GoogleSignIn", type: .runtime, condition: .none),
                 .package(product: "BuddiesNetwork", type: .runtime, condition: .none),
