@@ -9,6 +9,7 @@ import Foundation
 import BuddiesNetwork
 import Network
 import UIKit
+import Core
 
 @MainActor
 class BuddiesFeedViewModel: ObservableObject {
@@ -143,22 +144,14 @@ class BuddiesFeedViewModel: ObservableObject {
         }
     }
 }
-extension UIImage {
-    var base64: String? {
-        self.jpegData(compressionQuality: 1)?.base64EncodedString()
-    }
-}
 
-extension String {
-    var imageFromBase64: UIImage? {
-        guard let imageData = Data(base64Encoded: self, options: .ignoreUnknownCharacters) else {
-            return nil
-        }
-        return UIImage(data: imageData)
-    }
-}
 // MARK: - Request Types
 extension BuddiesFeedViewModel {
+    /// Feed Request
+    /// - limit: Number of items to fetch
+    /// - offset: Offset for pagination
+    /// - since: Date string to fetch posts since
+    /// - Data: FeedResponseModel
     struct FeedRequest: Requestable {
         enum FeedRequestType {
             case refresh
@@ -180,7 +173,12 @@ extension BuddiesFeedViewModel {
             )
         }
     }
-    
+    /// Get Image Request
+    /// - Request body:
+    ///    - uid: Image UID
+    ///
+    /// - Response body:
+    ///    - base64: Image data in base64 format
     struct GetImageRequest: Requestable {
         let uid: String
         
@@ -206,6 +204,11 @@ extension BuddiesFeedViewModel {
 /// - loaded: Content loaded
 enum FeedState: Equatable {
     case idle
+    /// Loading content
+    /// - Parameter LoadingType: Loading type
+    /// - initial: Initial loading
+    /// - nextPage: Loading next page
+    /// - refresh: Refreshing content
     case loading(LoadingType)
     case error(FeedError)
     case loaded(hasMore: Bool)
@@ -218,11 +221,6 @@ enum FeedState: Equatable {
         case initial
         case nextPage
         case refresh
-    }
-    
-    var isLoading: Bool {
-        if case .loading = self { return true }
-        return false
     }
     
     /// FeedError

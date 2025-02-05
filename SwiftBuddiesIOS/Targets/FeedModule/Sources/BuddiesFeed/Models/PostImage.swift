@@ -12,7 +12,7 @@ struct PostImage: Identifiable, Equatable {
     init(id: String = UUID().uuidString, image: UIImage) {
         self.id = id
         self.image = image
-        self.data = image.jpegData(compressionQuality: 0.7)
-        self.base64Value = image.base64
+        self.data = image.heicData()
+        self.base64Value = data?.base64EncodedString()
     }
 } 

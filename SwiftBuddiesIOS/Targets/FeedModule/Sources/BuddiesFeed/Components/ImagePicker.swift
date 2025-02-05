@@ -21,6 +21,7 @@ struct ImagePicker: View {
                 PhotoPicker(selectedImages: $selectedImages, isPresented: $isPresented, maxImages: maxImages)
             }
         }
+        .ignoresSafeArea()
     }
 }
 
@@ -94,15 +95,28 @@ private struct PhotoPicker: UIViewControllerRepresentable {
             var newImages: [PostImage] = []
             
             for result in results {
-                guard result.itemProvider.canLoadObject(ofClass: UIImage.self) else { continue }
-                
                 group.enter()
-                result.itemProvider.loadObject(ofClass: UIImage.self) { image, error in
-                    defer { group.leave() }
-                    
-                    if let image = image as? UIImage {
-                        newImages.append(PostImage(image: image))
+                
+                // Instead of loading UIImage, let's request the data directly
+                if result.itemProvider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                    result.itemProvider.loadDataRepresentation(forTypeIdentifier: UTType.image.identifier) { data, error in
+                        defer { group.leave() }
+                        
+                        guard let imageData = data,
+                              let uiImage = UIImage(data: imageData) else { return }
+                        
+                        // Compress immediately with a lower quality
+                        guard let compressedData = uiImage.jpegData(compressionQuality: 0.7),
+                              let compressedImage = UIImage(data: compressedData) else { return }
+                        
+                        // Print sizes for debugging
+                        print("Original size: \(imageData.count / 1024 / 1024)MB")
+                        print("Compressed size: \(compressedData.count / 1024 / 1024)MB")
+                        
+                        newImages.append(PostImage(image: compressedImage))
                     }
+                } else {
+                    group.leave()
                 }
             }
             

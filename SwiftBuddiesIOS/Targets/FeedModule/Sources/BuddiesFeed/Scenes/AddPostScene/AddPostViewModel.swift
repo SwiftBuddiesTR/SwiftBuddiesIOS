@@ -67,13 +67,12 @@ final class AddPostViewModel: ObservableObject {
         selectedImages[index].error = nil
         
         do {
-            guard let base64 = selectedImages[index].base64Value else {
+            guard let base64 = selectedImages[index].data?.base64EncodedString() else {
                 selectedImages[index].error = "Failed to get base64 value"
                 return
             }
             let request = UploadImageRequest(
-                base64: "data:image/jpeg;base64,\(base64)",
-                isPrivate: nil
+                base64: "data:image/heic;base64,\(base64)"
             )
             
             let response = try await apiClient.perform(request)
@@ -147,7 +146,6 @@ final class AddPostViewModel: ObservableObject {
 /// ```
 struct UploadImageRequest: Requestable {
     let base64: String
-    let isPrivate: Bool?
     
     struct Data: Decodable {
         var id: String?
@@ -159,7 +157,7 @@ struct UploadImageRequest: Requestable {
     
     func httpProperties() -> HTTPOperation<UploadImageRequest>.HTTPProperties {
         .init(
-            url: APIs.Feed.uploadImage.url(),
+            url: APIs.Feed.uploadImage.url(.prodV2),
             httpMethod: .post,
             data: self
         )
