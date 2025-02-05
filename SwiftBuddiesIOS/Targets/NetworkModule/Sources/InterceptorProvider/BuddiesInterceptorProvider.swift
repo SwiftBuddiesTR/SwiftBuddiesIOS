@@ -52,6 +52,8 @@ class AuthenticationErrorHandler: ChainErrorHandler {
                 // TODO: Auto renew token request
                 chain.cancel()
             }
+        } else if response?.httpResponse.statusCode == 400 {
+            debugPrint("Bad request")
         } else {
             completion(.failure(error))
         }

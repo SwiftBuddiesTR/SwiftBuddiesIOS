@@ -22,7 +22,7 @@ final public class BuddiesClient {
     public func perform<Request: Requestable>(
         _ request: Request,
         dispatchQueue: DispatchQueue = .main,
-        cachePolicy: CachePolicy = .returnCacheDataAndFetch,
+        cachePolicy: CachePolicy = .fetchIgnoringCacheCompletely,
         completion: @escaping HTTPResultHandler<Request>
     ) -> (any Cancellable)? {
         apiClient.perform(

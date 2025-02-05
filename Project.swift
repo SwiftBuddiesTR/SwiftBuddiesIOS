@@ -33,23 +33,31 @@ let project = Project(
             name: "SwiftBuddiesIOS",
             destinations: .iOS,
             product: .app,
-            bundleId: "com.swiftbuddies.SwiftBuddiesIOS",
+            bundleId: "com.dogukaank.SwiftBuddiesIOS",
             infoPlist: .extendingDefault(
                 with: [
-                    "CFBundleShortVersionString": "1.0",
+                    "CFBundleShortVersionString": "0.0.1",
                     "CFBundleVersion": "1",
                     "UIMainStoryboardFile": "",
                     "UILaunchStoryboardName": "LaunchScreen",
                     "CLIENT_ID": "1015261010783-dq3s025o2j6pcj81ped6nqpbiv5m1fvr.apps.googleusercontent.com",
                     "REVERSED_CLIENT_ID": "com.googleusercontent.apps.1015261010783-dq3s025o2j6pcj81ped6nqpbiv5m1fvr",
                     "NSLocationWhenInUseUsageDescription": "Your location is needed to provide location-based features.",
+                    "NSCameraUsageDescription": "Camera is needed to take photos.",
                     "CFBundleURLTypes": [
                         ["CFBundleURLSchemes": ["com.googleusercontent.apps.1015261010783-dq3s025o2j6pcj81ped6nqpbiv5m1fvr"]]
-                    ]
+                    ],
+                    "ITSAppUsesNonExemptEncryption": false
                 ]
             ),
             sources: ["SwiftBuddiesIOS/Sources/**"],
             resources: ["SwiftBuddiesIOS/Resources/**"],
+            entitlements: .dictionary(
+                [
+                    "com.apple.developer.applesignin" : ["Default"],
+                    "com.apple.developer.authentication-services.autofill-credential-provider": true
+                ]
+            ),
             dependencies: [
                 .package(product: "GoogleSignIn", type: .runtime, condition: .none),
                 .package(product: "BuddiesNetwork", type: .runtime, condition: .none),
@@ -105,7 +113,6 @@ enum Modules: CaseIterable {
                 dependencies:
                     [.target(Modules.auth.target), .target(Modules.network.target),
                         .package(product: "GoogleSignIn", type: .runtime, condition: .none)]
-//                []
             )
         case .localization:
             Target.featureTarget(
@@ -135,7 +142,6 @@ enum Modules: CaseIterable {
                 productName: "Auth",
                 dependencies: [
                     .target(Modules.network.target),
-//                    .target(Modules.core.target),
                     .package(product: "GoogleSignIn", type: .runtime, condition: .none)
                 ]
             )
@@ -166,7 +172,8 @@ enum Modules: CaseIterable {
                 productName: "Feed",
                 dependencies: [
                     .target(Modules.core.target),
-                    .target(Modules.design.target)
+                    .target(Modules.design.target),
+                    .package(product: "GoogleSignIn", type: .runtime, condition: .none)
                 ]
             )
         case .map:

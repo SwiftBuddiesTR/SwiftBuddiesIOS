@@ -7,7 +7,7 @@ import BuddiesNetwork
 @MainActor
 final public class AuthenticationViewModel: ObservableObject {
     private let apiClient: BuddiesClient
-    private let authManager: AuthWithSSOProtocol
+    private var authManager: AuthWithSSOProtocol
 //    @Dependency(\.authManager) var authManager
      
     public init() {

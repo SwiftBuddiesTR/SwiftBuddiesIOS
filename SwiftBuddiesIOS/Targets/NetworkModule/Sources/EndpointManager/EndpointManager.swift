@@ -16,7 +16,28 @@ public enum APIs {
         
         public var value: String {
             switch self {
-            case .register: "register"
+            case .register: 
+                "register"
+            }
+        }
+    }
+    
+    public enum Feed: Endpoint {
+        case getFeed
+        case createPost
+        case uploadImage
+        case getImage
+        
+        public var value: String {
+            switch self {
+            case .getFeed: 
+                "getFeed"
+            case .createPost:
+                "createPost"
+            case .uploadImage:
+                "uploadImage"
+            case .getImage:
+                "getImage"
             }
         }
     }
@@ -89,6 +110,10 @@ public enum Hosts {
         static let baseUrl: URL = URL(string: "https://swiftbuddies.vercel.app/api/")!
     }
     
+    struct ProdV2: Host {
+        static let baseUrl: URL = URL(string: "https://swiftbuddies.vercel.app/api/v2/")!
+    }
+    
     struct GitHub: Host {
         static let baseUrl: URL = URL(string: "https://api.github.com/")!
     }
@@ -96,12 +121,14 @@ public enum Hosts {
     case prod
     case qa
     case github
+    case prodV2
     
     var env: Host {
         switch self {
         case .prod: Prod()
         case .qa: Qa()
         case .github: GitHub()
+        case .prodV2: ProdV2()
         }
     }
 }

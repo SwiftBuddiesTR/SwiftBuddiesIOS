@@ -3,6 +3,7 @@ import GoogleSignIn
 import Map
 import SwiftData
 import Core
+import Feed
 
 @main
 struct SwiftBuddiesIOSApp: App {
