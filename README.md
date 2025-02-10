@@ -14,7 +14,7 @@ Welcome to the official iOS app for the Buddies Community! This project is a com
 
 <div align="center">
   <a href="https://github.com/SwiftBuddiesTR/BuddiesIOS">
-    <img src="https://raw.githubusercontent.com/SwiftBuddiesTR/BuddiesIOS/dev/Resources/buddies-icon-clear-bg.svg" alt="Logo" width="160" height="160">
+    <img src="https://github.com/SwiftBuddiesTR/BuddiesIOS/blob/dev/SwiftBuddiesIOS/Targets/DesignModule/Resources/Media/LocalMedia.xcassets/OnboardingBuddiesImage.imageset/OnboardingBuddiesImage.png?raw=true" alt="Logo" width="160" height="160">
   </a>
 
 <h3 align="center">Buddies iOS</h3>
