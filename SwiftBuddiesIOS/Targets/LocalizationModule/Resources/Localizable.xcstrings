@@ -1,0 +1,72 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "onboarding.ButtonTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next"
+          }
+        }
+      }
+    },
+    "onboarding.StartButtonTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        }
+      }
+    },
+    "onboardingItem.FirstDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Buddies Community, being a platform dedicated to iOS development, aims to provide a productive environment fostering networking, collaboration, and knowledge sharing. "
+          }
+        }
+      }
+    },
+    "onboardingItem.FirstTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome!"
+          }
+        }
+      }
+    },
+    "onboardingItem.SecondDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dive in, explore, learn and share. We're excited to have you here and can't wait to see what you'll bring to the table. "
+          }
+        }
+      }
+    },
+    "onboardingItem.SecondTitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BuddiesIOS"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
