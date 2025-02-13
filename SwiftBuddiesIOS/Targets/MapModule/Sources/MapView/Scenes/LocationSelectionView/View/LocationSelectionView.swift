@@ -14,6 +14,7 @@ struct LocationSelectionView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var coordinator: MapNavigationCoordinator
     @StateObject var vm = LocationSelectionViewViewModel()
+    @StateObject var mapVm = MapViewModel()
     @State var newEvent: NewEventModel
 
     @State var tappedLocation: CLLocationCoordinate2D? = nil
@@ -43,7 +44,6 @@ struct LocationSelectionView: View {
         }
     }
     
-   
 }
 
 
@@ -89,9 +89,11 @@ extension LocationSelectionView {
                     let eventId = await vm.createEvent(event: newEvent)
                     print("created")
                     print("new event name: \(newEvent.name)")
+                    print("returned id: \(eventId)")
                     createdCompletion?(eventId)
                 }
                 coordinator.popToRoot()
+
             } else {
                 showAlert = true
             }

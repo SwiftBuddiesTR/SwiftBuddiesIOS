@@ -13,6 +13,7 @@ import MapKit
 class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
     
     @Published private(set) var lastKnownLocation: Coord?
+    @Published var location: CLLocation?
     
     private let manager = CLLocationManager()
     
@@ -45,7 +46,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
             
         case .authorizedAlways:
             debugPrint("Location authorizedAlways")
-            
+            if let coordinate = manager.location?.coordinate {
+                lastKnownLocation = Coord(lat: coordinate.latitude.magnitude, lon: coordinate.longitude.magnitude)
+            }
         case .authorizedWhenInUse:
             debugPrint("Location authorized when in use")
             if let coordinate = manager.location?.coordinate {
@@ -63,8 +66,9 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let coordinate = locations.first?.coordinate {
+        if let coordinate = locations.last?.coordinate {
             lastKnownLocation = Coord(lat: coordinate.latitude.magnitude, lon: coordinate.longitude.magnitude)
         }
     }
+    
 }

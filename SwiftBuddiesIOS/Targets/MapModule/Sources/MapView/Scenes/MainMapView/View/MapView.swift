@@ -9,7 +9,12 @@ public struct MapView: View {
     @StateObject var coordinator = MapNavigationCoordinator()
     @Environment(\.modelContext) private var context
     
-    public init() {}
+    public init() {
+//        vm.startUpdatingLocation()
+//        Task {
+//            await vm.getAllEvents()
+//           }
+    }
     
     public var body: some View {
         NavigationStack(path: $coordinator.mapNavigationStack) {
@@ -135,11 +140,13 @@ extension MapView {
                 .mapControlVisibility(.visible)
                 .padding(.top, 100)
         }
-        .task {
-            await vm.getAllEvents()
-        }
         .onAppear{
+            print("MapView onAppear triggered")
             vm.startUpdatingLocation()
+            vm.setUserLocation()
+            Task {
+                   await vm.getAllEvents()
+               }
             vm.currentEvent = vm.selectedEvents.last
         }
         .onDisappear {

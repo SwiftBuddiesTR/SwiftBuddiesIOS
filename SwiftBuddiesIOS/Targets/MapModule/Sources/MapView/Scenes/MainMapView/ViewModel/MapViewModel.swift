@@ -66,9 +66,15 @@ class MapViewModel: ObservableObject {
         }
     }
     
+    @MainActor
     func getAllEvents() async {
         allEvents = await mapService.fetchEvents()
-        selectedEvents = allEvents
+        DispatchQueue.main.async {
+            self.selectedEvents = self.allEvents
+        }
+        
+        print("all fetched events count: \(allEvents.count)")
+        print("all fetched events: \(allEvents)")
     }
     
     
