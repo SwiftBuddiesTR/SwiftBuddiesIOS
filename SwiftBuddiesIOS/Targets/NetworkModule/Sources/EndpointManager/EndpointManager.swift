@@ -58,7 +58,7 @@ public enum APIs {
     
     public enum Profile: Endpoint {
         case getUserInfo
-        case postUserInfo
+        case updateUsername
         case updateSocialMedias
         
         public var value: String {
@@ -67,8 +67,8 @@ public enum APIs {
                 "whoAmI"
             case .updateSocialMedias:
                 "updateSocialMedias"
-            case .postUserInfo:
-                ""
+            case .updateUsername:
+                "updateUsername"
             }
         }
     }

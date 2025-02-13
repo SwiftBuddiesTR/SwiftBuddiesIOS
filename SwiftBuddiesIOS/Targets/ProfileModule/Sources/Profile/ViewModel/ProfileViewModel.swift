@@ -7,25 +7,28 @@
 
 import Foundation
 
-class ProfileViewModel: ObservableObject {
+final class ProfileViewModel: ObservableObject {
     
     private let profileService = ProfileService()
-    @Published var profileInfos = UserInfos(registerType: "",
-                                            registerDate: "",
-                                            lastLoginDate: "",
-                                            email: "",
-                                            name: "",
-                                            username: "",
-                                            picture: "")
+    
+    @Published private(set) var profileInfos = UserInfos(registerType: "",
+                                                         registerDate: "",
+                                                         lastLoginDate: "",
+                                                         email: "",
+                                                         name: "",
+                                                         username: "",
+                                                         picture: "")
     
     @MainActor
     func getProfileInfos() async {
-        profileInfos = await profileService.fetchEvents() ?? UserInfos(registerType: "",
-                                                                       registerDate: "",
-                                                                       lastLoginDate: "",
-                                                                       email: "",
-                                                                       name: "",
-                                                                       username: "",
-                                                                       picture: "")
+        profileInfos = await profileService.fetchProfileInfos() ?? UserInfos(
+            registerType: "",
+            registerDate: "",
+            lastLoginDate: "",
+            email: "",
+            name: "",
+            username: "",
+            picture: ""
+        )
     }
 }

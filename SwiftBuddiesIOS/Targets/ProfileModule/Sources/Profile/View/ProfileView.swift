@@ -1,7 +1,6 @@
 import SwiftUI
 import Design
 
-// com.dogukaank.SwiftBuddiesIOS
 
 public struct ProfileView: View {
     
@@ -11,7 +10,7 @@ public struct ProfileView: View {
     
     @State private var selectionSegment: String = "Posts"
     private var segments: [String] = ["Posts", "Liked"]
-        
+    
     public var body: some View {
         NavigationStack {
             GeometryReader { geometry in
@@ -19,14 +18,20 @@ public struct ProfileView: View {
                 
                 VStack {
                     HStack {
-                        Image(systemName: "person.circle")
-                            .resizable()
-                            .scaledToFill()
+                        if let url = URL(string: viewModel.profileInfos.picture) {
+                            AsyncImage(url: url) { image in
+                                image
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                            } placeholder: {
+                                Circle()
+                                    .foregroundColor(.gray.opacity(0.3))
+                            }
                             .frame(width: 100, height: 100)
                             .clipShape(Circle())
-                            .foregroundColor(Color.dynamicColor)
                             .padding(.horizontal, 10)
                             .padding(.trailing, 10)
+                        }
                         
                         Spacer()
                         
@@ -40,34 +45,37 @@ public struct ProfileView: View {
                                 .foregroundColor(Color.dynamicColor.opacity(0.6))
                             
                             HStack(spacing: 20) {
-                                Link(destination: URL(string: "https://www.linkedin.com/in/fatih-ozen/")!) {
-                                    Image("linkedinIcon")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color.dynamicColor)
-                                        .frame(height: 25)
+                                
+                                if let url = URL(string: viewModel.profileInfos.linkedin ?? "") {
+                                    Link(destination: url) {
+                                        Image("linkedinIcon")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color.dynamicColor)
+                                            .frame(height: 25)
+                                    }
                                 }
                                 
-                                Link(destination: URL(string: "https://github.com/Fatihozn")!) {
-                                    Image("githubIcon")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(Color.dynamicColor)
-                                        .frame(height: 30)
-                                        .clipShape(RoundedRectangle(cornerRadius: 15))
-                                    
+                                if let url = URL(string: viewModel.profileInfos.github ?? "") {
+                                    Link(destination: url) {
+                                        Image("githubIcon")
+                                            .resizable()
+                                            .scaledToFit()
+                                            .foregroundColor(Color.dynamicColor)
+                                            .frame(height: 25)
+                                        
+                                    }
                                 }
                                 
                                 Spacer()
                             }
-                            
                         }
                         
                         Spacer()
                     }
                     .padding()
                     
-                    Picker("Select your language", selection: $selectionSegment) {
+                    Picker("", selection: $selectionSegment) {
                         ForEach(segments, id: \.self) { item in
                             Text(item)
                         }

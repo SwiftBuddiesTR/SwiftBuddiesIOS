@@ -8,7 +8,7 @@ struct SettingsView: View {
         case editProfile = "Edit Profile"
     }
     
-    @StateObject private var viewModel = SettingsViewModel()
+//    @StateObject private var viewModel = SettingsViewModel()
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -39,13 +39,13 @@ struct SettingsView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Task {
-                            do {
-                                try viewModel.signOut()
-                            } catch {
-                                debugPrint(error)
-                            }
-                        }
+//                        Task {
+//                            do {
+//                                try viewModel.signOut()
+//                            } catch {
+//                                debugPrint(error)
+//                            }
+//                        }
                     } label: {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                             .foregroundStyle(.orange)

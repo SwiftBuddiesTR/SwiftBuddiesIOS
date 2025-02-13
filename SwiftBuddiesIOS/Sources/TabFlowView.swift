@@ -1,7 +1,6 @@
 import SwiftUI
 import Feed
 import Map
-import Profile
 import Contributors
 
 enum AppTab: Int, Identifiable {

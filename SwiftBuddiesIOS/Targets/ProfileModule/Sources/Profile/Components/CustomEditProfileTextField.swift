@@ -10,8 +10,7 @@ import SwiftUI
 struct CustomEditProfileTextField: View {
     
     enum textFieldType: String {
-        case name = "Name"
-        case title = "Title"
+        case username = "Username"
         case linkedIn = "LinkedIn"
         case github = "Github"
     }
