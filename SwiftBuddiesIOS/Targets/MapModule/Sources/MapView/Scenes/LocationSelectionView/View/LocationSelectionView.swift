@@ -87,9 +87,7 @@ extension LocationSelectionView {
                 newEvent.longitude = tappedLocation?.longitude
                 Task {
                     let eventId = await vm.createEvent(event: newEvent)
-                    print("created")
-                    print("new event name: \(newEvent.name)")
-                    print("returned id: \(eventId)")
+                    print("returned id: \(eventId ?? "eventId not returned that is a create event issue")")
                     createdCompletion?(eventId)
                 }
                 coordinator.popToRoot()

@@ -79,8 +79,8 @@ extension Categories {
     static let mock: Categories = [
         Category(name: "All", color: "#FFFFFF"),
         Category(name: "Meeting", color: "#FF0000"),
-        Category(name: "Study Boddy", color: "#FFFF00"),
-        Category(name: "Places to Work", color: "#00FF00"),
+        Category(name: "Study Boddy", color: "#FF8C00"),
+        Category(name: "Places to Work", color: "#006400"),
         Category(name: "SwiftBuddies Event", color: "#0000FF")
     ]
 }

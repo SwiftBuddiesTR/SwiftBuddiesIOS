@@ -80,8 +80,6 @@ class MapService {
                 print("fetched events count: that is the counts of events in the database\(fetchedEvents.count)")
                 
             }
-//            fetchedEvents = events
-            
             
         } catch {
             debugPrint(error)

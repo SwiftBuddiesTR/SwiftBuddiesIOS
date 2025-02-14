@@ -18,12 +18,12 @@ import SwiftData
 class MapViewModel: ObservableObject {
     
     private let apiClient: BuddiesClient
-    private var locationManager = LocationManager()
     private let mapService = MapService()
+    private var locationManager = LocationManager.shared
+   
     
     @Published var allEvents: [EventModel] = []
     @Published var selectedEvents: [EventModel] = []
-
     @Published var currentEvent: EventModel? {
         didSet {
             withAnimation(.easeInOut) {
@@ -31,21 +31,20 @@ class MapViewModel: ObservableObject {
             }
         }
     }
-    
     @Published var categoryModalShown: Bool = false
     @Published var selectedCategory: Category?
     @Published var selectedDetent: PresentationDetent = .fraction(0.9)
     @Published var showEventListView: Bool = false
     @Published var showExplanationText: Bool = true
     @Published var showAlert: Bool = false
-
     
-    @Published var region : MKCoordinateRegion = MKCoordinateRegion(
+    @Published var region: MKCoordinateRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 40, longitude: 40),
         span: MKCoordinateSpan(latitudeDelta: 0.1, longitudeDelta: 0.1)
     )
     
     @Published var categories: Categories
+    @Published var lastKnownLocation: Coord?
     
     var filteredCategories: Categories {
         categories.filter { $0.name != "All" }
@@ -55,18 +54,20 @@ class MapViewModel: ObservableObject {
         self.categories = .mock
         self.apiClient = .shared
         self.selectedCategory = self.categories.first
+        
+        // LocationManager'ı başlat ve güncellemeleri al
+        locationManager.setLocationUpdateHandler { [weak self] coordinate in
+            // Konum güncellendiğinde ViewModel'deki lastKnownLocation'u güncelle
+            self?.lastKnownLocation = Coord(lat: coordinate.latitude.magnitude, lon: coordinate.longitude.magnitude)
+            self?.setMapRegion(to: self?.lastKnownLocation)
+        }
+        
+        self.locationManager.startUpdatingLocation()
+        
         setUserLocation()
     }
     
-    func setUserLocation(errorCompletion: (() -> Void)? = nil) {
-        if let location = locationManager.lastKnownLocation {
-            setMapRegion(to: location)
-        } else {
-            errorCompletion?()
-        }
-    }
-    
-    @MainActor
+    // MARK: DATA && FILTERING
     func getAllEvents() async {
         allEvents = await mapService.fetchEvents()
         DispatchQueue.main.async {
@@ -76,28 +77,6 @@ class MapViewModel: ObservableObject {
         print("all fetched events count: \(allEvents.count)")
         print("all fetched events: \(allEvents)")
     }
-    
-    
-    // MARK: DATA FILTERING
-    private func setMapRegion(to item: EventModel?) {
-        guard let item else {
-            return
-        }
-        let coordinate = CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
-        let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
-        self.region = MKCoordinateRegion(center: coordinate, span: span)
-    }
-    
-    
-    private func setMapRegion(to coord: Coord?) {
-        guard let coord, currentEvent == nil else {
-            return
-        }
-        let coordinate = CLLocationCoordinate2D(latitude: coord.lat, longitude: coord.lon)
-        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.05)
-        self.region = MKCoordinateRegion(center: coordinate, span: span)
-    }
-    
     
     func filteredItems(items: [EventModel], selectedItems: inout [EventModel]) {
         selectedItems.removeAll()
@@ -116,14 +95,42 @@ class MapViewModel: ObservableObject {
         }
     }
     
+    
+    
+    // MARK: Set map region, get user location
+    func setUserLocation(errorCompletion: (() -> Void)? = nil) {
+        if let location = lastKnownLocation {
+            setMapRegion(to: location)
+        } else {
+            errorCompletion?()
+        }
+    }
+    
+    private func setMapRegion(to coord: Coord?) {
+        guard let coord, currentEvent == nil else {
+            return
+        }
+        let coordinate = CLLocationCoordinate2D(latitude: coord.lat, longitude: coord.lon)
+        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.05)
+        self.region = MKCoordinateRegion(center: coordinate, span: span)
+    }
+    
+    private func setMapRegion(to item: EventModel?) {
+        guard let item else {
+            return
+        }
+        let coordinate = CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
+        let span = MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
+        self.region = MKCoordinateRegion(center: coordinate, span: span)
+    }
+    
+    
     func toggleEventList() {
         withAnimation(.easeInOut) {
             showEventListView.toggle()
         }
     }
     
-    
-    // MARK: LOCATİON
     func stopUpdatingLocation() {
         locationManager.stopUpdatingLocation()
     }
