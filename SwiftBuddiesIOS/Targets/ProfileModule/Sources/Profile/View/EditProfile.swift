@@ -12,6 +12,7 @@ struct EditProfile: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
     @StateObject private var viewModel = ProfileEditViewModel()
+    @State private var showAlert = false
     
     var body: some View {
         Form {
@@ -32,17 +33,19 @@ struct EditProfile: View {
                 Button(action: {
                     Task {
                         await viewModel.saveProfile()
-                        dismiss()
+                        showAlert = true
                     }
                 }) {
-                    Text("Kaydet")
+                    Text("Save")
                         .frame(maxWidth: .infinity)
                         .font(.system(size: 24, weight: .bold))
-                        .foregroundStyle(.white)
+                    
                 }
+                .disabled(viewModel.username.isEmpty)
             }
-            .listRowBackground(Color.orange)
-            .background(Color.orange)
+            .foregroundStyle(viewModel.username.isEmpty ? .white.opacity(0.9) : .white)
+            .listRowBackground(viewModel.username.isEmpty ? Color.gray : Color.orange)
+            .background(viewModel.username.isEmpty ? Color.gray : Color.orange)
             
         }
         .task {
@@ -60,6 +63,13 @@ struct EditProfile: View {
                         .foregroundStyle(Color.dynamicColor)
                 }
             }
+        }
+        .alert("Info!", isPresented: $showAlert) {
+            Button("Ok", role: .cancel) {
+                dismiss()
+            }
+        } message: {
+            Text(viewModel.usernameMessage + ",\n " + viewModel.socialMessage)
         }
         
     }

@@ -16,44 +16,51 @@ final class ProfileService {
         self.apiClient = .shared
     }
     
-    func fetchProfileInfos() async -> UserInfos? {
+    func fetchProfileInfos() async -> UserInfosResponse? {
         let request = GetUserInfosRequest()
         
         do {
-            let data = try await apiClient.perform(request)
-            return data
+            var latestData: UserInfosResponse?
+            
+            for try await data in apiClient.watch(request, cachePolicy: .returnCacheDataAndFetch) {
+                latestData = data
+            }
+            
+            return latestData
         } catch {
             debugPrint(error)
             return nil
         }
     }
     
-    func updateUsername(username: String) async {
+    func updateUsername(username: String) async -> String {
         let request = UpdateUsernameRequest(username: username)
         
         do {
             let data = try await apiClient.perform(request)
-            print(data)
+            return data.message ?? ""
         } catch {
             debugPrint(error)
+            return error.localizedDescription
         }
     }
     
-    func updateSocialMedias(linkedin: String, github: String) async {
-        let request = UpdateSocialMediasRequest(linkedin: linkedin, github: github)
+    func updateSocialMedias(socialMedias: [SocialMediaResponse]) async -> String {
+        let request = UpdateSocialMediasRequest(socialMedias: socialMedias)
         
         do {
             let data = try await apiClient.perform(request)
-            print(data)
+            return data.message ?? ""
         } catch {
             debugPrint(error)
+            return error.localizedDescription
         }
     }
     
 }
 
 struct GetUserInfosRequest: Requestable {
-    typealias Data = UserInfos
+    typealias Data = UserInfosResponse
     
     func httpProperties() -> HTTPOperation<GetUserInfosRequest>.HTTPProperties {
         .init(
@@ -67,7 +74,10 @@ struct GetUserInfosRequest: Requestable {
 struct UpdateUsernameRequest: Requestable {
     let username: String
     
-    typealias Data = UserInfos
+    struct Data: Decodable {
+        let message: String?
+        let data: UsernameResponse?
+    }
     
     func httpProperties() -> HTTPOperation<UpdateUsernameRequest>.HTTPProperties {
         .init(
@@ -79,12 +89,11 @@ struct UpdateUsernameRequest: Requestable {
 }
 
 struct UpdateSocialMediasRequest: Requestable {
-    let linkedin: String?
-    let github: String?
+    let socialMedias: [SocialMediaResponse]
     
     struct Data: Decodable {
         let message: String?
-        let socialMedias: [String: String]?
+        let data: [SocialMediaResponse]?
     }
     
     func httpProperties() -> HTTPOperation<UpdateSocialMediasRequest>.HTTPProperties {

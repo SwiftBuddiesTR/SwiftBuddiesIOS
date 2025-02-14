@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct UserInfos: Codable {
+struct UserInfosResponse: Codable {
     var registerType: String
     var registerDate: String
     var lastLoginDate: String

@@ -11,7 +11,7 @@ final class ProfileViewModel: ObservableObject {
     
     private let profileService = ProfileService()
     
-    @Published private(set) var profileInfos = UserInfos(registerType: "",
+    @Published private(set) var profileInfos = UserInfosResponse(registerType: "",
                                                          registerDate: "",
                                                          lastLoginDate: "",
                                                          email: "",
@@ -21,7 +21,7 @@ final class ProfileViewModel: ObservableObject {
     
     @MainActor
     func getProfileInfos() async {
-        profileInfos = await profileService.fetchProfileInfos() ?? UserInfos(
+        profileInfos = await profileService.fetchProfileInfos() ?? UserInfosResponse(
             registerType: "",
             registerDate: "",
             lastLoginDate: "",
