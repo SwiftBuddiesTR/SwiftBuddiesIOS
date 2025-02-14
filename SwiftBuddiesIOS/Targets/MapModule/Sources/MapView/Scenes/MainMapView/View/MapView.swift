@@ -1,13 +1,12 @@
 import SwiftUI
 import MapKit
 import Design
-import SwiftData
 
 public struct MapView: View {
     
     @StateObject var vm = MapViewModel()
     @StateObject var coordinator = MapNavigationCoordinator()
-    @Environment(\.modelContext) private var context
+    @State private var hasAppeared = false
     
     public init() {}
     
@@ -80,6 +79,15 @@ public struct MapView: View {
                             Task {
                                 await vm.getAllEvents()
                             }
+                            DispatchQueue.main.async {
+                                withAnimation(.easeInOut) {
+                                    
+                                    vm.currentEvent = vm.selectedEvents.last
+                                    print("------------------- current event:", vm.currentEvent?.name)
+                                    
+                                }
+                            }
+                            
                         } else {
                             debugPrint("EVENT CREATION FAILED")
                         }
@@ -108,7 +116,6 @@ public struct MapView: View {
 extension MapView {
     
     private var mapLayer: some View {
-
         ZStack {
             Map(
                 coordinateRegion: $vm.region,
@@ -118,8 +125,8 @@ extension MapView {
                 MapAnnotation(
                     coordinate: CLLocationCoordinate2D(latitude: item.latitude, longitude: item.longitude)
                 ) {
-                    AnnotationView(color: Color(hex: item.category.color))
-                        .scaleEffect(vm.currentEvent == item ? 1 : 0.8)
+                    AnnotationView(color: Color(hex: item.category.color),
+                                   isSelected: vm.currentEvent == item)
                         .onTapGesture {
                             withAnimation(.easeInOut) {
                                 vm.currentEvent = item
@@ -135,12 +142,19 @@ extension MapView {
                 .mapControlVisibility(.visible)
                 .padding(.top, 100)
         }
-        .task {
-            await vm.getAllEvents()
-        }
-        .onAppear{
-            vm.startUpdatingLocation()
-            vm.currentEvent = vm.selectedEvents.last
+        .onAppear {
+            if !hasAppeared {
+                // İlk kez görünüyorsa, konum güncellemelerini başlat
+                vm.setUserLocation()
+                Task {
+                    await vm.getAllEvents()
+                }
+                // Sonrasında setUserLocation çağrılmaya devam etmesin
+                hasAppeared = true
+            } else {
+                // Son etkinliği seç
+            }
+        
         }
         .onDisappear {
             vm.stopUpdatingLocation()

@@ -28,6 +28,7 @@ class MapService {
             longitude: event.longitude
         )
         
+        
         do {
             let data = try await apiClient.perform(request)
             print("new event created \(data)")
@@ -42,43 +43,43 @@ class MapService {
     func fetchEvents() async -> [EventModel] {
         let request = MapGetEventsRequest()
         var fetchedEvents: [EventModel] = []
-        
+
         do {
-            let data = try await apiClient.perform(request)
-            
-            guard let mapEvents = data.events else {
-                return []
-            }
-            
-            let events: [EventModel] = mapEvents.compactMap { mapEvent in
-                guard
-                    let uid = mapEvent.uid,
-                    let categoryString = mapEvent.category,
-                    let category = Categories.mock.first(where: { $0.name == categoryString }),
-                    let name = mapEvent.name,
-                    let description = mapEvent.description,
-                    let startDate = mapEvent.startDate,
-                    let dueDate = mapEvent.dueDate,
-                    let latitude = mapEvent.latitude,
-                    let longitude = mapEvent.longitude
-                else {
-                    return nil
+            for try await response in apiClient.watch(request, cachePolicy: .returnCacheDataAndFetch) {
+                guard let mapEvents = response.events else {
+                    return []
                 }
                 
-                return EventModel(
-                    uid: uid,
-                    category: category,
-                    name: name,
-                    aboutEvent: description,
-                    startDate: startDate,
-                    dueDate: dueDate,
-                    latitude: latitude,
-                    longitude: longitude
-                )
+                let events: [EventModel] = mapEvents.compactMap { mapEvent in
+                    guard
+                        let uid = mapEvent.uid,
+                        let categoryString = mapEvent.category,
+                        let category = Categories.mock.first(where: { $0.name == categoryString }),
+                        let name = mapEvent.name,
+                        let description = mapEvent.description,
+                        let startDate = mapEvent.startDate,
+                        let dueDate = mapEvent.dueDate,
+                        let latitude = mapEvent.latitude,
+                        let longitude = mapEvent.longitude
+                    else {
+                        return nil
+                    }
+                    
+                    return EventModel(
+                        uid: uid,
+                        category: category,
+                        name: name,
+                        aboutEvent: description,
+                        startDate: startDate,
+                        dueDate: dueDate,
+                        latitude: latitude,
+                        longitude: longitude
+                    )
+                }
+                fetchedEvents = events
+                print("fetched events count: that is the counts of events in the database\(fetchedEvents.count)")
+                
             }
-            fetchedEvents = events
-            print("fetched events count: that is the counts of events in the database\(fetchedEvents.count)")
-            
             
         } catch {
             debugPrint(error)

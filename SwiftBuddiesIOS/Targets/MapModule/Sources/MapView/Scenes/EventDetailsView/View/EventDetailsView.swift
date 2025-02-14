@@ -32,10 +32,6 @@ struct EventDetailsView: View {
         
         }
         .background(.ultraThinMaterial)
-           
-        
-        
-        
     }
 }
 

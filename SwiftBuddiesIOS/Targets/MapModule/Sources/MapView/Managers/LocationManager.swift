@@ -10,20 +10,19 @@ import CoreLocation
 import SwiftUI
 import MapKit
 
-class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
+class LocationManager: NSObject, CLLocationManagerDelegate {
     
-    @Published private(set) var lastKnownLocation: Coord?
+    static let shared = LocationManager() // Singleton
     
     private let manager = CLLocationManager()
     
-    override init() {
+    private override init() {
         super.init()
         manager.delegate = self
         manager.startUpdatingLocation()
         manager.desiredAccuracy = kCLLocationAccuracyBest
     }
-    
-    
+
     func startUpdatingLocation() {
         manager.startUpdatingLocation()
     }
@@ -36,25 +35,14 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
         switch manager.authorizationStatus {
         case .notDetermined:
             manager.requestWhenInUseAuthorization()
-            
         case .restricted:
             debugPrint("Location restricted")
-            
         case .denied:
             debugPrint("Location denied")
-            
-        case .authorizedAlways:
-            debugPrint("Location authorizedAlways")
-            
-        case .authorizedWhenInUse:
-            debugPrint("Location authorized when in use")
-            if let coordinate = manager.location?.coordinate {
-                lastKnownLocation = Coord(lat: coordinate.latitude.magnitude, lon: coordinate.longitude.magnitude)
-            }
-            
+        case .authorizedAlways, .authorizedWhenInUse:
+            debugPrint("Location authorized")
         @unknown default:
             debugPrint("Location service disabled")
-            
         }
     }
     
@@ -63,8 +51,19 @@ class LocationManager: NSObject, CLLocationManagerDelegate, ObservableObject {
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        if let coordinate = locations.first?.coordinate {
-            lastKnownLocation = Coord(lat: coordinate.latitude.magnitude, lon: coordinate.longitude.magnitude)
-        }
+        guard let coordinate = locations.last?.coordinate else { return }
+        // Burada LocationManager sadece konum güncellemeleri sağlıyor, ViewModel'e bildirecek
+        LocationManager.shared.didUpdateLocation(coordinate)
+    }
+    
+    // Bu method, LocationManager singleton üzerinden location güncellenmesi sağlanacak
+    private var locationUpdateHandler: ((CLLocationCoordinate2D) -> Void)?
+    
+    func setLocationUpdateHandler(_ handler: @escaping (CLLocationCoordinate2D) -> Void) {
+        self.locationUpdateHandler = handler
+    }
+    
+    private func didUpdateLocation(_ coordinate: CLLocationCoordinate2D) {
+        locationUpdateHandler?(coordinate)
     }
 }
