@@ -56,6 +56,23 @@ public enum APIs {
         }
     }
     
+    public enum Profile: Endpoint {
+        case getUserInfo
+        case updateUsername
+        case updateSocialMedias
+        
+        public var value: String {
+            switch self {
+            case .getUserInfo:
+                "whoAmI"
+            case .updateSocialMedias:
+                "updateSocialMedias"
+            case .updateUsername:
+                "updateUsername"
+            }
+        }
+    }
+    
     public enum GitHub: Endpoint {
         case contributors
         case userStats(username: String?)
