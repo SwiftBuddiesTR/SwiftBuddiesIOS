@@ -10,6 +10,7 @@ import SwiftUI
 struct AnnotationView: View {
     
     let color: Color
+    var isSelected: Bool = false
     
     var body: some View {
        
@@ -30,8 +31,9 @@ struct AnnotationView: View {
                 .foregroundColor(color)
                 .rotationEffect(Angle(degrees: 180))
                 .offset(y: -11)
-                
         }
+        .scaleEffect(isSelected ? 1 : 0.8)
+
         //bu paddingi annotation yerleştirildiğinde konumu kapatmaması ve okun tam lokasyonnu göstermesi için kullandım
         .padding(.bottom)
     }
