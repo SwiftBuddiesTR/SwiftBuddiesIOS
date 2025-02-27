@@ -1,8 +1,8 @@
 import SwiftUI
 import Feed
 import Map
-import Profile
 import Contributors
+import Profile
 
 enum AppTab: Int, Identifiable {
     case feed = 0
