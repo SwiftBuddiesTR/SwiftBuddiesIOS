@@ -188,7 +188,7 @@ extension BuddiesFeedViewModel {
         
         func httpProperties() -> HTTPOperation<GetImageRequest>.HTTPProperties {
             .init(
-                url: APIs.Feed.getImage.url(),
+                url: APIs.Feed.getImage.url(.prodV2),
                 httpMethod: .get,
                 data: self
             )
