@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Design
 
 struct EditProfile: View {
     
@@ -41,7 +42,9 @@ struct EditProfile: View {
                         .font(.system(size: 24, weight: .bold))
                     
                 }
+                .buttonStyle(.styled(style: .secondary()))
                 .disabled(viewModel.username.isEmpty)
+                
             }
             .foregroundStyle(viewModel.username.isEmpty ? .white.opacity(0.9) : .white)
             .listRowBackground(viewModel.username.isEmpty ? Color.gray : Color.orange)
@@ -51,19 +54,8 @@ struct EditProfile: View {
         .task {
             await viewModel.getProfileInfos()
         }
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.automatic)
         .navigationTitle("Edit Profile")
-        .navigationBarBackButtonHidden()
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .foregroundStyle(Color.dynamicColor)
-                }
-            }
-        }
         .alert("Info!", isPresented: $showAlert) {
             Button("Ok", role: .cancel) {
                 dismiss()
@@ -71,7 +63,6 @@ struct EditProfile: View {
         } message: {
             Text(viewModel.usernameMessage + ",\n " + viewModel.socialMessage)
         }
-        
     }
 }
 

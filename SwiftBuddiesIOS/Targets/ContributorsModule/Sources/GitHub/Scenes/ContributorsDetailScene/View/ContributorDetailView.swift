@@ -151,12 +151,18 @@ struct ContributorDetailView: View {
                 UIApplication.shared.open(url)
             }
         } label: {
-            Label("Open in GitHub", systemImage: "link")
-                .font(.footnote)
-                .frame(maxWidth: .infinity)
+            Text("Open in GitHub")
         }
-        .buttonStyle(.bordered)
-        .tint(.primary)
+        .buttonStyle(
+            BuddiesButtonStyle(
+                style: .secondary(color: .accentColor),
+                width: .hug,
+                size: .medium,
+                shape: .roundedRectangle,
+                role: .default,
+                leadingIcon: Image(systemName: "link")
+            )
+        )
     }
 }
 
