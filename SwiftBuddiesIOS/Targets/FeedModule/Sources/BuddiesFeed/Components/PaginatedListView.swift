@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct PaginatedListView<Content: View>: View {
-    let content: Content
     let state: FeedState
+    let content: Content
     let onLoadMore: () async -> Void
     
     init(
@@ -10,42 +10,44 @@ struct PaginatedListView<Content: View>: View {
         @ViewBuilder content: () -> Content,
         onLoadMore: @escaping () async -> Void
     ) {
-        self.content = content()
         self.state = state
+        self.content = content()
         self.onLoadMore = onLoadMore
     }
     
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 16) {
+            LazyVStack(alignment: .leading, spacing: 0) {
                 content
                 
-                if case let .loaded(hasMore) = state, hasMore {
-                    loadingCell
-                }
-                
-                if case .loading(let type) = state {
-                    loadingIndicator(for: type)
+                if shouldShowLoadingIndicator {
+                    loadingIndicator
                 }
             }
             .padding(.horizontal)
         }
     }
     
-    private var loadingCell: some View {
-        ProgressView()
-            .frame(height: 20)
-            .onAppear {
-                Task {
-                    await onLoadMore()
-                }
-            }
+    private var shouldShowLoadingIndicator: Bool {
+        switch state {
+        case .loading(.nextPage), .loaded(hasMore: true):
+            return true
+        default:
+            return false
+        }
     }
     
-    @ViewBuilder
-    private func loadingIndicator(for type: FeedState.LoadingType) -> some View {
-        ProgressView()
-            .frame(maxWidth: .infinity)
-            .padding()
+    private var loadingIndicator: some View {
+        HStack {
+            Spacer()
+            ProgressView()
+                .onAppear {
+                    Task {
+                        await onLoadMore()
+                    }
+                }
+            Spacer()
+        }
+        .padding()
     }
 } 

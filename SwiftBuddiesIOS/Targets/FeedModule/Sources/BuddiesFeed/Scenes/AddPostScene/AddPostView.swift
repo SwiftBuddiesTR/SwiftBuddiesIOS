@@ -81,7 +81,7 @@ struct AddPostView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Cancel") {
-                    coordinator.popToRoot()
+                    coordinator.pop()
                 }
                 .foregroundColor(.red)
             }
