@@ -21,6 +21,7 @@ class BuddiesFeedViewModel: ObservableObject {
     private var paginationInfo = PaginationInfo(limit: 4)
     private var seenPostIds = Set<String>()
     private var currentTask: Task<Void, Never>?
+    private var shouldFetchInitialContent = true
     
     init(client: BuddiesClient = .shared) {
         self.apiClient = client
@@ -29,6 +30,8 @@ class BuddiesFeedViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadInitialContent() async {
+        if !shouldFetchInitialContent { return }
+        defer { shouldFetchInitialContent = false }
         await fetchPosts(loading: .initial)
     }
     
