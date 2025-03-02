@@ -1,20 +1,43 @@
 //
-//  ProfileService.swift
-//  Auth
+//  ProfileEditViewModel.swift
+//  Buddies
 //
-//  Created by Fatih Özen on 3.02.2025.
+//  Created by Fatih Özen on 12.02.2025.
 //
 
 import Foundation
-import BuddiesNetwork
 import Network
+import BuddiesNetwork
 
-final class ProfileService {
+final class ProfileEditViewModel: ObservableObject {
+    
+    @Published var username: String = ""
+    @Published var linkedinURL: String = ""
+    @Published var githubURL: String = ""
+    @Published private(set) var socialMessage: String = ""
+    @Published private(set) var usernameMessage: String = ""
     private let apiClient: BuddiesClient!
     
-    init() {
-        self.apiClient = .shared
+    init(client: BuddiesClient = .shared) {
+        self.apiClient = client
     }
+    
+    private var profileInfos: UserInfosResponse?
+    
+    @MainActor
+    func getProfileInfos() async {
+        profileInfos = await fetchProfileInfos()
+        
+        username = profileInfos?.username ?? ""
+        linkedinURL = profileInfos?.linkedin ?? ""
+        githubURL = profileInfos?.github ?? ""
+    }
+    
+    func saveProfile() async {
+        await updateUsername()
+        await updateSocialMediaURL()
+    }
+    
     
     func fetchProfileInfos() async -> UserInfosResponse? {
         let request = GetUserInfosRequest()
@@ -31,6 +54,42 @@ final class ProfileService {
             debugPrint(error)
             return nil
         }
+    }
+    
+    
+    @MainActor
+    private func updateUsername() async {
+        if !username.isEmpty,
+            username != profileInfos?.username {
+            usernameMessage = await updateUsername(username: username)
+        }
+    }
+    
+    @MainActor
+    private func updateSocialMediaURL() async {
+        var socialMedias: [SocialMediaResponse] = []
+        
+        if linkedinURL != profileInfos?.linkedin {
+            socialMedias.append(
+                SocialMediaResponse(
+                    key: "linkedin",
+                    value: linkedinURL
+                )
+            )
+        }
+        
+        if githubURL != profileInfos?.github {
+            socialMedias.append(
+                SocialMediaResponse(
+                    key: "github",
+                    value: githubURL
+                )
+            )
+        }
+        
+//        if !socialMedias.isEmpty {
+//            socialMessage = await profileService.updateSocialMedias(socialMedias: socialMedias)
+//        }
     }
     
     func updateUsername(username: String) async -> String {
@@ -55,19 +114,6 @@ final class ProfileService {
             debugPrint(error)
             return error.localizedDescription
         }
-    }
-    
-}
-
-struct GetUserInfosRequest: Requestable {
-    typealias Data = UserInfosResponse
-    
-    func httpProperties() -> HTTPOperation<GetUserInfosRequest>.HTTPProperties {
-        .init(
-            url: APIs.Profile.getUserInfo.url(),
-            httpMethod: .get,
-            data: self
-        )
     }
 }
 

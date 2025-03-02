@@ -6,8 +6,7 @@
 //
 
 import SwiftUI
-// If Design module is not available, you might need to create it or import the correct module
- import Design
+import Design
 
 public struct BuddiesFeedView: View {
     @ObservedObject private var viewModel: BuddiesFeedViewModel
