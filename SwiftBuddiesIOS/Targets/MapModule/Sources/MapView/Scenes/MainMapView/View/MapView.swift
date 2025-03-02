@@ -1,6 +1,7 @@
 import SwiftUI
 import MapKit
 import Design
+import Localization
 
 public struct MapView: View {
     
@@ -100,9 +101,9 @@ public struct MapView: View {
     }
     
     private func createAlert(text: String? = nil) -> Alert {
-        return Alert(title: Text("Ups 🧐"),
-                     message: Text(text ?? "Something went wrong, please try again"),
-                     dismissButton: .default(Text("OK")))
+        return Alert(title: L.alert_error_title,
+                     message: Text(text ?? L.$alert_error_generic.localized),
+                     dismissButton: .default(L.alert_button_ok))
     }
 }
 
@@ -167,7 +168,7 @@ extension MapView {
             Button {
                 vm.toggleEventList()
             } label: {
-                Text(vm.currentEvent?.name ?? "Select an event")
+                Text(vm.currentEvent?.name ?? L.$common_select_an_event.localized)
                     .font(.title2)
                     .fontWeight(.black)
                     .foregroundColor(.primary)
@@ -195,7 +196,7 @@ extension MapView {
             Button(action: {
                 vm.categoryModalShown.toggle()
             }) {
-                Text("Filter by Category")
+                L.filter_by_category
                     .foregroundColor(.secondary)
                     .font(.footnote)
                     .padding()
@@ -226,7 +227,7 @@ extension MapView {
     
     private var explanationText: some View {
         VStack {
-            Text("You can click for more information about the selected event on the map.")
+            L.map_event_info_hint
                 .font(.headline)
                 .foregroundStyle(.red)
                 .padding()

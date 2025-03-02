@@ -7,6 +7,7 @@
 
 import SwiftUI
 import UIKit
+import Localization
 
 struct SearchBar: UIViewRepresentable {
     @Binding var text: String
@@ -39,7 +40,7 @@ struct SearchBar: UIViewRepresentable {
         let searchBar = UISearchBar(frame: .zero)
         searchBar.delegate = context.coordinator
         searchBar.backgroundColor = UIColor.clear
-        searchBar.placeholder = "Find the best place for your event..."
+        searchBar.placeholder = L.$search_place_placeholder.localized
         searchBar.autocapitalizationType = .none
         return searchBar
     }

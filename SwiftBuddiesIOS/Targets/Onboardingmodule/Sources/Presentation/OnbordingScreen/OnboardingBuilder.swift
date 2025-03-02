@@ -15,11 +15,11 @@ public struct OnboardingBuilder {
             .init(id: 0,
                   title: L.$onboardingitem_firsttitle.localized,
                   description: L.$onboardingitem_firstdescription.localized,
-                  image: DesignAsset.onboardingWelcomeImage.swiftUIImage),
+                  image: DesignAsset.LocalMedia.onboardingWelcomeImage.swiftUIImage),
             .init(id: 1,
                   title: L.$onboardingitem_secondtitle.localized,
                   description: L.$onboardingitem_seconddescription.localized,
-                  image: DesignAsset.onboardingBuddiesImage.swiftUIImage)
+                  image: DesignAsset.LocalMedia.onboardingBuddiesImage.swiftUIImage)
         ]
         
         return OnboardingView(items: onboardingItems)

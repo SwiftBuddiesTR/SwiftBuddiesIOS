@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Design
+import Localization
 
 struct AddPostView: View {
     @StateObject private var viewModel = AddPostViewModel()
@@ -29,7 +30,7 @@ struct AddPostView: View {
                             .focused($isFocused)
                         
                         if viewModel.postContent.isEmpty {
-                            Text("What's on your mind?")
+                            Text(L.$feed_whats_on_your_mind.localized)
                                 .foregroundColor(.gray.opacity(0.8))
                                 .padding(.horizontal, 20)
                                 .padding(.top, 8)
@@ -76,27 +77,27 @@ struct AddPostView: View {
             .background(Color(uiColor: .systemBackground))
             .shadow(color: .black.opacity(0.05), radius: 8, y: -4)
         }
-        .navigationTitle("New Post")
+        .navigationTitle(L.$feed_new_post.localized)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Cancel") {
+                Button(L.$button_cancel.localized) {
                     coordinator.pop()
                 }
                 .foregroundColor(.red)
             }
         }
         .onAppear { isFocused = true }
-        .confirmationDialog("Choose Image Source", isPresented: $showingSourcePicker) {
-            Button("Camera") { 
+        .confirmationDialog(L.$imagepicker_choose_source.localized, isPresented: $showingSourcePicker) {
+            Button(L.$imagepicker_camera.localized) { 
                 selectedSource = .camera
                 showingImagePicker = true
             }
-            Button("Photo Library") { 
+            Button(L.$imagepicker_photo_library.localized) { 
                 selectedSource = .photoLibrary
                 showingImagePicker = true
             }
-            Button("Cancel", role: .cancel) {}
+            Button(L.$button_cancel.localized, role: .cancel) {}
         }
         .sheet(isPresented: $showingImagePicker) {
             if let source = selectedSource {
@@ -122,7 +123,7 @@ struct AddPostView: View {
                 coordinator.popToRoot()
             }
         }) {
-            Text("Share")
+            L.button_share
                 .fontWeight(.semibold)
                 .padding(.horizontal, 24)
                 .padding(.vertical, 8)

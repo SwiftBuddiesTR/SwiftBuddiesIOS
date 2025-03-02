@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Design
+import Localization
 
 struct EditProfile: View {
     
@@ -17,15 +18,15 @@ struct EditProfile: View {
     
     var body: some View {
         Form {
-            Section(header: Text("Kullanıcı Bilgileri")) {
-                TextField("Username", text: $viewModel.username)
+            Section(header: L.profile_section_user_info) {
+                TextField(L.$profile_field_username.localized, text: $viewModel.username)
                     .disableAutocorrection(true)
                 
-                TextField("LinkedIn URL", text: $viewModel.linkedinURL)
+                TextField(L.$textfield_linkedin_url.localized, text: $viewModel.linkedinURL)
                     .keyboardType(.URL)
                     .autocorrectionDisabled(true)
                 
-                TextField("GitHub URL", text: $viewModel.githubURL)
+                TextField(L.$textfield_github_url.localized, text: $viewModel.githubURL)
                     .keyboardType(.URL)
                     .autocorrectionDisabled(true)
             }
@@ -37,7 +38,7 @@ struct EditProfile: View {
                         showAlert = true
                     }
                 }) {
-                    Text("Save")
+                    L.button_save
                         .frame(maxWidth: .infinity)
                         .font(.system(size: 24, weight: .bold))
                     
@@ -55,9 +56,9 @@ struct EditProfile: View {
             await viewModel.getProfileInfos()
         }
         .navigationBarTitleDisplayMode(.automatic)
-        .navigationTitle("Edit Profile")
-        .alert("Info!", isPresented: $showAlert) {
-            Button("Ok", role: .cancel) {
+        .navigationTitle(L.$profile_title_edit.localized)
+        .alert(L.$alert_info_title.localized, isPresented: $showAlert) {
+            Button(L.$alert_info_button_ok.localized, role: .cancel) {
                 dismiss()
             }
         } message: {

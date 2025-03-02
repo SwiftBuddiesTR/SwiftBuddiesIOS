@@ -11,9 +11,9 @@ import SwiftUI
 
 public struct BuddiesButtonStyle: ButtonStyle {
     public enum Style {
-        case text(labelColor: Color = DesignAsset.black.swiftUIColor)
-        case primary(color: Color = DesignAsset.cyan.swiftUIColor)
-        case secondary(color: Color = DesignAsset.beaver.swiftUIColor)
+        case text(labelColor: Color = DesignAsset.Colors.black.swiftUIColor)
+        case primary(color: Color = DesignAsset.Colors.cyan.swiftUIColor)
+        case secondary(color: Color = DesignAsset.Colors.beaver.swiftUIColor)
         case inverted
         case ghost
     }

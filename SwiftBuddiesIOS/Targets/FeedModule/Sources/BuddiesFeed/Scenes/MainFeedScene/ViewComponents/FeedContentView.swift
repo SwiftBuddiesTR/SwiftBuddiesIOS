@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Design
+import Localization
 
 // MARK: - Feed Content View
 struct FeedContentView: View {
@@ -28,7 +29,7 @@ struct FeedContentView: View {
                 await viewModel.loadMoreIfNeeded()
             }
         )
-        .navigationTitle("Feed")
+        .navigationTitle(L.$feed_title.localized)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {

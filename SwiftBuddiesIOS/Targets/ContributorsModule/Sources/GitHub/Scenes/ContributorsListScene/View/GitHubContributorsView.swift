@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Design
+import Localization
 
 public struct GitHubContributorsView: View {
     @StateObject private var viewModel: GitHubContributorsViewModel
@@ -22,12 +23,12 @@ public struct GitHubContributorsView: View {
                 ProgressView()
             } else if let error = viewModel.error {
                 VStack {
-                    Text("Error loading contributors")
+                    L.contributors_error_loading
                         .foregroundColor(.red)
                     Text(error.localizedDescription)
                         .font(.caption)
                         .foregroundColor(.secondary)
-                    Button("Retry") {
+                    Button(L.$button_retry.localized) {
                         Task {
                             await viewModel.fetchContributors()
                         }
@@ -40,7 +41,7 @@ public struct GitHubContributorsView: View {
                 }
             }
         }
-        .navigationTitle("GitHub Contributors")
+        .navigationTitle(L.$contributors_github_title.localized)
         .task(id: "fetchContributors") {
             await viewModel.fetchContributors()
         }

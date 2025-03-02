@@ -1,5 +1,6 @@
 import SwiftUI
 import Design
+import Localization
 
 public struct SettingsView: View {
     
@@ -7,6 +8,17 @@ public struct SettingsView: View {
         case about = "About"
         case editProfile = "Edit Profile"
         case buttonsShowcase = "Buttons Showcase"
+        
+        var localized: String {
+            switch self {
+            case .about:
+                return L.$settings_about.localized
+            case .editProfile:
+                return L.$profile_title_edit.localized
+            case .buttonsShowcase:
+                return L.$settings_buttons_showcase.localized
+            }
+        }
     }
     
     @StateObject private var viewModel = SettingsViewModel()
@@ -23,7 +35,7 @@ public struct SettingsView: View {
                     Button(action: {
                         coordinator.push(.about)
                     }) {
-                        Text(selectedView.rawValue)
+                        Text(selectedView.localized)
                     }
                     .buttonStyle(.styled(style: .inverted))
 
@@ -31,14 +43,14 @@ public struct SettingsView: View {
                     Button(action: {
                         coordinator.push(.editProfile)
                     }) {
-                        Text(selectedView.rawValue)
+                        Text(selectedView.localized)
                     }
                     .buttonStyle(.styled(style: .primary(color: DesignAsset.fulvous.swiftUIColor)))
                 case .buttonsShowcase:
                     Button(action: {
                         coordinator.push(.buttonsShowcase)
                     }) {
-                        Text(selectedView.rawValue)
+                        Text(selectedView.localized)
                     }
                     .buttonStyle(.styled(style: .ghost))
                 }

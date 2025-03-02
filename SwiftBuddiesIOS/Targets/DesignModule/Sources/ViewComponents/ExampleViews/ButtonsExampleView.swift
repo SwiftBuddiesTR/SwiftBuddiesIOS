@@ -23,12 +23,12 @@ public struct ButtonsExampleView: View {
     
     private let styleOptions = ["Primary", "Secondary", "Inverted", "Ghost", "Text"]
     private let colorOptions: [(name: String, color: Color)] = [
-        (DesignAsset.white.name, DesignAsset.white.swiftUIColor),
-        (DesignAsset.black.name, DesignAsset.black.swiftUIColor),
-        (DesignAsset.fulvous.name, DesignAsset.fulvous.swiftUIColor),
-        (DesignAsset.cyan.name, DesignAsset.cyan.swiftUIColor),
-        (DesignAsset.olive.name, DesignAsset.olive.swiftUIColor),
-        (DesignAsset.beaver.name, DesignAsset.beaver.swiftUIColor),
+        (DesignAsset.Colors.white.name, DesignAsset.Colors.white.swiftUIColor),
+        (DesignAsset.Colors.black.name, DesignAsset.Colors.black.swiftUIColor),
+        (DesignAsset.Colors.fulvous.name, DesignAsset.Colors.fulvous.swiftUIColor),
+        (DesignAsset.Colors.cyan.name, DesignAsset.Colors.cyan.swiftUIColor),
+        (DesignAsset.Colors.olive.name, DesignAsset.Colors.olive.swiftUIColor),
+        (DesignAsset.Colors.beaver.name, DesignAsset.Colors.beaver.swiftUIColor),
     ]
     
     private var currentStyle: BuddiesButtonStyle.Style {
@@ -108,25 +108,25 @@ public struct ButtonsExampleView: View {
                 
                 ColorPicker("Custom Color", selection: $selectedColor)
                 
-//                ScrollView(.horizontal, showsIndicators: false) {
-//                    HStack(spacing: 12) {
-//                        ForEach(0..<colorOptions.count, id: \.self) { index in
-//                            Button {
-//                                selectedColor = colorOptions[index].1
-//                            } label: {
-//                                Circle()
-//                                    .fill(colorOptions[index].1)
-//                                    .frame(width: 32, height: 32)
-//                                    .overlay(
-//                                        Circle()
-//                                            .stroke(selectedColor == colorOptions[index].1 ? .primary : .clear, lineWidth: 2)
-//                                    )
-//                            }
-//                            .buttonStyle(.plain)
-//                        }
-//                    }
-//                    .padding(.vertical, 8)
-//                }
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(0..<colorOptions.count, id: \.self) { index in
+                            Button {
+                                selectedColor = colorOptions[index].1
+                            } label: {
+                                Circle()
+                                    .fill(colorOptions[index].1)
+                                    .frame(width: 32, height: 32)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(selectedColor == colorOptions[index].1 ? .primary : .clear, lineWidth: 2)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
             }
             
             Section("Button Configuration") {

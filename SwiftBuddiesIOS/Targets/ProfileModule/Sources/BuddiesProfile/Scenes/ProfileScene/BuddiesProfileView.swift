@@ -1,5 +1,6 @@
 import SwiftUI
 import Design
+import Localization
 
 
 public struct BuddiesProfileView: View {
@@ -77,7 +78,7 @@ public struct BuddiesProfileView: View {
                         } else {
                             VStack {
                                 ProgressView()
-                                Text("Loading...")
+                                Text(L.$common_loading.localized)
                                     .font(.title3)
                                     .foregroundColor(Color.dynamicColor)
                             }
@@ -86,7 +87,7 @@ public struct BuddiesProfileView: View {
                     }
                     .padding()
                     
-                    Picker("", selection: $selectionSegment) {
+                    Picker(L.$profile_tabs_title.localized, selection: $selectionSegment) {
                         ForEach(segments, id: \.self) { item in
                             Text(item)
                         }
@@ -99,7 +100,7 @@ public struct BuddiesProfileView: View {
                 }
                 .frame(width: size.width)
                 .navigationBarTitleDisplayMode(.inline)
-                .navigationTitle("Profile")
+                .navigationTitle(L.$profile_title.localized)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {

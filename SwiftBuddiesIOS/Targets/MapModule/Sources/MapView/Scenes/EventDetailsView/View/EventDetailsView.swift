@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import Localization
 
 struct EventDetailsView: View {
     
@@ -72,7 +73,7 @@ extension EventDetailsView {
         displayFormatter.timeStyle = .short
         
         return VStack(alignment: .leading, spacing: 8) {
-            Text("Between:")
+            L.event_details_between
                 .font(.title2)
                 .fontWeight(.bold)
             
@@ -102,4 +103,9 @@ extension EventDetailsView {
         }
     }
     
+    private func createAlert() -> Alert {
+        return Alert(title: L.alert_error_title,
+                     message: L.alert_error_category_empty,
+                     dismissButton: .default(L.alert_button_ok))
+    }
 }

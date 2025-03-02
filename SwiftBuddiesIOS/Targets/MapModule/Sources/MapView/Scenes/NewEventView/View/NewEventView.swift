@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import Localization
 
 struct NewEventView: View {
 
@@ -31,7 +32,7 @@ struct NewEventView: View {
             .alert(isPresented: $vm.showAlert) {
                 createAlert()
             }
-            .navigationTitle("Event Details")
+            .navigationTitle(L.$event_details.localized)
             .navigationBarTitleDisplayMode(.large)
             .padding(.top)
             Spacer()
@@ -62,7 +63,7 @@ extension NewEventView {
             }
         } label: {
             HStack {
-                Text(vm.categorySelection?.name ?? "Select a Category")
+                Text(vm.categorySelection?.name ?? L.$textfield_select_category.localized)
                     .font(.headline)
                     .foregroundStyle(Color("AdaptiveColor"))
                     .padding()
@@ -82,7 +83,7 @@ extension NewEventView {
     }
     
     private var nameTextfield: some View {
-        TextField("Event name...", text: $vm.nameText)
+        TextField(L.$textfield_event_name_placeholder.localized, text: $vm.nameText)
             .textInputAutocapitalization(.never)
             .font(.headline)
             .padding()
@@ -100,7 +101,7 @@ extension NewEventView {
     }
     
     private var descriptionTextField: some View {
-        TextField("About your event...", text: $vm.descriptionText)
+        TextField(L.$textfield_event_description_placeholder.localized, text: $vm.descriptionText)
             .font(.headline)
             .padding()
             .frame(maxWidth: .infinity)
@@ -118,7 +119,7 @@ extension NewEventView {
     
     private var datePickers: some View {
         VStack(spacing: 20) {
-            DatePicker("Start Date", selection: $vm.startDate, displayedComponents: [.date])
+            DatePicker(L.$datepicker_start_date.localized, selection: $vm.startDate, displayedComponents: [.date])
                 .font(.headline)
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -133,7 +134,7 @@ extension NewEventView {
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 .padding(.horizontal)
             
-            DatePicker("Due Date", selection: $vm.dueDate, in: vm.startDate..., displayedComponents: [.date])
+            DatePicker(L.$datepicker_due_date.localized, selection: $vm.dueDate, in: vm.startDate..., displayedComponents: [.date])
                 .font(.headline)
                 .padding()
                 .frame(maxWidth: .infinity)
@@ -168,7 +169,7 @@ extension NewEventView {
             }
             
         }) {
-            Text("Next")
+            L.button_next
                 .frame(width: UIScreen.main.bounds.width - 64, height: 55)
                 .padding(.horizontal)
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color.orange))
@@ -179,8 +180,8 @@ extension NewEventView {
     }
     
     private func createAlert() -> Alert {
-        return Alert(title: Text("Ups 🧐"),
-                     message: Text("Category option can not be empty."),
-                     dismissButton: .default(Text("OK")))
+        return Alert(title: L.alert_error_title,
+                     message: L.alert_error_category_empty,
+                     dismissButton: .default(L.alert_button_ok))
     }
 }
