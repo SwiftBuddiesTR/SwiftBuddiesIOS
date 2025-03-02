@@ -10,5 +10,5 @@ import SwiftUI
 public protocol FeedModuleProtocol {
     associatedtype FeedViewType: View
     
-    func makeFeedView() -> FeedViewType
+    func getFeedView() -> FeedViewType
 }

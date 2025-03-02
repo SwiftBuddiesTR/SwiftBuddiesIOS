@@ -13,7 +13,7 @@ struct FeedResponseModel: Decodable {
 }
 
 // MARK: - Feed
-struct Post: Decodable {
+struct Post: Decodable, Hashable {
     var user: FeedUser
     var post: FeedPost
 }

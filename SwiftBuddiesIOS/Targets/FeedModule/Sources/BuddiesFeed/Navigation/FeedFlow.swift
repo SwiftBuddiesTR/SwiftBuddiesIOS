@@ -11,8 +11,8 @@ import SwiftUI
 final class BuddiesFeedCoordinator: ObservableObject {
     enum BuddiesFeedRoute: Hashable {
         case addPost
-        case postDetail(FeedPost)
-        case userProfile(FeedUser)
+        case postDetail(String)
+        case userProfile(String)
     }
     
     @Published var navigationStack: [BuddiesFeedRoute] = []
@@ -24,30 +24,34 @@ final class BuddiesFeedCoordinator: ObservableObject {
     func popToRoot() {
         navigationStack.removeAll()
     }
+    
+    func pop() {
+        navigationStack.removeLast()
+    }
 }
 
 public struct FeedFlow: View {
     @StateObject private var coordinator: BuddiesFeedCoordinator
     private let module: BuddiesFeedModule
     
-    init(module: BuddiesFeedModule = BuddiesFeedModule()) {
+    init(module: BuddiesFeedModule) {
         self._coordinator = StateObject(wrappedValue: BuddiesFeedCoordinator())
         self.module = module
     }
     
     public var body: some View {
         NavigationStack(path: $coordinator.navigationStack) {
-            module.makeFeedView()
+            module.getFeedView()
                 .environmentObject(coordinator)
                 .navigationDestination(for: BuddiesFeedCoordinator.BuddiesFeedRoute.self) { route in
                     switch route {
                     case .addPost:
                         AddPostView()
                             .environmentObject(coordinator)
-                    case .postDetail(let post):
-                        Text("Post Detail View: \(post.content ?? "")")
-                    case .userProfile(let user):
-                        Text("User Profile: \(user.name)")
+                    case .postDetail(let postId):
+                        Text("Post Detail View: \(postId)")
+                    case .userProfile(let userId):
+                        Text("User Profile: \(userId)")
                     }
                 }
         }
@@ -55,5 +59,5 @@ public struct FeedFlow: View {
 }
 
 #Preview {
-    FeedFlow()
-} 
+    FeedFlow(module: .init())
+}

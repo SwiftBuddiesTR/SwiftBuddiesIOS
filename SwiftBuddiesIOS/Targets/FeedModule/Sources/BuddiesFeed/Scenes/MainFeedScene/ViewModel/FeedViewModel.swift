@@ -13,7 +13,7 @@ import Core
 
 @MainActor
 class BuddiesFeedViewModel: ObservableObject {
-    @Published private(set) var posts: [Post] = []
+    @Published var posts: [Post] = []
     @Published private(set) var state: FeedState = .idle
     @Published private(set) var postImages: [String: UIImage] = [:]  // Cache for images
     
@@ -21,6 +21,7 @@ class BuddiesFeedViewModel: ObservableObject {
     private var paginationInfo = PaginationInfo(limit: 4)
     private var seenPostIds = Set<String>()
     private var currentTask: Task<Void, Never>?
+    private var shouldFetchInitialContent = true
     
     init(client: BuddiesClient = .shared) {
         self.apiClient = client
@@ -29,6 +30,8 @@ class BuddiesFeedViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func loadInitialContent() async {
+        if !shouldFetchInitialContent { return }
+        defer { shouldFetchInitialContent = false }
         await fetchPosts(loading: .initial)
     }
     
@@ -188,60 +191,10 @@ extension BuddiesFeedViewModel {
         
         func httpProperties() -> HTTPOperation<GetImageRequest>.HTTPProperties {
             .init(
-                url: APIs.Feed.getImage.url(),
+                url: APIs.Feed.getImage.url(.prodV2),
                 httpMethod: .get,
                 data: self
             )
-        }
-    }
-}
-
-// MARK: - Feed States
-/// Feed state
-/// - idle: No content
-/// - loading: Loading content
-/// - error: Error state
-/// - loaded: Content loaded
-enum FeedState: Equatable {
-    case idle
-    /// Loading content
-    /// - Parameter LoadingType: Loading type
-    /// - initial: Initial loading
-    /// - nextPage: Loading next page
-    /// - refresh: Refreshing content
-    case loading(LoadingType)
-    case error(FeedError)
-    case loaded(hasMore: Bool)
-    
-    /// Loading type
-    /// - initial: Initial loading
-    /// - nextPage: Loading next page
-    /// - refresh: Refreshing content
-    enum LoadingType: Equatable {
-        case initial
-        case nextPage
-        case refresh
-    }
-    
-    /// FeedError
-    /// - network(String): Network error
-    ///     - Parameter message: Error message
-    /// - parsing: Parsing error
-    /// - unknown: Unknown error
-    enum FeedError: LocalizedError, Equatable {
-        case network(String)
-        case parsing
-        case unknown
-        
-        var errorDescription: String? {
-            switch self {
-            case .network(let message):
-                return "Network Error: \(message)"
-            case .parsing:
-                return "Failed to parse feed data"
-            case .unknown:
-                return "An unknown error occurred"
-            }
         }
     }
 }

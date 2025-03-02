@@ -15,6 +15,7 @@ extension Target {
             product: .staticLibrary,
             productName: productName,
             bundleId: "com.swiftbuddies.\(productName.lowercased())",
+            deploymentTargets: .iOS("17.0"),
             sources: ["SwiftBuddiesIOS/Targets/\(name)Module/Sources/**"],
             resources: hasResources ? ["SwiftBuddiesIOS/Targets/\(name)Module/Resources/**"] : [],
             dependencies: dependencies)
@@ -34,6 +35,7 @@ let project = Project(
             destinations: .iOS,
             product: .app,
             bundleId: "com.dogukaank.SwiftBuddiesIOS",
+            deploymentTargets: .iOS("17.0"),
             infoPlist: .extendingDefault(
                 with: [
                     "CFBundleShortVersionString": "0.0.1",

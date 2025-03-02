@@ -2,20 +2,30 @@ import SwiftUI
 import BuddiesNetwork
 import Network
 
-public struct BuddiesFeedModule: FeedModuleProtocol {
+@MainActor
+public class BuddiesFeedModule: @preconcurrency FeedModuleProtocol {
+    private var feedView: BuddiesFeedView!
     private let sessionConfiguration: URLSessionConfiguration
     
     public init(sessionConfiguration: URLSessionConfiguration = .default) {
         self.sessionConfiguration = sessionConfiguration
+        self.feedView = makeFeedView()
     }
     
-    @MainActor
-    public func makeFeedView() -> BuddiesFeedView {
-        let viewModel = makeViewModel()
-        return BuddiesFeedView(viewModel: viewModel)
+    public func getFeedView() -> BuddiesFeedView {
+        return feedView
     }
     
-    @MainActor 
+    private func makeFeedView() -> BuddiesFeedView {
+        if let feedView = feedView {
+            return feedView
+        } else {
+            let viewModel = makeViewModel()
+            feedView = BuddiesFeedView(viewModel: viewModel)
+            return feedView
+        }
+    }
+
     private func makeViewModel() -> BuddiesFeedViewModel {
         let client = makeNetworkClient()
         return BuddiesFeedViewModel(client: client)
@@ -24,4 +34,4 @@ public struct BuddiesFeedModule: FeedModuleProtocol {
     private func makeNetworkClient() -> BuddiesClient {
         return .shared
     }
-} 
+}
