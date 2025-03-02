@@ -25,7 +25,7 @@ public struct SettingsView: View {
                     }) {
                         Text(selectedView.rawValue)
                     }
-                    .buttonStyle(.styled(style: .ghost))
+                    .buttonStyle(.styled(style: .inverted))
 
                 case .editProfile:
                     Button(action: {
@@ -33,7 +33,7 @@ public struct SettingsView: View {
                     }) {
                         Text(selectedView.rawValue)
                     }
-                    .buttonStyle(.styled(style: .ghost))
+                    .buttonStyle(.styled(style: .primary(color: DesignAsset.buddiesGamboge.swiftUIColor)))
                 case .buttonsShowcase:
                     Button(action: {
                         coordinator.push(.buttonsShowcase)
@@ -43,7 +43,9 @@ public struct SettingsView: View {
                     .buttonStyle(.styled(style: .ghost))
                 }
             }
+            .listRowSeparator(.hidden)
         }
+        .listStyle(.plain)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {

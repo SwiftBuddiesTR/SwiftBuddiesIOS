@@ -7,11 +7,13 @@
 
 import SwiftUI
 
+// Adding the necessary import for StrokedShape
+
 public struct BuddiesButtonStyle: ButtonStyle {
     public enum Style {
-        case text(labelColor: Color = .primary)
-        case primary(color: Color = .gray)
-        case secondary(color: Color = .gray)
+        case text(labelColor: Color = DesignAsset.buddiesBlack.swiftUIColor)
+        case primary(color: Color = DesignAsset.buddiesTeal.swiftUIColor)
+        case secondary(color: Color = DesignAsset.buddiesPhotoBlue.swiftUIColor)
         case inverted
         case ghost
     }
@@ -44,6 +46,7 @@ public struct BuddiesButtonStyle: ButtonStyle {
     }
 
     public enum Size {
+        case small
         case medium
         case large
     }
@@ -76,6 +79,8 @@ public struct BuddiesButtonStyle: ButtonStyle {
 
     var fontSize: CGFloat {
         switch size {
+        case .small:
+            12
         case .medium:
             14
         case .large:
@@ -86,8 +91,8 @@ public struct BuddiesButtonStyle: ButtonStyle {
     var labelColor: Color {
         switch style {
         case let .text(color): color
-        case .primary: Color.white
-        case .secondary: Color.gray
+        case .primary(let color): color
+        case .secondary(let color): color
         case .inverted: Color.blue
         case .ghost: Color.gray
         }
@@ -99,7 +104,7 @@ public struct BuddiesButtonStyle: ButtonStyle {
             switch style {
             case .text: Color.clear
             case .primary(let color): color
-            case .secondary(let color): color.opacity(0.2)
+            case .secondary(let color): color.opacity(0.6)
             case .inverted: Color.gray.opacity(0.2)
             case .ghost: Color.clear
             }
@@ -172,24 +177,36 @@ public struct BuddiesButtonStyle: ButtonStyle {
         switch shape {
         case .capsule:
             Capsule()
-                .stroke(Color.gray, lineWidth: 1)
         case .roundedRectangle:
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray, lineWidth: 1)
         }
     }
-
+    
+    private func strokedShape() -> StrokedShape.Shape {
+        switch shape {
+        case .capsule: .capsule
+        case .roundedRectangle: .roundedRectangle(radius: 12)
+        }
+    }
+    
     @ViewBuilder
     func backgroundColor(configuration: Configuration) -> some View {
         switch style {
-        case .text: 
-            Color.clear
+        case .text: Color.clear
         case .ghost:
-            ZStack {
-                Color.clear
-                getShape(configuration: configuration)
-            }
-            .opacity(isDisabled ? 0.7 : 1)
+            getShape(configuration: configuration)
+                .foregroundStyle(configuration.isPressed ? backgroundColor.opacity(0.7) : backgroundColor)
+                .opacity(isDisabled ? 0.7 : 1)
+                .overlay {
+                    switch shape {
+                    case .capsule:
+                        Capsule()
+                            .stroke(Color(red: 0.9, green: 0.92, blue: 0.96), lineWidth: 1)
+                    case .roundedRectangle:
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(red: 0.9, green: 0.92, blue: 0.96), lineWidth: 1)
+                    }
+                }
         default:
             getShape(configuration: configuration)
                 .foregroundStyle(configuration.isPressed ? backgroundColor.opacity(0.7) : backgroundColor)
@@ -220,3 +237,5 @@ public extension ButtonStyle where Self == BuddiesButtonStyle {
         )
     }
 } 
+
+
