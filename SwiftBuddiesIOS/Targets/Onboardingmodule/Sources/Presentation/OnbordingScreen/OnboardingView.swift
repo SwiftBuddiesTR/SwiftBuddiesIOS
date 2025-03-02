@@ -23,7 +23,7 @@ public struct OnboardingView: View {
     
     public var body: some View {
         ZStack {
-            DesignAsset.buddiesAzureWhite.swiftUIColor
+            DesignAsset.white.swiftUIColor
                 .ignoresSafeArea()
             VStack {
                 TabView(selection: $currentOnboardingItem) {

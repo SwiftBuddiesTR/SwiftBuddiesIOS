@@ -11,9 +11,9 @@ import SwiftUI
 
 public struct BuddiesButtonStyle: ButtonStyle {
     public enum Style {
-        case text(labelColor: Color = DesignAsset.buddiesBlack.swiftUIColor)
-        case primary(color: Color = DesignAsset.buddiesTeal.swiftUIColor)
-        case secondary(color: Color = DesignAsset.buddiesPhotoBlue.swiftUIColor)
+        case text(labelColor: Color = DesignAsset.black.swiftUIColor)
+        case primary(color: Color = DesignAsset.cyan.swiftUIColor)
+        case secondary(color: Color = DesignAsset.beaver.swiftUIColor)
         case inverted
         case ghost
     }
@@ -89,13 +89,43 @@ public struct BuddiesButtonStyle: ButtonStyle {
     }
 
     var labelColor: Color {
+        // First get the background color based on role and style
+        let bgColor = backgroundColor
+        
         switch style {
-        case let .text(color): color
-        case .primary(let color): color
-        case .secondary(let color): color
-        case .inverted: Color.blue
-        case .ghost: Color.gray
+        case let .text(color): 
+            return color
+        case .primary:
+            // Return contrasting color for text on primary background
+            return getContrastingColor(for: bgColor)
+        case .secondary:
+            // Return contrasting color for text on secondary background
+            return getContrastingColor(for: bgColor)
+        case .inverted:
+            return role == .destructive ? Color.red : Color.blue
+        case .ghost:
+            return role == .destructive ? Color.red : Color.gray
         }
+    }
+
+    // Function to determine if a color is light or dark and return appropriate contrasting color
+    private func getContrastingColor(for color: Color) -> Color {
+        // Convert SwiftUI Color to UIColor for RGB components
+        let uiColor = UIColor(color)
+        
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        
+        // Calculate relative luminance using the formula for perceived brightness
+        // Based on W3C accessibility guidelines: https://www.w3.org/TR/WCAG20/#relativeluminancedef
+        let luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
+        
+        // If luminance is greater than 0.5, the color is considered light, otherwise dark
+        return luminance > 0.5 ? Color.black : Color.white
     }
 
     var backgroundColor: Color {

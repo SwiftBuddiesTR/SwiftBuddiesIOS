@@ -33,7 +33,7 @@ public struct SettingsView: View {
                     }) {
                         Text(selectedView.rawValue)
                     }
-                    .buttonStyle(.styled(style: .primary(color: DesignAsset.buddiesGamboge.swiftUIColor)))
+                    .buttonStyle(.styled(style: .primary(color: DesignAsset.fulvous.swiftUIColor)))
                 case .buttonsShowcase:
                     Button(action: {
                         coordinator.push(.buttonsShowcase)
