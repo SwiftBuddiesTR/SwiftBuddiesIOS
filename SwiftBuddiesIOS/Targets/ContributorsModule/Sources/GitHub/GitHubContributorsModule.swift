@@ -10,20 +10,25 @@ import SwiftUI
 import BuddiesNetwork
 import Network
 
-public struct GitHubContributorsModule: ContributorsModuleProtocol {
+@MainActor
+public struct GitHubContributorsModule: @preconcurrency ContributorsModuleProtocol {
+    private var contributorsView: GitHubContributorsView!
     private let sessionConfiguration: URLSessionConfiguration
     
     public init(sessionConfiguration: URLSessionConfiguration = .default) {
         self.sessionConfiguration = sessionConfiguration
+        self.contributorsView = makeContributorsView()
     }
     
-    @MainActor
-    public func makeContributorsView() -> GitHubContributorsView {
+    public func getContributorsView() -> GitHubContributorsView {
+        return contributorsView
+    }
+    
+    private func makeContributorsView() -> GitHubContributorsView {
         let viewModel = makeViewModel()
         return GitHubContributorsView(viewModel: viewModel)
     }
     
-    @MainActor 
     private func makeViewModel() -> GitHubContributorsViewModel {
         let client = makeNetworkClient()
         return GitHubContributorsViewModel(client: client)
