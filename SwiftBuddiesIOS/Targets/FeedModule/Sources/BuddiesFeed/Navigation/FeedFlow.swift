@@ -11,8 +11,8 @@ import SwiftUI
 final class BuddiesFeedCoordinator: ObservableObject {
     enum BuddiesFeedRoute: Hashable {
         case addPost
-        case postDetail(Post)
-        case userProfile(FeedUser)
+        case postDetail(String)
+        case userProfile(String)
     }
     
     @Published var navigationStack: [BuddiesFeedRoute] = []
@@ -48,10 +48,10 @@ public struct FeedFlow: View {
                     case .addPost:
                         AddPostView()
                             .environmentObject(coordinator)
-                    case .postDetail(let post):
-                        Text("Post Detail View: \(post.post.content ?? "")")
-                    case .userProfile(let user):
-                        Text("User Profile: \(user.name)")
+                    case .postDetail(let postId):
+                        Text("Post Detail View: \(postId)")
+                    case .userProfile(let userId):
+                        Text("User Profile: \(userId)")
                     }
                 }
         }
