@@ -15,7 +15,7 @@ public struct BuddiesButtonStyle: ButtonStyle {
         case primary(color: Color = DesignAsset.Colors.cyan.swiftUIColor)
         case secondary(color: Color = DesignAsset.Colors.beaver.swiftUIColor)
         case inverted
-        case ghost
+        case ghost(color: Color = DesignAsset.Colors.fulvous.swiftUIColor)
     }
 
     public enum Shape {
@@ -103,29 +103,9 @@ public struct BuddiesButtonStyle: ButtonStyle {
             return getContrastingColor(for: bgColor)
         case .inverted:
             return role == .destructive ? Color.red : Color.blue
-        case .ghost:
-            return role == .destructive ? Color.red : Color.gray
+        case .ghost(let color):
+            return role == .destructive ? Color.red : color
         }
-    }
-
-    // Function to determine if a color is light or dark and return appropriate contrasting color
-    private func getContrastingColor(for color: Color) -> Color {
-        // Convert SwiftUI Color to UIColor for RGB components
-        let uiColor = UIColor(color)
-        
-        var red: CGFloat = 0
-        var green: CGFloat = 0
-        var blue: CGFloat = 0
-        var alpha: CGFloat = 0
-        
-        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
-        
-        // Calculate relative luminance using the formula for perceived brightness
-        // Based on W3C accessibility guidelines: https://www.w3.org/TR/WCAG20/#relativeluminancedef
-        let luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
-        
-        // If luminance is greater than 0.5, the color is considered light, otherwise dark
-        return luminance > 0.5 ? Color.black : Color.white
     }
 
     var backgroundColor: Color {
@@ -172,9 +152,9 @@ public struct BuddiesButtonStyle: ButtonStyle {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 20, height: 20)
                 configuration.label
-                    .foregroundStyle(labelColor)
                     .font(.system(size: fontSize, weight: .semibold))
             }
+            .foregroundStyle(labelColor)
         default:
             HStack(spacing: 8) {
                 leadingIcon?
@@ -214,8 +194,10 @@ public struct BuddiesButtonStyle: ButtonStyle {
     
     private func strokedShape() -> StrokedShape.Shape {
         switch shape {
-        case .capsule: .capsule
-        case .roundedRectangle: .roundedRectangle(radius: 12)
+        case .capsule:
+                .capsule
+        case .roundedRectangle:
+                .roundedRectangle(radius: 12)
         }
     }
     
@@ -231,10 +213,10 @@ public struct BuddiesButtonStyle: ButtonStyle {
                     switch shape {
                     case .capsule:
                         Capsule()
-                            .stroke(Color(red: 0.9, green: 0.92, blue: 0.96), lineWidth: 1)
+                            .stroke(labelColor, lineWidth: 1)
                     case .roundedRectangle:
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color(red: 0.9, green: 0.92, blue: 0.96), lineWidth: 1)
+                            .stroke(labelColor, lineWidth: 1)
                     }
                 }
         default:
@@ -242,6 +224,29 @@ public struct BuddiesButtonStyle: ButtonStyle {
                 .foregroundStyle(configuration.isPressed ? backgroundColor.opacity(0.7) : backgroundColor)
                 .opacity(isDisabled ? 0.7 : 1)
         }
+    }
+}
+
+// MARK: - Label color getter extension
+private extension BuddiesButtonStyle {
+    // Function to determine if a color is light or dark and return appropriate contrasting color
+    private func getContrastingColor(for color: Color) -> Color {
+        // Convert SwiftUI Color to UIColor for RGB components
+        let uiColor = UIColor(color)
+        
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+//        var alpha: CGFloat = 0
+        
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: nil)
+        
+        // Calculate relative luminance using the formula for perceived brightness
+        // Based on W3C accessibility guidelines: https://www.w3.org/TR/WCAG20/#relativeluminancedef
+        let luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
+        
+        // If luminance is greater than 0.5, the color is considered light, otherwise dark
+        return luminance > 0.4 ? Color.black : Color.white
     }
 }
 

@@ -19,17 +19,10 @@ public struct ButtonsExampleView: View {
     @State private var selectedWidth = BuddiesButtonStyle.WidthType.fill
     @State private var isDestructive = false
     @State private var showLeadingIcon = false
-    @State private var selectedColor = Color.blue
+    @State private var selectedColor = Color.black
     
     private let styleOptions = ["Primary", "Secondary", "Inverted", "Ghost", "Text"]
-    private let colorOptions: [(name: String, color: Color)] = [
-        (DesignAsset.Colors.white.name, DesignAsset.Colors.white.swiftUIColor),
-        (DesignAsset.Colors.black.name, DesignAsset.Colors.black.swiftUIColor),
-        (DesignAsset.Colors.fulvous.name, DesignAsset.Colors.fulvous.swiftUIColor),
-        (DesignAsset.Colors.cyan.name, DesignAsset.Colors.cyan.swiftUIColor),
-        (DesignAsset.Colors.olive.name, DesignAsset.Colors.olive.swiftUIColor),
-        (DesignAsset.Colors.beaver.name, DesignAsset.Colors.beaver.swiftUIColor),
-    ]
+    
     
     private var currentStyle: BuddiesButtonStyle.Style {
         switch selectedStyleIndex {
@@ -40,7 +33,7 @@ public struct ButtonsExampleView: View {
         case 2:
             return .inverted
         case 3:
-            return .ghost
+            return .ghost(color: selectedColor)
         case 4:
             return .text(labelColor: selectedColor)
         default:
@@ -108,25 +101,7 @@ public struct ButtonsExampleView: View {
                 
                 ColorPicker("Custom Color", selection: $selectedColor)
                 
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(0..<colorOptions.count, id: \.self) { index in
-                            Button {
-                                selectedColor = colorOptions[index].1
-                            } label: {
-                                Circle()
-                                    .fill(colorOptions[index].1)
-                                    .frame(width: 32, height: 32)
-                                    .overlay(
-                                        Circle()
-                                            .stroke(selectedColor == colorOptions[index].1 ? .primary : .clear, lineWidth: 2)
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
+                DesignColorPicker(color: $selectedColor)
             }
             
             Section("Button Configuration") {
@@ -150,18 +125,18 @@ public struct ButtonsExampleView: View {
                 .pickerStyle(.segmented)
             }
             
-            Section("Color Variations") {
-                VStack(spacing: 16) {
-                    ForEach(0..<colorOptions.count, id: \.self) { index in
-                        Button(colorOptions[index].0) {}
-                            .buttonStyle(.styled(
-                                style: .primary(color: colorOptions[index].1),
-                                width: .fill
-                            ))
-                    }
-                }
-                .padding(.vertical, 8)
-            }
+//            Section("Color Variations") {
+//                VStack(spacing: 16) {
+//                    ForEach(0..<colorOptions.count, id: \.self) { index in
+//                        Button(colorOptions[index].0) {}
+//                            .buttonStyle(.styled(
+//                                style: .primary(color: colorOptions[index].1),
+//                                width: .fill
+//                            ))
+//                    }
+//                }
+//                .padding(.vertical, 8)
+//            }
             
             Section("Social Action Buttons") {
                 HStack(spacing: 16) {

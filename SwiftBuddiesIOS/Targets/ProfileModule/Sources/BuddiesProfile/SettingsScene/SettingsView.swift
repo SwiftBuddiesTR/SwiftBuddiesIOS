@@ -45,14 +45,14 @@ public struct SettingsView: View {
                     }) {
                         Text(selectedView.localized)
                     }
-                    .buttonStyle(.styled(style: .primary(color: DesignAsset.fulvous.swiftUIColor)))
+                    .buttonStyle(.styled(style: .secondary(color: DesignAsset.Colors.beaver.swiftUIColor)))
                 case .buttonsShowcase:
                     Button(action: {
                         coordinator.push(.buttonsShowcase)
                     }) {
                         Text(selectedView.localized)
                     }
-                    .buttonStyle(.styled(style: .ghost))
+                    .buttonStyle(.styled(style: .ghost(color: DesignAsset.Colors.olive.swiftUIColor)))
                 }
             }
             .listRowSeparator(.hidden)

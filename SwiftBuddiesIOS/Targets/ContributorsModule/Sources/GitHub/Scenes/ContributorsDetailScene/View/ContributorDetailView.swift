@@ -270,7 +270,7 @@ private struct ActivitiesLoadingView<Content: View>: View {
                     Image(systemName: "doc.text.image")
                         .font(.largeTitle)
                         .foregroundStyle(.secondary)
-                    Text(L.common_no_recent_activities)
+                    L.common_no_recent_activities
                         .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity)
