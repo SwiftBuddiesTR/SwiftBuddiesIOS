@@ -15,6 +15,6 @@ struct LoginButtonViewModifier: ViewModifier {
             .foregroundColor(.white)
             .frame(height: 55)
             .frame(maxWidth: .infinity)
-            .background(DesignAsset.loginStrokeColor.swiftUIColor)
+            .background(DesignAsset.Colors.fulvous.swiftUIColor)
     }
 }

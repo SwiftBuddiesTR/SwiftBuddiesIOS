@@ -1,4 +1,5 @@
 import SwiftUI
+import Localization
 
 struct RepoFilterView: View {
     let filters: [RepoFilter]
@@ -8,12 +9,12 @@ struct RepoFilterView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text("Filter by Repository")
+                L.contributors_filter_by_repository
                     .font(.headline)
                 Spacer()
                 
                 if filters.contains(where: \.isSelected) {
-                    Button("Clear", action: onClearFilters)
+                    Button(L.$button_clear.localized, action: onClearFilters)
                         .font(.subheadline)
                 }
             }

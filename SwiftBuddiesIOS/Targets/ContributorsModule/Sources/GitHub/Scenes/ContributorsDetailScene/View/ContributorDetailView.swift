@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Design
+import Localization
 
 struct ContributorDetailView: View {
     let contributor: Contributor
@@ -138,8 +139,8 @@ struct ContributorDetailView: View {
                 StatView(title: "Repos", value: "\(stats.publicRepos)")
             }
             HStack(spacing: 16) {
-                StatView(title: "Followers", value: "\(stats.followers)")
-                StatView(title: "Following", value: "\(stats.following)")
+                StatView(title: L.$contributors_followers.localized, value: "\(stats.followers)")
+                StatView(title: L.$contributors_following.localized, value: "\(stats.following)")
             }
         }
         .padding(.vertical)
@@ -151,12 +152,18 @@ struct ContributorDetailView: View {
                 UIApplication.shared.open(url)
             }
         } label: {
-            Label("Open in GitHub", systemImage: "link")
-                .font(.footnote)
-                .frame(maxWidth: .infinity)
+            L.contributors_open_in_github
         }
-        .buttonStyle(.bordered)
-        .tint(.primary)
+        .buttonStyle(
+            BuddiesButtonStyle(
+                style: .secondary(color: .accentColor),
+                width: .hug,
+                size: .medium,
+                shape: .roundedRectangle,
+                role: .default,
+                leadingIcon: Image(systemName: "link")
+            )
+        )
     }
 }
 
@@ -188,7 +195,7 @@ private struct ActivitiesLoadingView<Content: View>: View {
         VStack(spacing: 16) {
             // Section Header with Filter Button
             HStack {
-                Text("Recent Activities")
+                L.contributors_recent_activities
                     .font(.title3)
                     .bold()
                 
@@ -210,11 +217,11 @@ private struct ActivitiesLoadingView<Content: View>: View {
                         Divider()
                         
                         Button(role: .destructive, action: onClearFilters) {
-                            Text("Clear Filters")
+                            Text(L.$contributors_clear_filters.localized)
                         }
                     } label: {
                         HStack(spacing: 4) {
-                            Text("Filter")
+                            L.contributors_filter
                             Image(systemName: "line.3.horizontal.decrease.circle")
                         }
                         .foregroundStyle(filters.contains(where: \.isSelected) ? .blue : .secondary)
@@ -263,7 +270,7 @@ private struct ActivitiesLoadingView<Content: View>: View {
                     Image(systemName: "doc.text.image")
                         .font(.largeTitle)
                         .foregroundStyle(.secondary)
-                    Text("No recent activities")
+                    L.common_no_recent_activities
                         .foregroundStyle(.secondary)
                 }
                 .frame(maxWidth: .infinity)

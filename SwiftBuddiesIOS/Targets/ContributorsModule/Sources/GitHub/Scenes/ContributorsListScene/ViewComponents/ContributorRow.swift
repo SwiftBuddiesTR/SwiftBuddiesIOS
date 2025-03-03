@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Localization
 
 struct ContributorRow: View {
     @EnvironmentObject private var coordinator: GitHubContributorsCoordinator
@@ -33,7 +34,7 @@ struct ContributorRow: View {
                 VStack(alignment: .leading) {
                     Text(contributor.name)
                         .font(.headline)
-                    Text("\(contributor.contributions) contributions")
+                    Text(L.$contributors_contributions_count.format(contributor.contributions))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

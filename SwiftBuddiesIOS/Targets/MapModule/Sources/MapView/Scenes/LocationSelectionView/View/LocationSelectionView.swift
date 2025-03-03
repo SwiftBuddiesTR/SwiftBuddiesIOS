@@ -8,6 +8,7 @@
 import SwiftUI
 import MapKit
 import SwiftData
+import Localization
 
 struct LocationSelectionView: View {
     
@@ -97,7 +98,7 @@ extension LocationSelectionView {
             }
             
         }) {
-            Text("Create")
+            L.button_create
                 .frame(width: UIScreen.main.bounds.width - 64, height: 55)
                 .padding(.horizontal)
                 .background(RoundedRectangle(cornerRadius: 10).fill(Color.orange))
@@ -108,9 +109,9 @@ extension LocationSelectionView {
     }
     
     private func createAlert() -> Alert {
-        return Alert(title: Text("Ups 🧐"),
-                     message: Text("Please specify the event location."),
-                     dismissButton: .default(Text("OK")))
+        return Alert(title: L.alert_error_title,
+                     message: L.alert_error_location_empty,
+                     dismissButton: .default(L.alert_button_ok))
     }
 
 }

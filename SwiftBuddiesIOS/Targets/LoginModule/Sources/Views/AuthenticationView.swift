@@ -1,6 +1,7 @@
 import SwiftUI
 import Design
 import Auth
+import Localization
 
 public struct AuthenticationView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -27,7 +28,7 @@ public struct AuthenticationView: View {
 
 extension AuthenticationView {
     private var swiftBuddies: some View {
-        DesignAsset.swiftBuddiesImage.swiftUIImage
+        DesignAsset.LocalMedia.swiftBuddiesImage.swiftUIImage
             .resizable()
             .aspectRatio(1, contentMode: .fit)
             .frame(height: 250)
@@ -41,7 +42,7 @@ extension AuthenticationView {
                 debugPrint(error)
             }
         } label: {
-            Text("Sign in with Google")
+            L.button_sign_in_with_google
                 .withLoginButtonFormatting()
         }
     }

@@ -3,6 +3,7 @@ import Feed
 import Map
 import Contributors
 import Profile
+import Localization
 
 enum AppTab: Int, Identifiable {
     case feed = 0
@@ -21,28 +22,28 @@ struct TabFlowView: View {
             FeedView()
                 .tabItem {
                     Image(systemName: "list.bullet")
-                    Text("Feed")
+                    L.tab_feed
                 }
                 .tag(AppTab.feed)
             
             MapView()
                 .tabItem {
                     Image(systemName: "map")
-                    Text("Map")
+                    L.tab_map
                 }
                 .tag(AppTab.map)
             
             ProfileView()
                 .tabItem {
                     Image(systemName: "person.fill")
-                    Text("Profile")
+                    L.tab_profile
                 }
                 .tag(AppTab.profile)
             
             ContributorsView()
                 .tabItem {
                     Image(systemName: "person.3")
-                    Text("Contributors")
+                    L.tab_contributors
                 }
                 .tag(AppTab.contributors)
         }

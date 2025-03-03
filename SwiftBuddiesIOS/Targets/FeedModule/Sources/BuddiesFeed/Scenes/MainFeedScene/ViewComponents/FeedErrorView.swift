@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Localization
 
 // MARK: - Error View
 struct FeedErrorView: View {
@@ -18,7 +19,7 @@ struct FeedErrorView: View {
                 .multilineTextAlignment(.center)
                 .padding()
             
-            Button("Try Again", action: onRetry)
+            Button(L.$button_try_again.localized, action: onRetry)
                 .withLoginButtonFormatting()
         }
     }
